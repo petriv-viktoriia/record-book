@@ -13,10 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
     @Id
     private Long id;
     private String email;
     private String firstName;
     private String lastName;
+    private UserStatus status;
+    private Role role;
 }
