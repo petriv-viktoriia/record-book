@@ -19,7 +19,7 @@ class UserRepositoryTest {
 
     @Test
     void testCreateReadDelete() {
-        User user = new User(1L, "test@example.com");
+        User user = new User(1L, "test@example.com", "dude", "dude");
         userRepository.save(user);
 
         Iterable<User> users = userRepository.findAll();
