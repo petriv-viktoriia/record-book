@@ -7,8 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -21,7 +19,7 @@ class UserRepositoryTest {
 
     @Test
     void testCreateReadDelete() {
-        User user = new User(1L, "test@example.com");
+        User user = new User(1L, "test@example.com", "dude", "dude");
         userRepository.save(user);
 
         Iterable<User> users = userRepository.findAll();
