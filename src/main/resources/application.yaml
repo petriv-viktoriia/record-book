@@ -2,9 +2,9 @@ spring:
   application:
     name: record-book
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    url: jdbc:postgresql://localhost:5432/recordbook
+    username: postgres
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: create-drop
