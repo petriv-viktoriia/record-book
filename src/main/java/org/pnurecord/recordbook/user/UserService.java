@@ -1,16 +1,18 @@
 package org.pnurecord.recordbook.user;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@RequiredArgsConstructor
 @Service
-@AllArgsConstructor
 public class UserService {
 
     private UserRepository userRepository;
 
-    public Iterable<User> findAll() {
-        return this.userRepository.findAll();
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
 

@@ -1,13 +1,13 @@
 package org.pnurecord.recordbook.reaction;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/reactions")
-@AllArgsConstructor
 public class ReactionController {
 
-    private final ReactionRepository reactionRepository;
+    private final ReactionService reactionService;
 }

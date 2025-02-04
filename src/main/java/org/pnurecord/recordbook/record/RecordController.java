@@ -1,12 +1,12 @@
 package org.pnurecord.recordbook.record;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/records")
-@AllArgsConstructor
 public class RecordController {
-    private final RecordRepository recordRepository;
+    private final RecordService recordService;
 }
