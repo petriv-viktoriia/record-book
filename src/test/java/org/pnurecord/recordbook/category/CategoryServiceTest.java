@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -20,7 +21,7 @@ public class CategoryServiceTest {
     private CategoryService categoryService;
 
     @Test
-    void testCreateReadDelete(){
+    void testCreateReadDelete() {
         CategoryDto category = new CategoryDto();
         category.setName("Test Category");
         categoryService.createCategory(category);
@@ -32,7 +33,39 @@ public class CategoryServiceTest {
         categoryService.deleteAllCategories();
         assertThat(categoryService.getAllCategories()).isEmpty();
     }
+
+    @Test
+    void testFindById() {
+        CategoryDto testCategory = new CategoryDto();
+        testCategory.setId(1L);
+        testCategory.setName("Test Category");
+        categoryService.createCategory(testCategory);
+
+        CategoryDto result = categoryService.findById(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("Test Category", result.getName());
+    }
+
+    @Test
+    void testDeleteById() {
+        CategoryDto testCategory = new CategoryDto();
+        testCategory.setId(1L);
+        testCategory.setName("Test Category");
+
+        categoryService.createCategory(testCategory);
+
+        CategoryDto result = categoryService.findById(1L);
+        assertNotNull(result);
+        assertEquals("Test Category", result.getName());
+
+        categoryService.deleteCategory(1L);
+
+        assertThrows(IllegalArgumentException.class, () -> categoryService.findById(1L));
+    }
 }
+
 
 
 

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,16 +17,16 @@ public class CategoryController {
     }
 
     @GetMapping("/{categoryId}")
-    public Optional<CategoryDto> getCategoryById(@PathVariable Long categoryId) {
+    public CategoryDto getCategoryById(@PathVariable Long categoryId) {
         return categoryService.findById(categoryId);
     }
 
     @PostMapping
-    public CategoryDto createCategory(@RequestBody CategoryDto category) {
-        return categoryService.createCategory(category);
+    public void createCategory(@RequestBody CategoryDto category) {
+        categoryService.createCategory(category);
     }
 
-    @PutMapping("{categoryId}")
+    @PutMapping("/{categoryId}")
     public CategoryDto updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDto category) {
         return categoryService.updateCategory(categoryId, category);
     }
@@ -41,6 +40,4 @@ public class CategoryController {
     public void deleteAllCategories() {
         categoryService.deleteAllCategories();
     }
-
-
 }
