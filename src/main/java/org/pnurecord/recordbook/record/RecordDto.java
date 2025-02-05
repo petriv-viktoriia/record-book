@@ -10,10 +10,10 @@ import java.util.Date;
 public class RecordDto {
     private Long id;
     private String title;
-    private Long category;
+    private Long categoryId;
     private String description;
     private String file_path;
-    private Long author;
+    private Long authorId;
     private Date published_date;
     private RecordStatus status;
 }
