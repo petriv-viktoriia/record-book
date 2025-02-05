@@ -11,7 +11,7 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
-    public CategoryDTO createCategory(CategoryDTO categoryDto) {
+    public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = convertToEntity(categoryDto);
         Category savedCategory = categoryRepository.save(category);
         return convertToDTO(savedCategory);
@@ -21,7 +21,7 @@ public class CategoryService {
         categoryRepository.deleteById(categoryId);
     }
 
-    public List<CategoryDTO> getAllCategories() {
+    public List<CategoryDto> getAllCategories() {
         return categoryRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -31,12 +31,12 @@ public class CategoryService {
         categoryRepository.deleteAll();
     }
 
-    public Optional<CategoryDTO> findById(long id) {
+    public Optional<CategoryDto> findById(long id) {
         return categoryRepository.findById(id)
                 .map(this::convertToDTO);
     }
 
-    public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDto) {
+    public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
         Optional<Category> category = categoryRepository.findById(categoryId);
         category.get().setName(categoryDto.getName());
         Category updatedCategory = categoryRepository.save(category.get());
@@ -44,18 +44,18 @@ public class CategoryService {
     }
 
 
-    private CategoryDTO convertToDTO(Category category) {
+    private CategoryDto convertToDTO(Category category) {
         if (category == null) {
             return null;
         }
-        CategoryDTO categoryDTO = new CategoryDTO();
+        CategoryDto categoryDTO = new CategoryDto();
         categoryDTO.setId(category.getId());
         categoryDTO.setName(category.getName());
         return categoryDTO;
     }
 
 
-    private Category convertToEntity(CategoryDTO categoryDTO) {
+    private Category convertToEntity(CategoryDto categoryDTO) {
         if (categoryDTO == null) {
             return null;
         }

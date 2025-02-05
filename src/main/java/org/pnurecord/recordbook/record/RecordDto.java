@@ -7,13 +7,13 @@ import org.pnurecord.recordbook.user.User;
 import java.util.Date;
 
 @Data
-public class RecordDTO {
+public class RecordDto {
     private Long id;
     private String title;
-    private Category category;
+    private Long category;
     private String description;
     private String file_path;
-    private User author;
+    private Long author;
     private Date published_date;
     private RecordStatus status;
 }
