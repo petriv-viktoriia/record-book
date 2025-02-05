@@ -40,11 +40,9 @@ public class CategoryService {
     }
 
     public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDto) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-        category.setName(categoryDto.getName());
-        category.setRecords(categoryDto.getRecords());
-        Category updatedCategory = categoryRepository.save(category);
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        category.get().setName(categoryDto.getName());
+        Category updatedCategory = categoryRepository.save(category.get());
         return convertToDTO(updatedCategory);
     }
 
@@ -56,9 +54,9 @@ public class CategoryService {
         CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setId(category.getId());
         categoryDTO.setName(category.getName());
-        categoryDTO.setRecords(category.getRecords());
         return categoryDTO;
     }
+
 
     private Category convertToEntity(CategoryDTO categoryDTO) {
         if (categoryDTO == null) {
@@ -67,7 +65,6 @@ public class CategoryService {
         Category category = new Category();
         category.setId(categoryDTO.getId());
         category.setName(categoryDTO.getName());
-        category.setRecords(categoryDTO.getRecords());
         return category;
     }
 

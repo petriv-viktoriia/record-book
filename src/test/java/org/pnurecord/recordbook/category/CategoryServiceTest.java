@@ -24,7 +24,6 @@ public class CategoryServiceTest {
     void testCreateReadDelete(){
         CategoryDTO category = new CategoryDTO();
         category.setName("Test Category");
-        category.setRecords(new ArrayList<>());
         categoryService.createCategory(category);
 
         List<CategoryDTO> categories = categoryService.getAllCategories();

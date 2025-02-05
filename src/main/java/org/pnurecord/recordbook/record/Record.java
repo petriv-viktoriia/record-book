@@ -1,15 +1,11 @@
 package org.pnurecord.recordbook.record;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
-import org.pnurecord.recordbook.reaction.Reaction;
 import org.pnurecord.recordbook.category.Category;
 import org.pnurecord.recordbook.user.User;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Entity
@@ -20,19 +16,16 @@ public class Record {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
 
     private String description;
     private String file_path;
     private Date published_date;
     private RecordStatus status;
-
-    @OneToMany(mappedBy = "record")
-    private List<Reaction> reactions = new ArrayList<>();
 
 }
