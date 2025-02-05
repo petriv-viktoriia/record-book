@@ -1,8 +1,6 @@
 package org.pnurecord.recordbook.category;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.pnurecord.recordbook.record.RecordService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +10,6 @@ import java.util.Optional;
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-    private final RecordService recordService;
 
     public CategoryDTO createCategory(CategoryDTO categoryDto) {
         Category category = convertToEntity(categoryDto);
