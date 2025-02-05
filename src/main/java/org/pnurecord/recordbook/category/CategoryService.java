@@ -48,16 +48,15 @@ public class CategoryService {
     }
 
 
-    public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
+    public void updateCategory(Long categoryId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
         boolean nameExists = categoryRepository.existsByName(categoryDto.getName());
         if (nameExists && !category.getName().equals(categoryDto.getName())) {
             throw new IllegalArgumentException("Category with name '" + categoryDto.getName() + "' already exists.");
+        } else {
+            category.setName(categoryDto.getName());
+            categoryRepository.save(category);
         }
-        category.setName(categoryDto.getName());
-        Category updatedCategory = categoryRepository.save(category);
-        return categoryMapper.toCategoryDto(updatedCategory);
     }
-
 }
