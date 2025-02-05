@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,11 +21,11 @@ public class CategoryServiceTest {
 
     @Test
     void testCreateReadDelete(){
-        CategoryDTO category = new CategoryDTO();
+        CategoryDto category = new CategoryDto();
         category.setName("Test Category");
         categoryService.createCategory(category);
 
-        List<CategoryDTO> categories = categoryService.getAllCategories();
+        List<CategoryDto> categories = categoryService.getAllCategories();
         assertThat(categories).hasSize(1);
         assertThat(categories.get(0).getName()).isEqualTo(category.getName());
 
