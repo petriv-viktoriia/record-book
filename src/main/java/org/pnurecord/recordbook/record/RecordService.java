@@ -2,9 +2,10 @@ package org.pnurecord.recordbook.record;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.pnurecord.recordbook.category.Category;
 import org.pnurecord.recordbook.category.CategoryRepository;
+import org.pnurecord.recordbook.exceptions.DuplicateValueException;
+import org.pnurecord.recordbook.exceptions.NotFoundException;
 import org.pnurecord.recordbook.user.User;
 import org.pnurecord.recordbook.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,9 @@ public class RecordService {
 
 
     public void createRecord(RecordDto recordDto, MultipartFile file) {
-        if (StringUtils.isEmpty(recordDto.getTitle())) {
-            throw new IllegalArgumentException("Title is empty");
-        }
 
         if (recordRepository.existsByTitle(recordDto.getTitle())) {
-            throw new IllegalArgumentException("Record with title: %s already exists".formatted(recordDto.getTitle()));
+            throw new DuplicateValueException("Record with title: %s already exists".formatted(recordDto.getTitle()));
         }
 
         Record record = new Record();
@@ -41,7 +39,7 @@ public class RecordService {
 
     public void updateRecord(Long id, RecordDto recordDto, MultipartFile file) {
         Record record = recordRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Record not found"));
+                .orElseThrow(() -> new NotFoundException("Record not found"));
         updateFields(recordDto, file, record);
         recordRepository.save(record);
     }
@@ -51,11 +49,11 @@ public class RecordService {
         record.setDescription(recordDto.getDescription());
 
         Category category = categoryRepository.findById(recordDto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new NotFoundException("Category not found"));
         record.setCategory(category);
 
         User author = userRepository.findById(recordDto.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
         record.setAuthor(author);
 
         processFile(file, record);
@@ -70,7 +68,7 @@ public class RecordService {
             record.setFilename(originalFilename);
             record.setFile(file.getBytes());
         } else {
-            throw new IllegalArgumentException("File is empty");
+            throw new NotFoundException("File is empty");
         }
     }
 
@@ -80,7 +78,7 @@ public class RecordService {
 
     public RecordDto findById(long recordId) {
         Record record = recordRepository.findById(recordId)
-                .orElseThrow(() -> new IllegalArgumentException("Record not found with id: " + recordId));
+                .orElseThrow(() -> new NotFoundException("Record not found with id: %s".formatted(recordId)));
         return recordMapper.toRecordDto(record);
     }
 
@@ -90,7 +88,7 @@ public class RecordService {
 
     public void deleteRecord(Long recordId) {
         if (!recordRepository.existsById(recordId)) {
-            throw new IllegalArgumentException("Record not found with id: " + recordId);
+            throw new NotFoundException("Record not found with id: %s".formatted(recordId));
         }
         recordRepository.deleteById(recordId);
     }
@@ -109,7 +107,7 @@ public class RecordService {
 
     public List<RecordDto> getRecordsByUserAndStatus(Long userId, RecordStatus status) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         List<Record> records = recordRepository.findByAuthorAndStatus(user, status);
         return recordMapper.toRecordDtoList(records);
@@ -118,7 +116,7 @@ public class RecordService {
 
     public void approveRecord(Long recordId) {
         Record record = recordRepository.findById(recordId)
-                .orElseThrow(() -> new IllegalArgumentException("Record not found with id: " + recordId));
+                .orElseThrow(() -> new NotFoundException("Record not found with id: %s".formatted(recordId)));
 
         record.setStatus(RecordStatus.APPROVED);
         recordRepository.save(record);
@@ -126,7 +124,7 @@ public class RecordService {
 
     public void rejectRecord(Long recordId) {
         Record record = recordRepository.findById(recordId)
-                .orElseThrow(() -> new IllegalArgumentException("Record not found with id: " + recordId));
+                .orElseThrow(() -> new NotFoundException("Record not found with id: %s".formatted(recordId)));
 
         record.setStatus(RecordStatus.REJECTED);
         recordRepository.save(record);
@@ -134,7 +132,7 @@ public class RecordService {
 
     public List<RecordDto> getRecordsByCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
+                .orElseThrow(() -> new NotFoundException("Category not found with id: %s".formatted(categoryId)));
 
         List<Record> records = recordRepository.findByCategory(category);
 
@@ -144,7 +142,7 @@ public class RecordService {
 
     public List<RecordDto> getRecordsByAuthor(Long authorId) {
         User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + authorId));
+                .orElseThrow(() -> new NotFoundException("User not found with id: %s".formatted(authorId)));
 
         List<Record> records = recordRepository.findByAuthor(author);
 
