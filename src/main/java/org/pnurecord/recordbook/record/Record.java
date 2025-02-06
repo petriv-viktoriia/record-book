@@ -12,6 +12,7 @@ import java.util.Date;
 @Table(name = "records")
 public class Record {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
 
@@ -26,6 +27,7 @@ public class Record {
     private String description;
     private String file_path;
     private Date published_date;
+    @Enumerated(EnumType.STRING)
     private RecordStatus status;
 
 }
