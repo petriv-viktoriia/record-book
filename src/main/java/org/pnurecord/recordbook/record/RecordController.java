@@ -1,5 +1,6 @@
 package org.pnurecord.recordbook.record;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,12 +34,12 @@ public class RecordController {
     }
 
     @PostMapping
-    public void createRecord(@RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
+    public void createRecord(@Valid @RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
         recordService.createRecord(recordDto, file);
     }
 
     @PutMapping("/{recordId}")
-    public void updateRecord(@PathVariable Long recordId, @RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
+    public void updateRecord(@PathVariable Long recordId, @Valid @RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
         recordService.updateRecord(recordId, recordDto, file);
     }
 
