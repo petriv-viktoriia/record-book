@@ -1,6 +1,8 @@
 package org.pnurecord.recordbook.reaction;
 
 import lombok.RequiredArgsConstructor;
+import org.pnurecord.recordbook.exceptions.DuplicateValueException;
+import org.pnurecord.recordbook.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +16,7 @@ public class ReactionService {
     public void addReaction(ReactionDto reactionDto) {
         boolean exists = reactionRepository.existsByRecordIdAndUserId(reactionDto.getRecordId(), reactionDto.getUserId());
         if (exists) {
-            throw new IllegalArgumentException("Reaction already exists");
+            throw new DuplicateValueException("Reaction with recordId: %s and userId: %s already exists".formatted(reactionDto.getRecordId(), reactionDto.getUserId()));
         } else {
             Reaction reaction = reactionMapper.toReaction(reactionDto);
             reactionRepository.save(reaction);
@@ -23,7 +25,7 @@ public class ReactionService {
 
     public void deleteReaction(Long id) {
         Reaction reaction = reactionRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Reaction not found")
+                () -> new NotFoundException("Reaction with id: %s not found".formatted(id))
         );
 
         reactionRepository.delete(reaction);
@@ -31,7 +33,7 @@ public class ReactionService {
 
     public void updateReaction(Long id, ReactionUpdateDto reactionUpdateDto) {
         Reaction reaction = reactionRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Reaction not found")
+                () -> new NotFoundException("Reaction with id: %s not found".formatted(id))
         );
 
         reaction.setLiked(reactionUpdateDto.isLiked());
@@ -52,13 +54,13 @@ public class ReactionService {
 
             return new ReactionCountDto(likes, dislikes);
         } else {
-            throw new IllegalArgumentException("Reaction not found");
+            throw new NotFoundException("Reaction with id: %s not found".formatted(recordId));
         }
     }
 
     public ReactionDto getReactionById(Long id) {
         Reaction reaction = reactionRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Reaction not found")
+                () -> new NotFoundException("Reaction with id: %s not found".formatted(id))
         );
         return reactionMapper.toReactionDto(reaction);
     }

@@ -27,4 +27,23 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseDto handleNotFoundException(NotFoundException ex) {
+        return new ResponseDto(
+                HttpStatus.NOT_FOUND.name(),
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage()
+        );
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DuplicateValueException.class)
+    public ResponseDto handleDuplicateValueException(DuplicateValueException ex) {
+        return new ResponseDto(
+                HttpStatus.CONFLICT.name(),
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+    }
 }
