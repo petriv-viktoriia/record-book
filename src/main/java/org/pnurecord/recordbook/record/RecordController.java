@@ -34,12 +34,12 @@ public class RecordController {
     }
 
     @PostMapping
-    public void createRecord(@RequestBody RecordDto recordDto, @RequestParam MultipartFile file) throws IOException {
+    public void createRecord(@RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
         recordService.createRecord(recordDto, file);
     }
 
     @PutMapping("/{recordId}")
-    public void updateRecord(@PathVariable Long recordId, @RequestBody RecordDto recordDto, @RequestParam MultipartFile file) throws IOException {
+    public void updateRecord(@PathVariable Long recordId, @RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
         recordService.updateRecord(recordId, recordDto, file);
     }
 

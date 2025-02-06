@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
-    boolean existsByTitleAndDescription(String title, String description);
+    boolean existsByTitle(String title);
 
     List<Record> findByCategory(Category category);
 
