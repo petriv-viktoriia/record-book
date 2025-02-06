@@ -1,6 +1,7 @@
 package org.pnurecord.recordbook.record;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -51,12 +53,12 @@ public class RecordController {
         recordService.deleteAllRecords();
     }
 
-    @GetMapping("/category/{categoryId}")
+    @GetMapping("/categories/{categoryId}")
     public List<RecordDto> getRecordsByCategory(@PathVariable Long categoryId) {
         return recordService.getRecordsByCategory(categoryId);
     }
 
-    @GetMapping("/author/{authorId}")
+    @GetMapping("/authors/{authorId}")
     public List<RecordDto> getRecordsByAuthor(@PathVariable Long authorId) {
         return recordService.getRecordsByAuthor(authorId);
     }
@@ -71,7 +73,12 @@ public class RecordController {
         return recordService.findAllPendingRecords();
     }
 
-    @GetMapping("/user/{userId}/status/{status}")
+    @GetMapping("/date/{date}")
+    public List<RecordDto> getRecordsByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return recordService.getRecordsByDate(date);
+    }
+
+    @GetMapping("/users/{userId}?status={status}")
     public List<RecordDto> getUserRecordsByStatus(@PathVariable Long userId, @PathVariable RecordStatus status) {
         return recordService.getRecordsByUserAndStatus(userId, status);
     }

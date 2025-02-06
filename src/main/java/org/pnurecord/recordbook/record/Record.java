@@ -26,7 +26,7 @@ public class Record {
     private String description;
     private String filename;
     private byte[] file;
-    private LocalDate published_date;
+    private LocalDate publishedDate;
     private RecordStatus status;
 
 }

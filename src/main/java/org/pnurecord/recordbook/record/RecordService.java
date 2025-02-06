@@ -43,7 +43,7 @@ public class RecordService {
 
             processFile(file, record);
 
-            record.setPublished_date(LocalDate.now());
+            record.setPublishedDate(LocalDate.now());
             record.setStatus(RecordStatus.PENDING);
 
             recordRepository.save(record);
@@ -160,6 +160,10 @@ public class RecordService {
         List<Record> records = recordRepository.findByAuthor(author);
 
         return recordMapper.toRecordDtoList(records);
+    }
+
+    public List<RecordDto> getRecordsByDate(LocalDate date) {
+        return recordMapper.toRecordDtoList(recordRepository.findByPublishedDate(date));
     }
 
 }
