@@ -5,7 +5,7 @@ import lombok.Data;
 import org.pnurecord.recordbook.category.Category;
 import org.pnurecord.recordbook.user.User;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -24,8 +24,9 @@ public class Record {
     private User author;
 
     private String description;
-    private String file_path;
-    private Date published_date;
+    private String filename;
+    private byte[] file;
+    private LocalDate published_date;
     private RecordStatus status;
 
 }
