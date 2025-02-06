@@ -1,6 +1,7 @@
 package org.pnurecord.recordbook.reaction;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class ReactionController {
     }
 
     @PostMapping
-    public void createReaction(ReactionDto reaction) {
+    public void createReaction(@Valid @RequestBody ReactionDto reaction) {
         reactionService.addReaction(reaction);
     }
 
@@ -28,7 +29,7 @@ public class ReactionController {
     }
 
     @PutMapping("/{id}")
-    public void updateReaction(@PathVariable Long id, ReactionUpdateDto reactionUpdateDto) {
+    public void updateReaction(@PathVariable Long id, @Valid @RequestBody ReactionUpdateDto reactionUpdateDto) {
         reactionService.updateReaction(id, reactionUpdateDto);
     }
 

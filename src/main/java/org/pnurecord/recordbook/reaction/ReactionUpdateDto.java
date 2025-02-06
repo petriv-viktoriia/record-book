@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class ReactionUpdateDto {
     private Long id;
-    private boolean isLike;
+    private boolean liked;
 }

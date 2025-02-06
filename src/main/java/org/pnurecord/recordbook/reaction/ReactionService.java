@@ -1,9 +1,6 @@
 package org.pnurecord.recordbook.reaction;
 
 import lombok.RequiredArgsConstructor;
-import org.pnurecord.recordbook.record.Record;
-import org.pnurecord.recordbook.record.RecordRepository;
-import org.pnurecord.recordbook.record.RecordService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +10,6 @@ import java.util.List;
 public class ReactionService {
     private final ReactionRepository reactionRepository;
     private final ReactionMapper reactionMapper;
-    private final RecordRepository recordRepository;
 
     public void addReaction(ReactionDto reactionDto) {
         boolean exists = reactionRepository.existsByRecordIdAndUserId(reactionDto.getRecordId(), reactionDto.getUserId());
@@ -38,7 +34,7 @@ public class ReactionService {
                 () -> new IllegalArgumentException("Reaction not found")
         );
 
-        reaction.setLiked(reactionUpdateDto.isLike());
+        reaction.setLiked(reactionUpdateDto.isLiked());
         reactionRepository.save(reaction);
 
     }
@@ -49,14 +45,15 @@ public class ReactionService {
     }
 
     public ReactionCountDto getReactionsCount(Long recordId) {
-        Record record = recordRepository.findById(recordId).orElseThrow(
-                () -> new IllegalArgumentException("Record not found")
-        );
 
-        int likes = reactionRepository.countByRecordIdAndLiked(recordId, true);
-        int dislikes = reactionRepository.countByRecordIdAndLiked(recordId, false);
+        if (reactionRepository.existsById(recordId)) {
+            int likes = reactionRepository.countByRecordIdAndLiked(recordId, true);
+            int dislikes = reactionRepository.countByRecordIdAndLiked(recordId, false);
 
-        return new ReactionCountDto(likes, dislikes);
+            return new ReactionCountDto(likes, dislikes);
+        } else {
+            throw new IllegalArgumentException("Reaction not found");
+        }
     }
 
     public ReactionDto getReactionById(Long id) {
@@ -65,5 +62,4 @@ public class ReactionService {
         );
         return reactionMapper.toReactionDto(reaction);
     }
-
 }
