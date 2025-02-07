@@ -34,10 +34,8 @@ public class Record {
     private User author;
 
     private String description;
-    private String filename;
-    private byte[] file;
     private LocalDate publishedDate;
-  
+
     @Enumerated(EnumType.STRING)
     private RecordStatus status;
 

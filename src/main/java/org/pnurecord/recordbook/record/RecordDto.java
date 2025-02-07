@@ -2,6 +2,7 @@ package org.pnurecord.recordbook.record;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
 import java.time.LocalDate;
 
 @Data
@@ -14,9 +15,6 @@ public class RecordDto {
 
     @NotBlank(message = "Description cannot be blank")
     private String description;
-
-    private String filename;
-    private byte[] file;
     private Long authorId;
     private LocalDate publishedDate;
     private RecordStatus status;

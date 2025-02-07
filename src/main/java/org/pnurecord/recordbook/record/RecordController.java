@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -34,13 +35,13 @@ public class RecordController {
     }
 
     @PostMapping
-    public void createRecord(@Valid @RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
-        recordService.createRecord(recordDto, file);
+    public void createRecord(@Valid @RequestBody RecordDto recordDto) {
+        recordService.createRecord(recordDto);
     }
 
     @PutMapping("/{recordId}")
-    public void updateRecord(@PathVariable Long recordId, @Valid @RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
-        recordService.updateRecord(recordId, recordDto, file);
+    public void updateRecord(@PathVariable Long recordId, @Valid @RequestBody RecordDto recordDto) {
+        recordService.updateRecord(recordId, recordDto);
     }
 
     @DeleteMapping("/{recordId}")
@@ -91,5 +92,13 @@ public class RecordController {
     @PutMapping("/{recordId}/reject")
     public void rejectRecord(@PathVariable Long recordId) {
         recordService.rejectRecord(recordId);
+    }
+
+    @GetMapping("/search")
+    public List<RecordDto> searchRecordsByTitle(@RequestParam String title) {
+        if (title.length() < 2) {
+            return Collections.emptyList();
+        }
+        return recordService.findRecordsByTitle(title);
     }
 }

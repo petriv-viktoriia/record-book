@@ -1,7 +1,6 @@
 package org.pnurecord.recordbook.record;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.pnurecord.recordbook.category.Category;
 import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.exceptions.DuplicateValueException;
@@ -9,7 +8,6 @@ import org.pnurecord.recordbook.exceptions.NotFoundException;
 import org.pnurecord.recordbook.user.User;
 import org.pnurecord.recordbook.user.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,27 +22,13 @@ public class RecordService {
     private final CategoryRepository categoryRepository;
 
 
-    public void createRecord(RecordDto recordDto, MultipartFile file) {
+    public void createRecord(RecordDto recordDto) {
 
         if (recordRepository.existsByTitle(recordDto.getTitle())) {
             throw new DuplicateValueException("Record with title: %s already exists".formatted(recordDto.getTitle()));
         }
 
         Record record = new Record();
-        updateFields(recordDto, file, record);
-        record.setPublishedDate(LocalDate.now());
-
-        recordRepository.save(record);
-    }
-
-    public void updateRecord(Long id, RecordDto recordDto, MultipartFile file) {
-        Record record = recordRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Record not found"));
-        updateFields(recordDto, file, record);
-        recordRepository.save(record);
-    }
-
-    private void updateFields(RecordDto recordDto, MultipartFile file, Record record) {
         record.setTitle(recordDto.getTitle());
         record.setDescription(recordDto.getDescription());
 
@@ -56,20 +40,31 @@ public class RecordService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
         record.setAuthor(author);
 
-        processFile(file, record);
-
         record.setStatus(RecordStatus.PENDING);
+        record.setPublishedDate(LocalDate.now());
+
+        recordRepository.save(record);
     }
 
-    @SneakyThrows
-    private void processFile(MultipartFile file, Record record) {
-        if (file != null && !file.isEmpty()) {
-            String originalFilename = file.getOriginalFilename();
-            record.setFilename(originalFilename);
-            record.setFile(file.getBytes());
-        } else {
-            throw new NotFoundException("File is empty");
-        }
+    public void updateRecord(Long id, RecordDto recordDto) {
+        Record record = recordRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Record not found"));
+
+        record.setTitle(recordDto.getTitle());
+        record.setDescription(recordDto.getDescription());
+
+        Category category = categoryRepository.findById(recordDto.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+        record.setCategory(category);
+
+        User author = userRepository.findById(recordDto.getAuthorId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        record.setAuthor(author);
+
+        record.setStatus(RecordStatus.PENDING);
+        record.setPublishedDate(LocalDate.now());
+
+        recordRepository.save(record);
     }
 
     public List<RecordDto> findAllRecords() {
@@ -151,6 +146,15 @@ public class RecordService {
 
     public List<RecordDto> getRecordsByDate(LocalDate date) {
         return recordMapper.toRecordDtoList(recordRepository.findByPublishedDate(date));
+    }
+
+    public List<RecordDto> findRecordsByTitle(String title) {
+        int limit = 7;
+        List<Record> records = recordRepository.findByTitleContainingIgnoreCase(title);
+        if (records.size() > limit) {
+            records = records.subList(0, limit);
+        }
+        return recordMapper.toRecordDtoList(records);
     }
 
 }
