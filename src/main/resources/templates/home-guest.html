@@ -83,7 +83,7 @@
                 </div>
                 <h1 class="publication-title" th:text="${record.title}">Title Title Title Title Title Title</h1>
 
-                <div class="container" th:if="${user.status != T(com.example.Role).GUEST}">
+                <div class="container" th:if="${user.status != T(org.pnurecord.recordbook.user.Role).GUEST}">
                     <div class="row justify-content-between">
                         <h4 class="publication-reaction btn btn-light btn-sm col-auto">Like</h4>
                         <h4 class="publication-reaction btn btn-light btn-sm col-auto">Dislike</h4>
