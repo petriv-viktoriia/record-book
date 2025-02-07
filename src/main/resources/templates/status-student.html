@@ -76,20 +76,90 @@
         .nav-link, .sign-in-btn, .more-link, .form-select {
             cursor: pointer;
         }
+
+        .avatar-container {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ddd;
+            cursor: pointer;
+        }
+
+
+        .dropdown-menu {
+            background-color: #2F254C;
+            border: none;
+        }
+
+        .dropdown-menu .dropdown-item {
+            color: #B59797;
+        }
+
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #524848;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-toggler {
+                border: 1px solid #ddd;      /* Легкий бордер */
+            }
+
+        }
     </style>
 </head>
 <body class="back">
-<div class="top-bar">
-    <div class="container">
-        <div class="d-flex justify-content-center align-items-center position-relative">
-            <a href="home-guest.html" class="nav-link position-absolute start-0">Exit</a>
-            <div class="d-flex align-items-center">
-                <a href="home-guest.html" class="nav-link">Home</a>
-                <a href="all-guest.html" class="nav-link ms-3">All Achievements</a>
+<div>
+    <nav class="navbar navbar-expand-lg navbar-light top-bar">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-dark navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <a class="nav-item nav-link" href="home-guest.html">Exit</a>
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home-guest.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="all-guest.html">All Achievements</a>
+                    </li>
+                </ul>
             </div>
-            <a href="login.html" class="sign-in-btn position-absolute end-0">Sign in</a>
+
+            <div class="d-flex align-items-center position-absolute end-0">
+                <a href="#" class="nav-link me-3 d-none d-lg-block">Status</a>
+
+                <div class="dropdown d-none d-lg-block">
+                    <a href="#" id="avatarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar-container"></div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
+                        <li><a class="dropdown-item" href="#">Send request for publication</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">View my publication</a></li>
+                    </ul>
+                </div>
+
+                <a href="#" class="nav-link me-3 d-block d-lg-none">Status</a>
+
+                <div class="dropdown d-block d-lg-none">
+                    <a href="#" id="avatarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar-container"></div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
+                        <li><a class="dropdown-item" href="#">Send request for publication</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">View my publication</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div>
+    </nav>
 
 </div>
 
