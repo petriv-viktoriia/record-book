@@ -40,7 +40,7 @@ public class RecordController {
     }
 
     @PutMapping("/{recordId}")
-    public void updateRecord(@PathVariable Long recordId, @RequestBody RecordDto recordDto) {
+    public void updateRecord(@PathVariable Long recordId, @Valid @RequestBody RecordDto recordDto) {
         recordService.updateRecord(recordId, recordDto);
     }
 
