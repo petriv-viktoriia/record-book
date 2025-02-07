@@ -6,70 +6,130 @@
     <title>Record Book - All Achievements</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        .back {
+            background-image: url('files/back.jpg');
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
         .top-bar {
-            background-color: #0039fd;
+            background-color: #2F254C;
             padding: 15px 0;
         }
+
         .nav-link {
-            color: white !important;
+            color: #B59797 !important;
             font-size: 18px;
             margin: 0 15px;
         }
+
         .sign-in-btn {
-            background-color:  white;
-            color: black;
+            background-color: #524848;
+            color: #B59797;
             padding: 8px 20px;
             text-decoration: none;
-            border-radius: 5px;
         }
+
+        .sort-dropdown select {
+            background-color: transparent;
+            border: none;
+            color: #B59797;
+
+        }
+
+        .sort-dropdown option {
+            background-color: #76347C;
+            color: #B59797;
+            text-align: left;
+
+        }
+
+        .sort-dropdown select:focus {
+            border-color: #B59797;
+            outline: none;
+        }
+
+
         .achievement-box {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between; /* Переконатися, що вміст займає всю висоту контейнера */
+        }
+
+        .publication-image {
             background-color: #f0f0f0;
-            height: 200px;
-            margin-bottom: 15px;
+            height: 300px;
             width: 100%;
+            margin-bottom: 20px;
         }
-        .sort-dropdown {
-            margin: 20px 0;
+
+        .publication-title {
+            font-size: 24px;
+            margin-bottom: 0;
+            text-align: left;
+            color: #B59797 !important;
         }
+
         .more-link {
-            display: block;
-            text-align: right;
+            align-self: flex-end;
+            margin-top: auto;
             text-decoration: none;
-            color: #6f78ff;
-            margin-top: 10px;
+            color: #B59797 !important;
+            font-style: italic;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-link, .sign-in-btn, .more-link, .form-select {
+            cursor: pointer;
         }
     </style>
 </head>
-<body>
+<body class="back">
 <div class="top-bar">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-center align-items-center position-relative">
             <div class="d-flex align-items-center">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/achievements" class="nav-link">All Achievements</a>
+                <a href="home-guest.html" class="nav-link">Home</a>
+                <a href="" class="nav-link ms-3">All Achievements</a>
             </div>
-            <a href="/login" class="sign-in-btn ms-3">Sign in</a>
+            <a href="login.html" class="sign-in-btn position-absolute end-0">Sign in</a>
         </div>
     </div>
+
 </div>
 
 <div class="container mt-4">
     <div class="sort-dropdown">
         <select class="form-select" style="width: auto;" th:name="category">
             <option selected>Sort by...</option>
-            <option value="category">categorie</option>
+            <option value="category">Category</option>
+            <option value="likes">Likes</option>
+            <option value="date">Date</option>
+
         </select>
     </div>
 
-    <div class="row">
-        <div th:each="achievement : ${achievements}" class="col-md-4 mb-4">
-            <div class="achievement-box">
-                <img th:if="${achievement.image}" th:src="${achievement.image}" class="w-100 h-100 object-fit-cover">
+
+    <div class="container mt-4">
+        <div class="row">
+            <div th:each="achievement : ${achievements}" class="col-md-4 col-sm-6 mb-4">
+                <div class="achievement-box">
+                    <div class="publication-image">
+                        <img th:if="${achievement.image}" th:src="@{${achievement.image}}" class="w-100 h-100 object-fit-cover">
+                    </div>
+                    <p class="publication-title" th:text="${achievement.title}">Title Title Title Title</p>
+                    <a th:href="@{/achievement/{id}(id=${achievement.id})}" class="more-link">More...</a>
+                </div>
             </div>
-            <p th:text="${achievement.description}">TEXT TEXT TEXT TEXT ...</p>
-            <a th:href="@{/achievement/{id}(id=${achievement.id})}" class="more-link">More...</a>
         </div>
     </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
