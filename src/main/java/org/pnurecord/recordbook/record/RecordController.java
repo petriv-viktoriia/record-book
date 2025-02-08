@@ -78,8 +78,8 @@ public class RecordController {
         return recordService.getRecordsByDate(date);
     }
 
-    @GetMapping("/users/{userId}?status={status}")
-    public List<RecordDto> getUserRecordsByStatus(@PathVariable Long userId, @PathVariable RecordStatus status) {
+    @GetMapping("/users/{userId}")
+    public List<RecordDto> getUserRecordsByStatus(@PathVariable Long userId, @RequestParam RecordStatus status) {
         return recordService.getRecordsByUserAndStatus(userId, status);
     }
 
