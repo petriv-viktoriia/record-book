@@ -31,13 +31,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public void createCategory(@Valid @RequestBody CategoryDto category) {
-        categoryService.createCategory(category);
+    public CategoryDto createCategory (@Valid @RequestBody CategoryDto category) {
+        return categoryService.createCategory(category);
     }
 
     @PutMapping("/{categoryId}")
-    public void updateCategory(@PathVariable Long categoryId, @Valid  @RequestBody CategoryDto categoryDto) {
-        categoryService.updateCategory(categoryId, categoryDto);
+    public CategoryDto updateCategory(@PathVariable Long categoryId, @Valid  @RequestBody CategoryDto categoryDto) {
+        return categoryService.updateCategory(categoryId, categoryDto);
     }
 
     @DeleteMapping("/{categoryId}")

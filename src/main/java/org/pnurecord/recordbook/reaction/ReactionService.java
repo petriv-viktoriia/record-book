@@ -13,13 +13,13 @@ public class ReactionService {
     private final ReactionRepository reactionRepository;
     private final ReactionMapper reactionMapper;
 
-    public void addReaction(ReactionDto reactionDto) {
+    public ReactionDto addReaction(ReactionDto reactionDto) {
         boolean exists = reactionRepository.existsByRecordIdAndUserId(reactionDto.getRecordId(), reactionDto.getUserId());
         if (exists) {
             throw new DuplicateValueException("Reaction with recordId: %s and userId: %s already exists".formatted(reactionDto.getRecordId(), reactionDto.getUserId()));
         } else {
             Reaction reaction = reactionMapper.toReaction(reactionDto);
-            reactionRepository.save(reaction);
+            return reactionMapper.toReactionDto(reactionRepository.save(reaction));
         }
     }
 
@@ -31,13 +31,13 @@ public class ReactionService {
         reactionRepository.delete(reaction);
     }
 
-    public void updateReaction(Long id, ReactionUpdateDto reactionUpdateDto) {
+    public ReactionDto updateReaction(Long id, ReactionUpdateDto reactionUpdateDto) {
         Reaction reaction = reactionRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Reaction with id: %s not found".formatted(id))
         );
 
         reaction.setLiked(reactionUpdateDto.isLiked());
-        reactionRepository.save(reaction);
+        return reactionMapper.toReactionDto(reactionRepository.save(reaction));
 
     }
 

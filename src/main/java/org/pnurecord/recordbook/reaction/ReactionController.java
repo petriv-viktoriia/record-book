@@ -19,8 +19,8 @@ public class ReactionController {
     }
 
     @PostMapping
-    public void createReaction(@Valid @RequestBody ReactionDto reaction) {
-        reactionService.addReaction(reaction);
+    public ReactionDto createReaction(@Valid @RequestBody ReactionDto reaction) {
+        return reactionService.addReaction(reaction);
     }
 
     @DeleteMapping("/{id}")
@@ -29,8 +29,8 @@ public class ReactionController {
     }
 
     @PutMapping("/{id}")
-    public void updateReaction(@PathVariable Long id, @Valid @RequestBody ReactionUpdateDto reactionUpdateDto) {
-        reactionService.updateReaction(id, reactionUpdateDto);
+    public ReactionDto updateReaction(@PathVariable Long id, @Valid @RequestBody ReactionUpdateDto reactionUpdateDto) {
+        return reactionService.updateReaction(id, reactionUpdateDto);
     }
 
     @GetMapping("/count")

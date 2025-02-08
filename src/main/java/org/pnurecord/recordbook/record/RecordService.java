@@ -22,7 +22,7 @@ public class RecordService {
     private final CategoryRepository categoryRepository;
 
 
-    public void createRecord(RecordDto recordDto) {
+    public RecordDto createRecord(RecordDto recordDto) {
 
         if (recordRepository.existsByTitle(recordDto.getTitle())) {
             throw new DuplicateValueException("Record with title: %s already exists".formatted(recordDto.getTitle()));
@@ -43,10 +43,10 @@ public class RecordService {
         record.setStatus(RecordStatus.PENDING);
         record.setPublishedDate(LocalDate.now());
 
-        recordRepository.save(record);
+        return recordMapper.toRecordDto(recordRepository.save(record));
     }
 
-    public void updateRecord(Long id, RecordDto recordDto) {
+    public RecordDto updateRecord(Long id, RecordDto recordDto) {
         Record record = recordRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Record not found"));
 
@@ -64,7 +64,7 @@ public class RecordService {
         record.setStatus(RecordStatus.PENDING);
         record.setPublishedDate(LocalDate.now());
 
-        recordRepository.save(record);
+        return recordMapper.toRecordDto(recordRepository.save(record));
     }
 
     public List<RecordDto> findAllRecords() {

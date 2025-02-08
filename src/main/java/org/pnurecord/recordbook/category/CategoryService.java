@@ -13,13 +13,13 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public void createCategory(CategoryDto categoryDto) {
+    public CategoryDto createCategory(CategoryDto categoryDto) {
         boolean exists = categoryRepository.existsByName(categoryDto.getName());
         if (exists) {
             throw new DuplicateValueException("Category with %s already exists".formatted(categoryDto.getName()));
         } else {
             Category category = categoryMapper.toCategory(categoryDto);
-            categoryRepository.save(category);
+            return categoryMapper.toCategoryDto(categoryRepository.save(category));
         }
     }
 
@@ -50,7 +50,7 @@ public class CategoryService {
     }
 
 
-    public void updateCategory(Long categoryId, CategoryDto categoryDto) {
+    public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category not found with id: %s".formatted(categoryId)));
 
@@ -60,7 +60,7 @@ public class CategoryService {
             throw new DuplicateValueException("Category with name '%s' already exists.".formatted(categoryDto.getName()));
         } else {
             category.setName(categoryDto.getName());
-            categoryRepository.save(category);
+            return categoryMapper.toCategoryDto(categoryRepository.save(category));
         }
     }
 }
