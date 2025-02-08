@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -35,13 +34,13 @@ public class RecordController {
     }
 
     @PostMapping
-    public void createRecord(@Valid @RequestBody RecordDto recordDto) {
-        recordService.createRecord(recordDto);
+    public RecordDto createRecord(@Valid @RequestBody RecordDto recordDto) {
+        return recordService.createRecord(recordDto);
     }
 
     @PutMapping("/{recordId}")
-    public void updateRecord(@PathVariable Long recordId, @Valid @RequestBody RecordDto recordDto) {
-        recordService.updateRecord(recordId, recordDto);
+    public RecordDto updateRecord(@PathVariable Long recordId, @Valid @RequestBody RecordDto recordDto) {
+        return recordService.updateRecord(recordId, recordDto);
     }
 
     @DeleteMapping("/{recordId}")
