@@ -1,6 +1,5 @@
 package org.pnurecord.recordbook.record;
 
-import jakarta.security.auth.message.callback.PrivateKeyCallback;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
