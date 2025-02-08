@@ -1,5 +1,6 @@
 package org.pnurecord.recordbook.record;
 
+import jakarta.security.auth.message.callback.PrivateKeyCallback;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -78,8 +79,8 @@ public class RecordController {
         return recordService.getRecordsByDate(date);
     }
 
-    @GetMapping("/users/{userId}?status={status}")
-    public List<RecordDto> getUserRecordsByStatus(@PathVariable Long userId, @PathVariable RecordStatus status) {
+    @GetMapping("/users/{userId}")
+    public List<RecordDto> getUserRecordsByStatus(@PathVariable Long userId, @RequestParam RecordStatus status) {
         return recordService.getRecordsByUserAndStatus(userId, status);
     }
 
