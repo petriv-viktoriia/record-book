@@ -5,6 +5,7 @@ import org.pnurecord.recordbook.category.Category;
 import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.exceptions.DuplicateValueException;
 import org.pnurecord.recordbook.exceptions.NotFoundException;
+import org.pnurecord.recordbook.user.Role;
 import org.pnurecord.recordbook.user.User;
 import org.pnurecord.recordbook.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,11 @@ public class RecordService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
         record.setAuthor(author);
 
-        record.setStatus(RecordStatus.PENDING);
+        if (author.getRole().equals(Role.ADMIN) || author.getRole().equals(Role.MODERATOR)) {
+            record.setStatus(RecordStatus.APPROVED);
+        } else if (author.getRole().equals(Role.STUDENT)) {
+            record.setStatus(RecordStatus.PENDING);
+        }
         record.setPublishedDate(LocalDate.now());
 
         return recordMapper.toRecordDto(recordRepository.save(record));
