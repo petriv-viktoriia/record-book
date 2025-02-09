@@ -37,6 +37,7 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
     private RecordDto recordDto;
 
 
+
     @BeforeEach
     public void setup() {
         UserDto userDto = new UserDto();
@@ -81,22 +82,20 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
     void testUpdateRecord() {
         RecordDto savedRecord = recordService.createRecord(recordDto);
 
-        RecordDto recordDto2 = new RecordDto();
-        recordDto2.setTitle(UUID.randomUUID().toString());
-        recordDto2.setAuthorId(savedUser.getId());
-        recordDto2.setDescription(UUID.randomUUID().toString());
-        recordDto2.setCategoryId(savedCategory.getId());
+        RecordDto recordToUpdate = new RecordDto();
+        recordToUpdate.setTitle(UUID.randomUUID().toString());
+        recordToUpdate.setDescription(UUID.randomUUID().toString());
+        recordToUpdate.setCategoryId(savedCategory.getId());
 
-        RecordDto updatedRecordDto = recordService.updateRecord(savedRecord.getId(), recordDto2);
+        RecordDto updatedRecord = recordService.updateRecord(savedRecord.getId(), recordToUpdate);
 
         assertAll(
-                () -> assertEquals(savedRecord.getId(), updatedRecordDto.getId(), "Record ID should remain unchanged"),
-                () -> assertEquals(recordDto2.getTitle(), updatedRecordDto.getTitle(), "Title should be updated"),
-                () -> assertEquals(recordDto2.getDescription(), updatedRecordDto.getDescription(), "Description should be updated"),
-                () -> assertEquals(recordDto2.getAuthorId(), updatedRecordDto.getAuthorId(), "Author ID should match"),
-                () -> assertEquals(recordDto2.getCategoryId(), updatedRecordDto.getCategoryId(), "Category ID should match"),
-                () -> assertEquals(RecordStatus.PENDING, updatedRecordDto.getStatus(), "Status should be PENDING"),
-                () -> assertEquals(LocalDate.now(), updatedRecordDto.getPublishedDate(), "Published date should be today")
+                () -> assertEquals(recordToUpdate.getTitle(), updatedRecord.getTitle(), "Title should be updated"),
+                () -> assertEquals(recordToUpdate.getDescription(), updatedRecord.getDescription(), "Description should be updated"),
+                () -> assertEquals(recordToUpdate.getCategoryId(), updatedRecord.getCategoryId(), "Category should be updated"),
+                () -> assertEquals(savedRecord.getAuthorId(), updatedRecord.getAuthorId(), "Author should remain unchanged"),
+                () -> assertEquals(savedRecord.getStatus(), updatedRecord.getStatus(), "Status should remain unchanged"),
+                () -> assertEquals(savedRecord.getPublishedDate(), updatedRecord.getPublishedDate(), "Published date should remain unchanged")
         );
     }
 
@@ -222,7 +221,7 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         List<RecordDto> approvedUserRecords = recordService.getRecordsByUserAndStatus(savedUser.getId(), RecordStatus.APPROVED);
         assertEquals(1, approvedUserRecords.size());
 
-        List<RecordDto>  pendingUserRecords = recordService.getRecordsByUserAndStatus(savedUser.getId(), RecordStatus.PENDING);
+        List<RecordDto> pendingUserRecords = recordService.getRecordsByUserAndStatus(savedUser.getId(), RecordStatus.PENDING);
         assertEquals(1, pendingUserRecords.size());
     }
 
