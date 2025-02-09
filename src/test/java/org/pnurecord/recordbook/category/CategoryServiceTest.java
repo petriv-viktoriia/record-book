@@ -6,6 +6,7 @@ import org.pnurecord.recordbook.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,8 @@ public class CategoryServiceTest extends AbstractTestContainerBaseTest {
 
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Test
     void testCreate() {
@@ -29,16 +32,27 @@ public class CategoryServiceTest extends AbstractTestContainerBaseTest {
 
     @Test
     void testFindAllCategories() {
-        categoryService.deleteAllCategories();
-        CategoryDto category1 = new CategoryDto();
-        category1.setName(UUID.randomUUID().toString());
+        if (categoryRepository.count() > 0) {
+            categoryService.deleteAllCategories();
+        }
 
-        CategoryDto savedCategory = categoryService.createCategory(category1);
-        assertNotNull(savedCategory.getId(), "Saved category should have an ID");
+        int numberOfCategoriesToCreate = 10;
+        List<CategoryDto> savedCategories = new ArrayList<>();
+
+        for (int i = 0; i < numberOfCategoriesToCreate; i++) {
+            CategoryDto categoryDto = new CategoryDto();
+            categoryDto.setName(UUID.randomUUID().toString());
+
+            CategoryDto savedCategory = categoryService.createCategory(categoryDto);
+            assertNotNull(savedCategory.getId(), "Saved category should have an ID");
+            savedCategories.add(savedCategory);
+        }
 
         List<CategoryDto> categories = categoryService.getAllCategories();
-        assertThat(categories).hasSize(1);
+        assertThat(categories).hasSize(numberOfCategoriesToCreate);
     }
+
+
 
     @Test
     void testGetById() {
@@ -73,7 +87,12 @@ public class CategoryServiceTest extends AbstractTestContainerBaseTest {
         categoryService.deleteCategory(savedCategory.getId());
 
         assertThrows(NotFoundException.class, () -> categoryService.findById(savedCategory.getId()));
+
+        CategoryDto foundCategory2 = categoryService.findById(savedCategory2.getId());
+        assertNotNull(foundCategory2, "Category should still exist after deletion of another category");
+        assertEquals(foundCategory2.getName(), savedCategory2.getName());
     }
+
 
     @Test
     void testUpdate() {
@@ -98,12 +117,27 @@ public class CategoryServiceTest extends AbstractTestContainerBaseTest {
 
     @Test
     void testDeleteAllCategories() {
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setName(UUID.randomUUID().toString());
-        CategoryDto savedCategory = categoryService.createCategory(categoryDto);
-        assertNotNull(savedCategory.getId(), "Saved category should have an ID");
+        int numberOfCategoriesToCreate = 10;
+        List<CategoryDto> savedCategories = new ArrayList<>();
+
+        for (int i = 0; i < numberOfCategoriesToCreate; i++) {
+            CategoryDto categoryDto = new CategoryDto();
+            categoryDto.setName(UUID.randomUUID().toString());
+
+            CategoryDto savedCategory = categoryService.createCategory(categoryDto);
+            assertNotNull(savedCategory.getId(), "Saved category should have an ID");
+            savedCategories.add(savedCategory);
+        }
+
         categoryService.deleteAllCategories();
-        assertTrue(categoryService.getAllCategories().isEmpty(), "Table should be empty after delete");
+
+        List<CategoryDto> categoriesAfterDelete = categoryService.getAllCategories();
+        assertTrue(categoriesAfterDelete.isEmpty(), "All categories should be deleted");
+
+        for (CategoryDto category : savedCategories) {
+            assertThrows(NotFoundException.class, () -> categoryService.findById(category.getId()),
+                    "Category should not be found after deletion");
+        }
     }
 
 }
