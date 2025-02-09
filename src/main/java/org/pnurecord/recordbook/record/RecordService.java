@@ -57,13 +57,6 @@ public class RecordService {
                 .orElseThrow(() -> new NotFoundException("Category not found"));
         record.setCategory(category);
 
-        User author = userRepository.findById(recordDto.getAuthorId())
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        record.setAuthor(author);
-
-        record.setStatus(RecordStatus.PENDING);
-        record.setPublishedDate(LocalDate.now());
-
         return recordMapper.toRecordDto(recordRepository.save(record));
     }
 
