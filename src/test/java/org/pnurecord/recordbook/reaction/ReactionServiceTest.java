@@ -54,7 +54,7 @@ public class ReactionServiceTest extends AbstractTestContainerBaseTest {
         userDto.setFirstName(UUID.randomUUID().toString());
         userDto.setLastName(UUID.randomUUID().toString());
         userDto.setEmail(UUID.randomUUID().toString());
-        userDto.setRole(Role.GUEST);
+        userDto.setRole(Role.STUDENT);
         return userService.save(userDto);
     }
 

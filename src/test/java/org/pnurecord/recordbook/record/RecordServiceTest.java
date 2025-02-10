@@ -44,7 +44,7 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         userDto.setFirstName(UUID.randomUUID().toString());
         userDto.setLastName(UUID.randomUUID().toString());
         userDto.setEmail(UUID.randomUUID().toString());
-        userDto.setRole(Role.GUEST);
+        userDto.setRole(Role.STUDENT);
         savedUser = userService.save(userDto);
 
         CategoryDto categoryDto = new CategoryDto();
@@ -86,6 +86,7 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         recordToUpdate.setTitle(UUID.randomUUID().toString());
         recordToUpdate.setDescription(UUID.randomUUID().toString());
         recordToUpdate.setCategoryId(savedCategory.getId());
+        recordToUpdate.setAuthorId(savedUser.getId());
 
         RecordDto updatedRecord = recordService.updateRecord(savedRecord.getId(), recordToUpdate);
 
@@ -273,7 +274,7 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         userDto2.setFirstName(UUID.randomUUID().toString());
         userDto2.setLastName(UUID.randomUUID().toString());
         userDto2.setEmail(UUID.randomUUID().toString());
-        userDto2.setRole(Role.GUEST);
+        userDto2.setRole(Role.STUDENT);
         UserDto savedUser2 = userService.save(userDto2);
 
         RecordDto recordDto3 = new RecordDto();
