@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -243,9 +244,25 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     void searchRecordsByTitle() throws Exception {
-        mockMvc.perform(get("/records/search?title=" + savedRecord.getTitle()))
+        RecordDto recordDto2 = new RecordDto();
+        recordDto2.setTitle("Test" + UUID.randomUUID());
+        recordDto2.setAuthorId(savedUser.getId());
+        recordDto2.setDescription(UUID.randomUUID().toString());
+        recordDto2.setCategoryId(savedCategory.getId());
+        recordService.createRecord(recordDto2);
+
+        RecordDto recordDto3 = new RecordDto();
+        recordDto3.setTitle("Test" + UUID.randomUUID());
+        recordDto3.setAuthorId(savedUser.getId());
+        recordDto3.setDescription(UUID.randomUUID().toString());
+        recordDto3.setCategoryId(savedCategory.getId());
+        recordService.createRecord(recordDto3);
+
+        mockMvc.perform(get("/records/search?title=Test&limit=2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value(savedRecord.getTitle()));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].title").value(recordDto2.getTitle()))
+                .andExpect(jsonPath("$[1].title").value(recordDto3.getTitle()));
     }
 
     @Test

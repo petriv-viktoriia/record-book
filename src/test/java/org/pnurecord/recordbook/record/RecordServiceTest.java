@@ -37,7 +37,6 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
     private RecordDto recordDto;
 
 
-
     @BeforeEach
     public void setup() {
         UserDto userDto = new UserDto();
@@ -320,7 +319,7 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
             recordService.createRecord(record);
         }
 
-        List<RecordDto> foundRecords = recordService.findRecordsByTitle("Test Title");
+        List<RecordDto> foundRecords = recordService.findRecordsByTitle("Test Title", null);
 
         assertEquals(7, foundRecords.size(), "The number of records should be limited to 7");
 
