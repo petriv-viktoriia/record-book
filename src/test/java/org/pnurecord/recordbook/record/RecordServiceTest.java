@@ -8,6 +8,7 @@ import org.pnurecord.recordbook.category.CategoryDto;
 import org.pnurecord.recordbook.category.CategoryService;
 import org.pnurecord.recordbook.exceptions.NotFoundException;
 import org.pnurecord.recordbook.user.Role;
+import org.pnurecord.recordbook.user.UserCreateDto;
 import org.pnurecord.recordbook.user.UserDto;
 import org.pnurecord.recordbook.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +40,12 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
 
     @BeforeEach
     public void setup() {
-        UserDto userDto = new UserDto();
+        UserCreateDto userDto = new UserCreateDto();
         userDto.setFirstName(UUID.randomUUID().toString());
         userDto.setLastName(UUID.randomUUID().toString());
         userDto.setEmail(UUID.randomUUID().toString());
         userDto.setRole(Role.STUDENT);
-        savedUser = userService.save(userDto);
+        savedUser = userService.createUser(userDto);
 
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setName(UUID.randomUUID().toString());
@@ -269,12 +270,12 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         recordDto2.setCategoryId(savedCategory.getId());
         recordService.createRecord(recordDto2);
 
-        UserDto userDto2 = new UserDto();
+        UserCreateDto userDto2 = new UserCreateDto();
         userDto2.setFirstName(UUID.randomUUID().toString());
         userDto2.setLastName(UUID.randomUUID().toString());
         userDto2.setEmail(UUID.randomUUID().toString());
         userDto2.setRole(Role.STUDENT);
-        UserDto savedUser2 = userService.save(userDto2);
+        UserDto savedUser2 = userService.createUser(userDto2);
 
         RecordDto recordDto3 = new RecordDto();
         recordDto3.setAuthorId(savedUser2.getId());

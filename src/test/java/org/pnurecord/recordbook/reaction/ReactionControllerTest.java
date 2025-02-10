@@ -11,6 +11,7 @@ import org.pnurecord.recordbook.exceptions.NotFoundException;
 import org.pnurecord.recordbook.record.RecordDto;
 import org.pnurecord.recordbook.record.RecordService;
 import org.pnurecord.recordbook.user.Role;
+import org.pnurecord.recordbook.user.UserCreateDto;
 import org.pnurecord.recordbook.user.UserDto;
 import org.pnurecord.recordbook.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,12 +62,12 @@ public class ReactionControllerTest extends AbstractTestContainerBaseTest {
 
     @BeforeEach
     void setup() {
-        UserDto userDto = new UserDto();
+        UserCreateDto userDto = new UserCreateDto();
         userDto.setFirstName(UUID.randomUUID().toString());
         userDto.setLastName(UUID.randomUUID().toString());
         userDto.setEmail(UUID.randomUUID() + "@test.com");
         userDto.setRole(Role.STUDENT);
-        savedUser = userService.save(userDto);
+        savedUser = userService.createUser(userDto);
 
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setName(UUID.randomUUID().toString());
@@ -103,13 +104,13 @@ public class ReactionControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     void shouldNotCreateDuplicateReaction() throws Exception {
-        UserDto userDto2 = new UserDto();
+        UserCreateDto userDto2 = new UserCreateDto();
         userDto2.setFirstName(UUID.randomUUID().toString());
         userDto2.setLastName(UUID.randomUUID().toString());
         userDto2.setEmail(UUID.randomUUID() + "@test.com");
         userDto2.setRole(Role.STUDENT);
 
-        UserDto savedUser2 = userService.save(userDto2);
+        UserDto savedUser2 = userService.createUser(userDto2);
 
         ReactionDto newReaction = new ReactionDto();
         newReaction.setRecordId(savedRecord.getId());

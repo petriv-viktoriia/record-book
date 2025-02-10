@@ -8,6 +8,7 @@ import org.pnurecord.recordbook.category.CategoryDto;
 import org.pnurecord.recordbook.category.CategoryService;
 import org.pnurecord.recordbook.exceptions.NotFoundException;
 import org.pnurecord.recordbook.user.Role;
+import org.pnurecord.recordbook.user.UserCreateDto;
 import org.pnurecord.recordbook.user.UserDto;
 import org.pnurecord.recordbook.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +54,12 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @BeforeEach
     void setUp() {
-        UserDto userDto = new UserDto();
+        UserCreateDto userDto = new UserCreateDto();
         userDto.setFirstName(UUID.randomUUID().toString());
         userDto.setLastName(UUID.randomUUID().toString());
         userDto.setEmail(UUID.randomUUID().toString());
         userDto.setRole(Role.STUDENT);
-        savedUser = userService.save(userDto);
+        savedUser = userService.createUser(userDto);
 
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setName(UUID.randomUUID().toString());

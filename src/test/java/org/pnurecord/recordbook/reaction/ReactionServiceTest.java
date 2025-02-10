@@ -9,6 +9,7 @@ import org.pnurecord.recordbook.category.CategoryService;
 import org.pnurecord.recordbook.record.RecordDto;
 import org.pnurecord.recordbook.record.RecordService;
 import org.pnurecord.recordbook.user.Role;
+import org.pnurecord.recordbook.user.UserCreateDto;
 import org.pnurecord.recordbook.user.UserDto;
 import org.pnurecord.recordbook.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +51,12 @@ public class ReactionServiceTest extends AbstractTestContainerBaseTest {
     }
 
     private UserDto createUser() {
-        UserDto userDto = new UserDto();
+        UserCreateDto userDto = new UserCreateDto();
         userDto.setFirstName(UUID.randomUUID().toString());
         userDto.setLastName(UUID.randomUUID().toString());
         userDto.setEmail(UUID.randomUUID().toString());
         userDto.setRole(Role.STUDENT);
-        return userService.save(userDto);
+        return userService.createUser(userDto);
     }
 
     @BeforeEach
