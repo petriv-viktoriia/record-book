@@ -41,7 +41,7 @@ public class RecordService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
         record.setAuthor(author);
 
-        if (author.getRole().equals(Role.ADMIN) || author.getRole().equals(Role.MODERATOR)) {
+        if (author.getRole().equals(Role.ADMIN)) {
             record.setStatus(RecordStatus.APPROVED);
         } else if (author.getRole().equals(Role.STUDENT)) {
             record.setStatus(RecordStatus.PENDING);
