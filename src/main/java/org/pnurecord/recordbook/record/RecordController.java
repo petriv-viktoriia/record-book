@@ -94,10 +94,12 @@ public class RecordController {
     }
 
     @GetMapping("/search")
-    public List<RecordDto> searchRecordsByTitle(@RequestParam String title) {
+    public List<RecordDto> searchRecordsByTitle(
+            @RequestParam String title,
+            @RequestParam(required = false) Integer limit) {
         if (title.length() < 2) {
             return Collections.emptyList();
         }
-        return recordService.findRecordsByTitle(title);
+        return recordService.findRecordsByTitle(title, limit);
     }
 }
