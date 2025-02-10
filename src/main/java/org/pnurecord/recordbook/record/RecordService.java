@@ -146,11 +146,14 @@ public class RecordService {
         return recordMapper.toRecordDtoList(recordRepository.findByPublishedDate(date));
     }
 
-    public List<RecordDto> findRecordsByTitle(String title) {
-        int limit = 7;
+
+    public List<RecordDto> findRecordsByTitle(String title, Integer limit) {
+        int defaultLimit = 7;
+        int searchLimit = limit != null ? limit : defaultLimit;
+
         List<Record> records = recordRepository.findByTitleContainingIgnoreCase(title);
-        if (records.size() > limit) {
-            records = records.subList(0, limit);
+        if (records.size() > searchLimit) {
+            records = records.subList(0, searchLimit);
         }
         return recordMapper.toRecordDtoList(records);
     }
