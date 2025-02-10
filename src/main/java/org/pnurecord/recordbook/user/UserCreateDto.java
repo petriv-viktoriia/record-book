@@ -7,8 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDto {
-    private Long id;
+public class UserCreateDto {
 
     @Email(message = "Email is not nice")
     @NotBlank(message = "Email name cannot be blank")
@@ -19,5 +18,6 @@ public class UserDto {
 
     @NotBlank(message = "Last name cannot be blank")
     private String lastName;
+
     private Role role;
 }
