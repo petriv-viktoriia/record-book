@@ -7,6 +7,10 @@
 </head>
 <body>
 <div class="container mt-4">
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
     <div class="row mb-4">
         <div class="col">
             <h2>Categories</h2>

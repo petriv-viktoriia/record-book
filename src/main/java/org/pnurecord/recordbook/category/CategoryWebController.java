@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -27,10 +28,16 @@ public class CategoryWebController {
     }
 
     @PostMapping
-    public String createCategory(@ModelAttribute CategoryDto categoryDto) {
-        categoryService.createCategory(categoryDto);
-        return "redirect:/web/categories";
+    public String createCategory(@ModelAttribute CategoryDto categoryDto, RedirectAttributes redirectAttributes) {
+        try {
+            categoryService.createCategory(categoryDto);
+            return "redirect:/web/categories";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/web/categories/new";
+        }
     }
+
 
     @GetMapping("/edit/{categoryId}")
     public String showEditForm(@PathVariable Long categoryId, Model model) {
@@ -40,9 +47,14 @@ public class CategoryWebController {
     }
 
     @PostMapping("/update/{categoryId}")
-    public String updateCategory(@PathVariable Long categoryId, @ModelAttribute CategoryDto categoryDto) {
-        categoryService.updateCategory(categoryId, categoryDto);
-        return "redirect:/web/categories";
+    public String updateCategory(@PathVariable Long categoryId, @ModelAttribute CategoryDto categoryDto, RedirectAttributes redirectAttributes) {
+        try {
+            categoryService.updateCategory(categoryId, categoryDto);
+            return "redirect:/web/categories";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/web/categories/edit/" + categoryId;
+        }
     }
 
     @DeleteMapping("/delete/{categoryId}")
