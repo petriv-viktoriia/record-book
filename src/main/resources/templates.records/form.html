@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Record Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row mb-4">
+
+        <div class="col text-end">
+            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/approved}" class="btn btn-primary">View Approved Records</a>
+            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
+            <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary">Create New Record</a>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h2 th:text="${record.id == null ? 'Create New Record' : 'Edit Record'}">Record Form</h2>
+
+    <form th:action="${record.id == null ? '/web/records' : '/web/records/update/' + record.id}"
+          th:object="${record}"
+          method="post"
+          enctype="multipart/form-data"
+          class="mt-4">
+
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" th:field="*{title}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <textarea class="form-control" id="content" th:field="*{content}" rows="5" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" id="category" th:field="*{categoryId}" required>
+                <option value="">Select Category</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}">Category Name</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="files" class="form-label">Attachments</label>
+            <input type="file" class="form-control" id="files" name="files" multiple>
+        </div>
+
+        <div th:if="${record.id != null && !#lists.isEmpty(files)}" class="mb-3">
+            <label class="form-label">Current Files:</label>
+            <div class="list-group">
+                <div th:each="file : ${files}" class="list-group-item d-flex justify-content-between align-items-center">
+                    <a th:href="@{/files/{filename}(filename=${file.filename})}" th:text="${file.originalFilename}">File</a>
+                    <a th:href="@{/files/delete/{filename}(filename=${file.filename})}"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Delete this file?')">Delete</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary me-2">Save</button>
+            <a th:href="@{/web/records}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
