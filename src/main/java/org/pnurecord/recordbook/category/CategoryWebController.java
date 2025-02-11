@@ -45,9 +45,10 @@ public class CategoryWebController {
         return "redirect:/web/categories";
     }
 
-    @GetMapping("/delete/{categoryId}")
+    @DeleteMapping("/delete/{categoryId}")
     public String deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
         return "redirect:/web/categories";
     }
+
 }

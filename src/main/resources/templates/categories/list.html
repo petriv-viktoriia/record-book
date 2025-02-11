@@ -25,16 +25,23 @@
             </tr>
             </thead>
             <tbody>
+
             <tr th:each="category : ${categories}">
                 <td th:text="${category.name}">Category Name</td>
                 <td>
                     <a th:href="@{/web/categories/edit/{id}(id=${category.id})}"
                        class="btn btn-sm btn-warning me-2">Edit</a>
-                    <a th:href="@{/web/categories/delete/{id}(id=${category.id})}"
-                       class="btn btn-sm btn-danger"
-                       onclick="return confirm('Are you sure you want to delete this category?')">Delete</a>
+                    <form th:action="@{/web/categories/delete/{id}(id=${category.id})}" method="post"
+                          style="display:inline;">
+                        <input type="hidden" name="_method" value="DELETE"/>
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this category?')">Delete
+                        </button>
+                    </form>
                 </td>
             </tr>
+
+
             <tr th:if="${#lists.isEmpty(categories)}">
                 <td colspan="4" class="text-center">No categories found</td>
             </tr>
