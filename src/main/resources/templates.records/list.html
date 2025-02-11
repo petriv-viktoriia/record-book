@@ -57,6 +57,13 @@
                         (record.status == 'APPROVED' ? 'bg-success' :
                          record.status == 'PENDING' ? 'bg-warning' : 'bg-danger')}"
                           th:text="${record.status}">Status</span>
+
+                    <!-- Display file based on type -->
+                    <div class="mt-3">
+                        <img th:if="${record.fileType == 'IMAGE'}" th:src="@{${record.fileUrl}}" class="img-fluid" alt="Record Image">
+                        <a th:if="${record.fileType == 'PDF'}" th:href="@{${record.fileUrl}}" target="_blank">View PDF</a>
+                    </div>
+
                     <div class="mt-2">
                         <a th:href="@{/web/records/edit/{id}(id=${record.id})}" class="btn btn-warning btn-sm me-2">Edit</a>
                         <a th:href="@{/web/records/delete/{id}(id=${record.id})}" class="btn btn-danger btn-sm"
