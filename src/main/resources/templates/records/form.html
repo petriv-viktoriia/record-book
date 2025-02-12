@@ -8,7 +8,6 @@
 <body>
 <div class="container mt-4">
     <div class="row mb-4">
-
         <div class="col text-end">
             <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/approved}" class="btn btn-primary">View Approved Records</a>
             <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
@@ -18,10 +17,10 @@
 </div>
 
 <div class="container mt-4">
-    <h2 th:text="${record.id == null ? 'Create New Record' : 'Edit Record'}">Record Form</h2>
+    <h2 th:text="${recordDto.id == null ? 'Create New Record' : 'Edit Record'}">Record Form</h2>
 
-    <form th:action="${record.id == null ? '/web/records' : '/web/records/update/' + record.id}"
-          th:object="${record}"
+    <form th:action="${recordDto.id == null ? '/web/records/new' : '/web/records/update/' + recordDto.id}"
+          th:object="${recordDto}"
           method="post"
           enctype="multipart/form-data"
           class="mt-4">
@@ -50,10 +49,10 @@
 
         <div class="mb-3">
             <label for="files" class="form-label">Attachments</label>
-            <input type="file" class="form-control" id="files" name="files" multiple>
+            <input type="file" class="form-control" id="files" name="file" multiple>
         </div>
 
-        <div th:if="${record.id != null && !#lists.isEmpty(files)}" class="mb-3">
+        <div th:if="${recordDto.id != null && !#lists.isEmpty(files)}" class="mb-3">
             <label class="form-label">Current Files:</label>
             <div class="list-group">
                 <div th:each="file : ${files}" class="list-group-item d-flex justify-content-between align-items-center">

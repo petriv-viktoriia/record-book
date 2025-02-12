@@ -7,6 +7,15 @@
 </head>
 <body>
 <div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col text-end">
+            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/approved}" class="btn btn-primary">View Approved Records</a>
+            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
+            <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary">Create New Record</a>
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
     <div th:if="${error}" class="alert alert-danger">
         <p th:text="${error}"></p>
     </div>
