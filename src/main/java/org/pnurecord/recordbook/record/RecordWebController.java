@@ -34,7 +34,7 @@ public class RecordWebController {
     private final RecordFileRepository recordFileRepository;
 
     //-----------for guests-------------
-    @GetMapping("/approved")
+    @GetMapping()
     public String showAllApprovedRecords(Model model) {
         List<RecordDto> approved = recordService.findAllApprovedRecords();
 
@@ -57,6 +57,27 @@ public class RecordWebController {
     }
     //-------------------------------------
 
+    @GetMapping("/all")
+    public String showAllRecords(Model model) {
+        List<RecordDto> allRecords = recordService.findAllRecords();
+
+        Map<Long, String> authorNames = new HashMap<>();
+        Map<Long, String> categoryNames = new HashMap<>();
+
+        for (RecordDto record : allRecords) {
+            authorNames.put(record.getAuthorId(),
+                    userRepository.findUserNameById(record.getAuthorId()));
+
+            categoryNames.put(record.getCategoryId(),
+                    categoryRepository.findCategoryNameById(record.getCategoryId()));
+        }
+
+        model.addAttribute("allRecords", allRecords);
+        model.addAttribute("authorNames", authorNames);
+        model.addAttribute("categoryNames", categoryNames);
+
+        return "records/listAllRecords";
+    }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
@@ -154,7 +175,7 @@ public class RecordWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to delete record: " + e.getMessage());
         }
-        return "redirect:/web/records/approved";
+        return "redirect:/web/records";
     }
 
 
@@ -188,7 +209,7 @@ public class RecordWebController {
             return "records/listPending";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch pending records.");
-            return "redirect:/web/records/approved";
+            return "redirect:/web/records";
         }
     }
 
@@ -249,7 +270,7 @@ public class RecordWebController {
             return "records/listByDate";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the specified date");
-            return "redirect:/web/records/approved";
+            return "redirect:/web/records";
         }
     }
 
@@ -263,7 +284,7 @@ public class RecordWebController {
             return "records/categoryRecords";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
-            return "redirect:/web/records/approved";
+            return "redirect:/web/records";
         }
     }
 
@@ -284,7 +305,7 @@ public class RecordWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Failed to fetch records for the specified user and status.");
-            return "redirect:/web/records/approved";
+            return "redirect:/web/records";
         }
     }
 
@@ -303,7 +324,7 @@ public class RecordWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Failed to fetch records for the specified author.");
-            return "redirect:/web/records/approved";
+            return "redirect:/web/records";
         }
     }
 
