@@ -32,12 +32,15 @@
             </form>
         </div>
         <div class="col-md-6">
-            <select class="form-select" id="categoryFilter" th:change="this.form.submit()">
-                <option value="">All Categories</option>
-                <option th:each="category : ${categories}"
-                        th:value="${category.id}"
-                        th:text="${category.name}">Category Name</option>
-            </select>
+            <form th:action="@{/web/records/categories}" method="get">
+                <select class="form-select" name="categoryId" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:text="${category.name}"
+                            th:selected="${category.id == selectedCategoryId}">Category Name</option>
+                </select>
+            </form>
         </div>
     </div>
 
@@ -58,9 +61,16 @@
                     <p class="card-text" th:text="${#dates.format(record.date, 'yyyy-MM-dd')}">Date</p>
                     <a th:href="@{/web/records/{id}(id=${record.id})}" class="btn btn-primary">View</a>
                     <a th:href="@{/web/records/{id}/edit(id=${record.id})}" class="btn btn-warning btn-sm">Edit</a>
-                    <a th:href="@{/web/records/{id}/delete(id=${record.id})}" class="btn btn-danger btn-sm"
-                       onclick="return confirm('Are you sure you want to delete this record?')">Delete</a>
-                </div>
+                    <form th:action="@{/web/records/delete/{id}(id=${record.id})}"
+                          method="post"
+                          style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this record?')">
+                            Delete
+                        </button>
+                    </form>
             </div>
         </div>
     </div>
