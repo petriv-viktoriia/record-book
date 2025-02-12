@@ -2,16 +2,12 @@ package org.pnurecord.recordbook.record;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.pnurecord.recordbook.category.Category;
-import org.pnurecord.recordbook.category.CategoryDto;
+import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.category.CategoryService;
 import org.pnurecord.recordbook.recordFile.RecordFileInfoDto;
 import org.pnurecord.recordbook.recordFile.RecordFileRepository;
 import org.pnurecord.recordbook.recordFile.RecordFileService;
-import org.pnurecord.recordbook.user.Role;
-import org.pnurecord.recordbook.user.UserCreateDto;
-import org.pnurecord.recordbook.user.UserDto;
-import org.pnurecord.recordbook.user.UserService;
+import org.pnurecord.recordbook.user.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,9 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Controller
@@ -34,21 +28,31 @@ public class RecordWebController {
     private final RecordFileService recordFileService;
     private final RecordService recordService;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
     private final RecordFileRepository recordFileRepository;
 
     //-----------for guests-------------
     @GetMapping("/approved")
     public String showAllApprovedRecords(Model model) {
         List<RecordDto> approved = recordService.findAllApprovedRecords();
-        for (RecordDto recordDto : approved) {
-            UserDto author = userService.getUserById(recordDto.getAuthorId());
-            recordDto.setAuthorName(author.getFirstName() + " " + author.getLastName());
 
-            CategoryDto categoryDto = categoryService.findById(recordDto.getCategoryId());
-            recordDto.setCategoryName(categoryDto.getName());
+        Map<Long, String> authorNames = new HashMap<>();
+        Map<Long, String> categoryNames = new HashMap<>();
+
+        for (RecordDto record : approved) {
+            authorNames.put(record.getAuthorId(),
+                    userRepository.findUserNameById(record.getAuthorId()));
+
+            categoryNames.put(record.getCategoryId(),
+                    categoryRepository.findCategoryNameById(record.getCategoryId()));
         }
+
         model.addAttribute("approved", approved);
+        model.addAttribute("authorNames", authorNames);
+        model.addAttribute("categoryNames", categoryNames);
+
         return "records/listApproved";
     }
     //-------------------------------------

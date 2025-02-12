@@ -12,12 +12,10 @@ public class RecordDto {
     @NotBlank(message = "Title cannot be blank")
     private String title;
     private Long categoryId;
-    private String categoryName;
 
     @NotBlank(message = "Description cannot be blank")
     private String description;
     private Long authorId;
-    private String authorName;
     private LocalDate publishedDate;
     private RecordStatus status;
 }
