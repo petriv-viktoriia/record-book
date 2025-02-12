@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Users</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+</head>
+<body>
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col text-end">
+      <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/approved}" class="btn btn-primary">View Approved Records</a>
+      <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
+      <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary">Create New Record</a>
+    </div>
+  </div>
+</div>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Users</h2>
+    <a th:href="@{/web/users/new}" class="btn btn-primary">
+      <i class="bi bi-person-plus-fill me-2"></i>Add User
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped mb-0">
+        <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th class="text-end">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+          <td th:text="${user.id}"></td>
+          <td th:text="${user.firstName}"></td>
+          <td th:text="${user.lastName}"></td>
+          <td th:text="${user.email}"></td>
+          <td th:text="${user.role}"></td>
+          <td class="text-end">
+            <a th:href="@{/web/users/edit/{id}(id=${user.id})}" class="btn btn-sm btn-warning me-2">
+              <i class="bi bi-pencil-square"></i> Edit
+            </a>
+            <form th:action="@{/web/users/delete/{id}(id=${user.id})}" method="post" class="d-inline">
+              <input type="hidden" name="_method" value="delete"/>
+              <button type="submit" class="btn btn-sm btn-danger"
+                      onclick="return confirm('Delete user: ' + [[${user.firstName}]] + '?')">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(users)}" class="text-center py-5">
+      <div class="text-muted">
+        <i class="bi bi-inbox fs-1"></i>
+        <p class="mt-2">No users found</p>
+        <a th:href="@{/web/users/new}" class="btn btn-primary">Create First User</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
