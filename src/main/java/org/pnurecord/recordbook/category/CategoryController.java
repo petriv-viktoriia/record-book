@@ -1,5 +1,6 @@
 package org.pnurecord.recordbook.category;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,13 +31,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public void createCategory(@RequestBody CategoryDto category) {
-        categoryService.createCategory(category);
+    public CategoryDto createCategory (@Valid @RequestBody CategoryDto category) {
+        return categoryService.createCategory(category);
     }
 
     @PutMapping("/{categoryId}")
-    public void updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDto category) {
-        categoryService.updateCategory(categoryId, category);
+    public CategoryDto updateCategory(@PathVariable Long categoryId, @Valid  @RequestBody CategoryDto categoryDto) {
+        return categoryService.updateCategory(categoryId, categoryDto);
     }
 
     @DeleteMapping("/{categoryId}")

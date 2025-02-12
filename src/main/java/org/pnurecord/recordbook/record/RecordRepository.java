@@ -21,4 +21,6 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     List<Record> findByAuthorAndStatus(User user, RecordStatus status);
 
     List<Record> findByPublishedDate(LocalDate publishedDate);
+
+    List<Record> findByTitleContainingIgnoreCase(String title);
 }

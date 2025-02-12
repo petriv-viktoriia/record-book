@@ -15,4 +15,8 @@ public interface UserMapper {
 
     List<UserDto> toUserDtoList(List<User> userList);
 
+    UserUpdateDto toUserUpdateDto(User user);
+
+    User toUserCreateDto(UserCreateDto userCreateDto);
+
 }

@@ -1,4 +1,4 @@
-package org.pnurecord.recordbook.reaction;
+package org.pnurecord.recordbook.recordFile;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,27 +7,28 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import org.pnurecord.recordbook.user.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.pnurecord.recordbook.record.Record;
 
-@Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
-@Table(name = "reactions")
-public class Reaction {
+@Table(name = "record_file")
+@Data
+public class RecordFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String filename;
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "record_id", referencedColumnName = "id")
     private Record record;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
-
-    private boolean liked;
+    private byte[] data;
 }
+

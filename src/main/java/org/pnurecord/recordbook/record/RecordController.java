@@ -1,5 +1,6 @@
 package org.pnurecord.recordbook.record;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -34,13 +34,13 @@ public class RecordController {
     }
 
     @PostMapping
-    public void createRecord(@RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
-        recordService.createRecord(recordDto, file);
+    public RecordDto createRecord(@Valid @RequestBody RecordDto recordDto) {
+        return recordService.createRecord(recordDto);
     }
 
     @PutMapping("/{recordId}")
-    public void updateRecord(@PathVariable Long recordId, @RequestBody RecordDto recordDto, @RequestParam MultipartFile file) {
-        recordService.updateRecord(recordId, recordDto, file);
+    public RecordDto updateRecord(@PathVariable Long recordId, @Valid @RequestBody RecordDto recordDto) {
+        return recordService.updateRecord(recordId, recordDto);
     }
 
     @DeleteMapping("/{recordId}")
@@ -78,8 +78,8 @@ public class RecordController {
         return recordService.getRecordsByDate(date);
     }
 
-    @GetMapping("/users/{userId}?status={status}")
-    public List<RecordDto> getUserRecordsByStatus(@PathVariable Long userId, @PathVariable RecordStatus status) {
+    @GetMapping("/users/{userId}")
+    public List<RecordDto> getUserRecordsByStatus(@PathVariable Long userId, @RequestParam RecordStatus status) {
         return recordService.getRecordsByUserAndStatus(userId, status);
     }
 
@@ -91,5 +91,15 @@ public class RecordController {
     @PutMapping("/{recordId}/reject")
     public void rejectRecord(@PathVariable Long recordId) {
         recordService.rejectRecord(recordId);
+    }
+
+    @GetMapping("/search")
+    public List<RecordDto> searchRecordsByTitle(
+            @RequestParam String title,
+            @RequestParam(required = false) Integer limit) {
+        if (title.length() < 2) {
+            return Collections.emptyList();
+        }
+        return recordService.findRecordsByTitle(title, limit);
     }
 }
