@@ -7,6 +7,12 @@
 </head>
 <body>
 <div class="container mt-4">
+
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+
     <div class="row mb-4">
         <div class="col">
             <h2 th:text="${category.id == null ? 'Create New Category' : 'Edit Category'}">Category Form</h2>
@@ -18,7 +24,7 @@
           method="post"
           class="col-md-6">
 
-        <input type="hidden" th:field="*{id}" />
+        <input type="hidden" th:field="*{id}"/>
 
         <div class="mb-3">
             <label for="name" class="form-label">Name</label>

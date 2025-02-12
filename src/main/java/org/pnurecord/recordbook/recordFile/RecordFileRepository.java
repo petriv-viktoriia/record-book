@@ -25,4 +25,7 @@ public interface RecordFileRepository extends CrudRepository<RecordFile, Long> {
     void deleteByFilename(@Param("filename") String filename);
 
     List<RecordFile> findByRecordId(Long recordId);
+
+    @Transactional
+    void deleteByRecordId(Long recordId);
 }
