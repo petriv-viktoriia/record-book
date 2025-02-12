@@ -65,7 +65,7 @@ public class RecordWebController {
         return "records/form";
     }
 
-    @PostMapping("/new")
+    @PostMapping("/create")
     public String createRecord(@ModelAttribute @Valid RecordDto recordDto,
                                BindingResult bindingResult,
                                @RequestParam(value = "file", required = false) MultipartFile file,
@@ -78,7 +78,7 @@ public class RecordWebController {
 
         try {
 //            //needs to be changed with security
-
+//
 //            UserCreateDto newUser = new UserCreateDto();
 //            newUser.setRole(Role.ADMIN);
 //            newUser.setFirstName(UUID.randomUUID().toString());
@@ -100,7 +100,7 @@ public class RecordWebController {
             return "redirect:/web/records/" + createdRecord.getId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to create record: " + e.getMessage());
-            return "redirect:/web/records/new";
+            return "redirect:/web/records/create";
         }
     }
 
