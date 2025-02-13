@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -76,6 +77,7 @@
                 <th scope="col">Title</th>
                 <th scope="col">Author</th>
                 <th scope="col">Category</th>
+                <th scope="col">Date Added</th> <!-- Новий стовпець для дати -->
             </tr>
             </thead>
             <tbody>
@@ -83,11 +85,12 @@
                 <td>
                     <a th:href="@{/web/records/{id}(id=${record.id})}" th:text="${record.title}"></a>
                 </td>
-
                 <td th:text="${authorNames.get(record.authorId)}"></td>
                 <td th:text="${categoryNames.get(record.categoryId)}"></td>
+                <td th:text="${record.publishedDate}"></td>
             </tr>
             </tbody>
+
         </table>
     </div>
 

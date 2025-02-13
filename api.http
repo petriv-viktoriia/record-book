@@ -1,0 +1,8 @@
+POST http://localhost:8080/reactions
+Content-Type: application/json
+
+{
+  "recordId": 1,
+  "userId": 1,
+  "liked": true
+}
