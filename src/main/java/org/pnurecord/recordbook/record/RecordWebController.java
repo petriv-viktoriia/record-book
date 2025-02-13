@@ -98,16 +98,16 @@ public class RecordWebController {
         }
 
         try {
-            //needs to be changed with security
-
-            UserCreateDto newUser = new UserCreateDto();
-            newUser.setRole(Role.STUDENT);
-            newUser.setFirstName(UUID.randomUUID().toString());
-            newUser.setLastName(UUID.randomUUID().toString());
-            newUser.setEmail(UUID.randomUUID() + "@test.com");
-
-            UserDto userDto = userService.createUser(newUser);
-            recordDto.setAuthorId(userDto.getId());
+//            //needs to be changed with security
+//
+//            UserCreateDto newUser = new UserCreateDto();
+//            newUser.setRole(Role.STUDENT);
+//            newUser.setFirstName(UUID.randomUUID().toString());
+//            newUser.setLastName(UUID.randomUUID().toString());
+//            newUser.setEmail(UUID.randomUUID() + "@test.com");
+//
+//            UserDto userDto = userService.createUser(newUser);
+//            recordDto.setAuthorId(userDto.getId());
 
             RecordDto createdRecord = recordService.createRecord(recordDto);
 
@@ -321,9 +321,22 @@ public class RecordWebController {
             RedirectAttributes redirectAttributes) {
         try {
             List<RecordDto> records = recordService.getApprovedRecordsByDate(date);
+
+            Map<Long, String> authorNames = new HashMap<>();
+            Map<Long, String> categoryNames = new HashMap<>();
+
+            for (RecordDto record : records) {
+                authorNames.put(record.getAuthorId(),
+                        userRepository.findUserNameById(record.getAuthorId()));
+
+                categoryNames.put(record.getCategoryId(),
+                        categoryRepository.findCategoryNameById(record.getCategoryId()));
+            }
             model.addAttribute("records", records);
             model.addAttribute("selectedDate", date);
-            return "records/listByDate";
+            model.addAttribute("authorNames", authorNames);
+            model.addAttribute("categoryNames", categoryNames);
+            return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the specified date");
             return "redirect:/web/records";
@@ -337,9 +350,21 @@ public class RecordWebController {
             RedirectAttributes redirectAttributes) {
         try {
             List<RecordDto> records = recordService.getPendingRecordsByDate(date);
+            Map<Long, String> authorNames = new HashMap<>();
+            Map<Long, String> categoryNames = new HashMap<>();
+
+            for (RecordDto record : records) {
+                authorNames.put(record.getAuthorId(),
+                        userRepository.findUserNameById(record.getAuthorId()));
+
+                categoryNames.put(record.getCategoryId(),
+                        categoryRepository.findCategoryNameById(record.getCategoryId()));
+            }
             model.addAttribute("records", records);
             model.addAttribute("selectedDate", date);
-            return "records/listByDatePending";
+            model.addAttribute("authorNames", authorNames);
+            model.addAttribute("categoryNames", categoryNames);
+            return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the specified date");
             return "redirect:/web/records";
@@ -354,9 +379,49 @@ public class RecordWebController {
             RedirectAttributes redirectAttributes) {
         try {
             List<RecordDto> records = recordService.getApprovedRecordsByCategory(categoryId);
+            Map<Long, String> authorNames = new HashMap<>();
+            Map<Long, String> categoryNames = new HashMap<>();
+
+            for (RecordDto record : records) {
+                authorNames.put(record.getAuthorId(),
+                        userRepository.findUserNameById(record.getAuthorId()));
+
+                categoryNames.put(record.getCategoryId(),
+                        categoryRepository.findCategoryNameById(record.getCategoryId()));
+            }
             model.addAttribute("records", records);
             model.addAttribute("selectedCategoryId", categoryId);
-            return "records/categoryRecords";
+            model.addAttribute("authorNames", authorNames);
+            model.addAttribute("categoryNames", categoryNames);
+            return "records/searchResults";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
+            return "redirect:/web/records";
+        }
+    }
+
+    @GetMapping("/pending/categories/{categoryId}")
+    public String getPendingRecordsByCategory(
+            @PathVariable Long categoryId,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            List<RecordDto> records = recordService.getPendingRecordsByCategory(categoryId);
+            Map<Long, String> authorNames = new HashMap<>();
+            Map<Long, String> categoryNames = new HashMap<>();
+
+            for (RecordDto record : records) {
+                authorNames.put(record.getAuthorId(),
+                        userRepository.findUserNameById(record.getAuthorId()));
+
+                categoryNames.put(record.getCategoryId(),
+                        categoryRepository.findCategoryNameById(record.getCategoryId()));
+            }
+            model.addAttribute("records", records);
+            model.addAttribute("selectedCategoryId", categoryId);
+            model.addAttribute("authorNames", authorNames);
+            model.addAttribute("categoryNames", categoryNames);
+            return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
             return "redirect:/web/records";
