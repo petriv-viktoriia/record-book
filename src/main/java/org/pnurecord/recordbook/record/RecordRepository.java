@@ -14,8 +14,11 @@ import java.util.List;
 public interface RecordRepository extends JpaRepository<Record, Long> {
     boolean existsByTitle(String title);
 
-    List<Record> findApprovedRecordsByCategory(Category category);
-    List<Record> findPendingRecordsByCategory(Category category);
+    @Query("SELECT r FROM Record r WHERE r.category = :category AND r.status = 'APPROVED'")
+    List<Record> findApprovedRecordsByCategory(@Param("category") Category category);
+
+    @Query("SELECT r FROM Record r WHERE r.category = :category AND r.status = 'PENDING'")
+    List<Record> findPendingRecordsByCategory(@Param("category") Category category);
 
     List<Record> findByAuthor(User user);
 
@@ -23,8 +26,15 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     List<Record> findByAuthorAndStatus(User user, RecordStatus status);
 
-    List<Record> findApprovedRecordsByPublishedDate(LocalDate publishedDate);
-    List<Record> findPendingRecordsByPublishedDate(LocalDate publishedDate);
+    @Query("SELECT r FROM Record r WHERE r.status = 'APPROVED' AND r.publishedDate = :publishedDate")
+    List<Record> findApprovedRecordsByPublishedDate(
+            @Param("publishedDate") LocalDate publishedDate
+    );
+
+    @Query("SELECT r FROM Record r WHERE r.status = 'PENDING' AND r.publishedDate = :publishedDate")
+    List<Record> findPendingRecordsByPublishedDate(
+            @Param("publishedDate") LocalDate publishedDate
+    );
 
     @Query("SELECT r FROM Record r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :title, '%')) AND r.status = 'APPROVED'")
     List<Record> findApprovedRecordsByTitleContainingIgnoreCase(@Param("title") String title);
