@@ -453,22 +453,25 @@ public class RecordWebController {
     }
 
 
-    @GetMapping("/users/{userId}/status")
+    @GetMapping("/status")
     public String getUserRecordsByStatus(
-            @PathVariable Long userId,
-            @RequestParam(required = false, defaultValue = "APPROVED") RecordStatus status,
+            @RequestParam RecordStatus status,
             Model model) {
 
-        UserDto user = userService.getUserById(userId);
-        List<RecordDto> records = recordService.getRecordsByUserAndStatus(userId, status);
+//        needs to be changed with security
 
-        Map<Long, String> authorNames = new HashMap<>();
+        UserCreateDto currentUser = new UserCreateDto();
+        currentUser.setRole(Role.STUDENT);
+        currentUser.setFirstName(UUID.randomUUID().toString());
+        currentUser.setLastName(UUID.randomUUID().toString());
+        currentUser.setEmail(UUID.randomUUID() + "@test.com");
+        UserDto currentUserDto = userService.createUser(currentUser);
+
+        List<RecordDto> records = recordService.getRecordsByUserAndStatus(currentUserDto.getId(), status);
+
         Map<Long, String> categoryNames = new HashMap<>();
 
         for (RecordDto record : records) {
-            authorNames.put(record.getAuthorId(),
-                    userRepository.findUserNameById(record.getAuthorId()));
-
             categoryNames.put(record.getCategoryId(),
                     categoryRepository.findCategoryNameById(record.getCategoryId()));
         }
@@ -477,10 +480,8 @@ public class RecordWebController {
             records = Collections.emptyList();
         }
 
-        model.addAttribute("authorNames", authorNames);
         model.addAttribute("categoryNames", categoryNames);
         model.addAttribute("records", records);
-        model.addAttribute("user", user);
         model.addAttribute("currentStatus", status);
         model.addAttribute("statuses", RecordStatus.values());
 
@@ -488,23 +489,23 @@ public class RecordWebController {
 
     }
 
-    @GetMapping("/authors/{authorId}")
-    public String getRecordsByAuthor(
-            @PathVariable Long authorId,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-        try {
-            List<RecordDto> records = recordService.getRecordsByAuthor(authorId);
-            UserDto author = userService.getUserById(authorId);
-
-            model.addAttribute("records", records);
-            model.addAttribute("author", author);
-            return "records/authorRecords";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    "Failed to fetch records for the specified author.");
-            return "redirect:/web/records";
-        }
-    }
+//    @GetMapping("/authors/{authorId}")
+//    public String getRecordsByAuthor(
+//            @PathVariable Long authorId,
+//            Model model,
+//            RedirectAttributes redirectAttributes) {
+//        try {
+//            List<RecordDto> records = recordService.getRecordsByAuthor(authorId);
+//            UserDto author = userService.getUserById(authorId);
+//
+//            model.addAttribute("records", records);
+//            model.addAttribute("author", author);
+//            return "records/authorRecords";
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("errorMessage",
+//                    "Failed to fetch records for the specified author.");
+//            return "redirect:/web/records";
+//        }
+//    }
 
 }
