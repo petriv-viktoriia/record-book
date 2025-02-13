@@ -18,7 +18,7 @@
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#"><h1>Records Of PNU</h1></a>
+                <a class="navbar-brand" th:href="@{/web/records}"><h1>Records Of PNU</h1></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -32,7 +32,7 @@
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn" >Categories</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn" >Users</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn" >View Pending Records</a>
-                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
+                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
                         <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/my-requests}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
                     </div>
                 </div>
