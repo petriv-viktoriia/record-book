@@ -11,8 +11,8 @@
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <h1>Records Of PNU</h1>
         <div>
-            <a href="/logout" class="btn btn-danger">Exit</a>
-            <a th:href="@{/web/categories/new}" class="btn btn-success">Add Category</a>
+            <a href="/logout" class="btn btn-danger">Вихід</a>
+            <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success">Категорії</a>
         </div>
     </div>
 </header>
@@ -22,82 +22,81 @@
         <div class="col text-end">
             <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
             <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary">Create New Record</a>
-            <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/my-requests}" class="btn btn-info">Мої Запити</a>
         </div>
     </div>
 </div>
-<div class="container mt-4">
-    <h1 class="mb-4">All Records</h1>
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <form class="d-flex" th:action="@{/web/records/search}" method="get">
-                <input class="form-control me-2" type="search" name="title" placeholder="Search by title" required>
-                <button class="btn btn-outline-primary" type="submit">Search</button>
-            </form>
-        </div>
-        <div class="col-md-6">
-            <form th:action="@{/web/categories}" method="get">
-                <select class="form-select" name="categoryId" onchange="this.form.submit()">
-                    <option value="">All Categories</option>
-                    <option th:each="category : ${categories}"
-                            th:value="${category.id}"
-                            th:text="${category.name}"
-                            th:selected="${category.id}">Category Name</option>
-                </select>
-            </form>
-        </div>
+<div class="row mb-4">
+    <div class="col text-end">
+        <form class="d-flex" th:action="@{/web/records/search}" method="get">
+            <input class="form-control me-2" type="search" name="title" placeholder="Search by title" required>
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </form>
     </div>
+</div>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form th:action="@{/web/records/categories}" method="get">
+            <select class="form-select" name="categoryId" onchange="this.form.submit()">
+                <option value="">Search by Category</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}">
+                </option>
+            </select>
+        </form>
+    </div>
+</div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-            <tr>
-                <th scope="col">Title</th>
-                <th scope="col">Author</th>
-                <th scope="col">Category</th>
-                <th scope="col">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="record : ${records}">
-                <td>
-                    <a th:href="@{/web/records/{id}(id=${record.id})}" th:text="${record.title}"></a>
-                </td>
-                <td th:text="${authorNames.get(record.authorId)}"></td>
-                <td th:text="${categoryNames.get(record.categoryId)}"></td>
-                <td>
-                    <!-- Like Button -->
-                    <form th:action="@{/reactions}" method="post" style="display:inline;">
-                        <input type="hidden" name="recordId" th:value="${record.id}">
-                        <input type="hidden" name="reactionType" value="like">
-                        <button class="btn btn-sm btn-success me-2" type="submit">
-                            <i class="fas fa-thumbs-up"></i> Like
-                        </button>
-                    </form>
-                    <!-- Dislike Button -->
-                    <form th:action="@{/reactions}" method="post" style="display:inline;">
-                        <input type="hidden" name="recordId" th:value="${record.id}">
-                        <input type="hidden" name="reactionType" value="dislike">
-                        <button class="btn btn-sm btn-danger" type="submit">
-                            <i class="fas fa-thumbs-down"></i> Dislike
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form th:action="@{/web/records/date}" method="get">
+            <input class="form-control" type="date" name="date" onchange="this.form.submit()">
+        </form>
     </div>
+</div>
 
-    <div th:if="${#lists.isEmpty(records)}" class="alert alert-info">
-        No  records found.
-    </div>
 
-    <div class="mt-3">
-        <a href="/web/records" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to All Records
-        </a>
-    </div>
+<div class="table-responsive mt-4">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Category</th>
+            <th scope="col">Reactions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="record : ${records}">
+            <td>
+                <a th:href="@{/web/records/{id}(id=${record.id})}" th:text="${record.title}"></a>
+            </td>
+            <td th:text="${authorNames.get(record.authorId)}"></td>
+            <td th:text="${categoryNames.get(record.categoryId)}"></td>
+            <td>
+                    <span>
+                        <i class="fas fa-thumbs-up text-success"></i>
+                        <span th:text="${reactions.get(record.id)?.getLikes() ?: 0}">0</span>
+                    </span>
+                <span class="ms-3">
+                        <i class="fas fa-thumbs-down text-danger"></i>
+                        <span th:text="${reactions.get(record.id)?.getDislikes() ?: 0}">0</span>
+                    </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:if="${#lists.isEmpty(records)}" class="alert alert-info">
+    No records found.
+</div>
+
+<div class="mt-3">
+    <a href="/web/records" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to All Records
+    </a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
