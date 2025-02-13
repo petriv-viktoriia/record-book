@@ -456,22 +456,36 @@ public class RecordWebController {
     @GetMapping("/users/{userId}/status")
     public String getUserRecordsByStatus(
             @PathVariable Long userId,
-            @RequestParam RecordStatus status,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-        try {
-            List<RecordDto> records = recordService.getRecordsByUserAndStatus(userId, status);
-            UserDto user = userService.getUserById(userId);
+            @RequestParam(required = false, defaultValue = "APPROVED") RecordStatus status,
+            Model model) {
 
-            model.addAttribute("records", records);
-            model.addAttribute("user", user);
-            model.addAttribute("status", status);
-            return "records/listByUserStatus";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    "Failed to fetch records for the specified user and status.");
-            return "redirect:/web/records";
+        UserDto user = userService.getUserById(userId);
+        List<RecordDto> records = recordService.getRecordsByUserAndStatus(userId, status);
+
+        Map<Long, String> authorNames = new HashMap<>();
+        Map<Long, String> categoryNames = new HashMap<>();
+
+        for (RecordDto record : records) {
+            authorNames.put(record.getAuthorId(),
+                    userRepository.findUserNameById(record.getAuthorId()));
+
+            categoryNames.put(record.getCategoryId(),
+                    categoryRepository.findCategoryNameById(record.getCategoryId()));
         }
+
+        if (records == null) {
+            records = Collections.emptyList();
+        }
+
+        model.addAttribute("authorNames", authorNames);
+        model.addAttribute("categoryNames", categoryNames);
+        model.addAttribute("records", records);
+        model.addAttribute("user", user);
+        model.addAttribute("currentStatus", status);
+        model.addAttribute("statuses", RecordStatus.values());
+
+        return "records/listByUserStatus";
+
     }
 
     @GetMapping("/authors/{authorId}")
