@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Approved Records</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h1 class="mb-4">All Pending Records</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form class="d-flex gap-2" th:action="@{/web/records/pending/search}" method="get">
+                <input class="form-control"
+                       type="search"
+                       name="title"
+                       placeholder="Search by title"
+                       minlength="2"
+                       required>
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form th:action="@{/web/records/categories}" method="get">
+                <select class="form-select" name="categoryId" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:text="${category.name}"
+                            th:selected="${category.id}">Category Name</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Category</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="record : ${records}">
+                <td>
+                    <a th:href="@{/web/records/{id}(id=${record.id})}" th:text="${record.title}"></a>
+                </td>
+
+                <td th:text="${authorNames.get(record.authorId)}"></td>
+                <td th:text="${categoryNames.get(record.categoryId)}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(records)}" class="alert alert-info">
+        No  records found.
+    </div>
+
+    <div class="mt-3">
+        <a href="/web/records" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to All Approved Records
+        </a>
+    </div>
+</div>

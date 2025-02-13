@@ -123,11 +123,20 @@ public class RecordService {
         recordRepository.save(record);
     }
 
-    public List<RecordDto> getRecordsByCategory(Long categoryId) {
+    public List<RecordDto> getApprovedRecordsByCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category not found with id: %s".formatted(categoryId)));
 
-        List<Record> records = recordRepository.findByCategory(category);
+        List<Record> records = recordRepository.findApprovedRecordsByCategory(category);
+
+        return recordMapper.toRecordDtoList(records);
+    }
+
+    public List<RecordDto> getPendingRecordsByCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException("Category not found with id: %s".formatted(categoryId)));
+
+        List<Record> records = recordRepository.findPendingRecordsByCategory(category);
 
         return recordMapper.toRecordDtoList(records);
     }
@@ -142,16 +151,31 @@ public class RecordService {
         return recordMapper.toRecordDtoList(records);
     }
 
-    public List<RecordDto> getRecordsByDate(LocalDate date) {
-        return recordMapper.toRecordDtoList(recordRepository.findByPublishedDate(date));
+    public List<RecordDto> getApprovedRecordsByDate(LocalDate date) {
+        return recordMapper.toRecordDtoList(recordRepository.findApprovedRecordsByPublishedDate(date));
+    }
+
+    public List<RecordDto> getPendingRecordsByDate(LocalDate date) {
+        return recordMapper.toRecordDtoList(recordRepository.findPendingRecordsByPublishedDate(date));
     }
 
 
-    public List<RecordDto> findRecordsByTitle(String title, Integer limit) {
+    public List<RecordDto> findApprovedRecordsByTitle(String title, Integer limit) {
         int defaultLimit = 7;
         int searchLimit = limit != null ? limit : defaultLimit;
 
-        List<Record> records = recordRepository.findByTitleContainingIgnoreCase(title);
+        List<Record> records = recordRepository.findApprovedRecordsByTitleContainingIgnoreCase(title);
+        if (records.size() > searchLimit) {
+            records = records.subList(0, searchLimit);
+        }
+        return recordMapper.toRecordDtoList(records);
+    }
+
+    public List<RecordDto> findPendingRecordsByTitle(String title, Integer limit) {
+        int defaultLimit = 7;
+        int searchLimit = limit != null ? limit : defaultLimit;
+
+        List<Record> records = recordRepository.findPendingRecordsByTitleContainingIgnoreCase(title);
         if (records.size() > searchLimit) {
             records = records.subList(0, searchLimit);
         }

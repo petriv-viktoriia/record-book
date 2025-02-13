@@ -36,12 +36,11 @@ public class RecordWebController {
     //-----------for guests-------------
     @GetMapping()
     public String showAllApprovedRecords(Model model) {
-        List<RecordDto> approved = recordService.findAllApprovedRecords();
-
+        List<RecordDto> records = recordService.findAllApprovedRecords();
         Map<Long, String> authorNames = new HashMap<>();
         Map<Long, String> categoryNames = new HashMap<>();
 
-        for (RecordDto record : approved) {
+        for (RecordDto record : records) {
             authorNames.put(record.getAuthorId(),
                     userRepository.findUserNameById(record.getAuthorId()));
 
@@ -49,11 +48,12 @@ public class RecordWebController {
                     categoryRepository.findCategoryNameById(record.getCategoryId()));
         }
 
-        model.addAttribute("approved", approved);
+        model.addAttribute("records", records);
         model.addAttribute("authorNames", authorNames);
         model.addAttribute("categoryNames", categoryNames);
+        model.addAttribute("categories", categoryService.getAllCategories());
 
-        return "records/listApproved";
+        return "records/listApproved2";
     }
     //-------------------------------------
 
@@ -83,7 +83,7 @@ public class RecordWebController {
     public String showCreateForm(Model model) {
         model.addAttribute("recordDto", new RecordDto());
         model.addAttribute("categories", categoryService.getAllCategories());
-        return "records/form";
+        return "records/form2";
     }
 
     @PostMapping("/create")
@@ -94,20 +94,20 @@ public class RecordWebController {
                                Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAllCategories());
-            return "records/form";
+            return "records/form2";
         }
 
         try {
-//            //needs to be changed with security
-//
-//            UserCreateDto newUser = new UserCreateDto();
-//            newUser.setRole(Role.ADMIN);
-//            newUser.setFirstName(UUID.randomUUID().toString());
-//            newUser.setLastName(UUID.randomUUID().toString());
-//            newUser.setEmail(UUID.randomUUID() + "@test.com");
-//
-//            UserDto userDto = userService.createUser(newUser);
-//            recordDto.setAuthorId(userDto.getId());
+            //needs to be changed with security
+
+            UserCreateDto newUser = new UserCreateDto();
+            newUser.setRole(Role.STUDENT);
+            newUser.setFirstName(UUID.randomUUID().toString());
+            newUser.setLastName(UUID.randomUUID().toString());
+            newUser.setEmail(UUID.randomUUID() + "@test.com");
+
+            UserDto userDto = userService.createUser(newUser);
+            recordDto.setAuthorId(userDto.getId());
 
             RecordDto createdRecord = recordService.createRecord(recordDto);
 
@@ -131,7 +131,7 @@ public class RecordWebController {
         RecordDto recordDto = recordService.findById(recordId);
         model.addAttribute("recordDto", recordDto);
         model.addAttribute("categories", categoryService.getAllCategories());
-        return "records/form";
+        return "records/form2";
     }
 
     @PutMapping("/edit/{recordId}")
@@ -198,38 +198,94 @@ public class RecordWebController {
         model.addAttribute("authorName", authorName);
         model.addAttribute("files", files);
 
-        return "records/details";
+        return "records/details2";
     }
 
     @GetMapping("/pending")
-    public String showPendingRecords(Model model, RedirectAttributes redirectAttributes) {
-        try {
-            List<RecordDto> pending = recordService.findAllPendingRecords();
-            model.addAttribute("pending", pending);
-            return "records/listPending";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch pending records.");
-            return "redirect:/web/records";
+    public String showPendingRecords(Model model) {
+        List<RecordDto> records = recordService.findAllPendingRecords();
+        Map<Long, String> authorNames = new HashMap<>();
+        Map<Long, String> categoryNames = new HashMap<>();
+
+        for (RecordDto record : records) {
+            authorNames.put(record.getAuthorId(),
+                    userRepository.findUserNameById(record.getAuthorId()));
+
+            categoryNames.put(record.getCategoryId(),
+                    categoryRepository.findCategoryNameById(record.getCategoryId()));
         }
+
+
+        model.addAttribute("records", records);
+        model.addAttribute("authorNames", authorNames);
+        model.addAttribute("categoryNames", categoryNames);
+        model.addAttribute("categories", categoryService.getAllCategories());
+
+        return "records/listPending2";
     }
 
 
     @GetMapping("/search")
-    public String searchRecords(
+    public String searchApprovedRecords(
             @RequestParam String title,
             @RequestParam(required = false) Integer limit,
             Model model) {
         List<RecordDto> searchResults = Collections.emptyList();
 
         if (title != null && title.length() >= 2) {
-            searchResults = recordService.findRecordsByTitle(title, limit);
+            searchResults = recordService.findApprovedRecordsByTitle(title, limit);
         }
 
+        Map<Long, String> authorNames = new HashMap<>();
+        Map<Long, String> categoryNames = new HashMap<>();
+
+        for (RecordDto record : searchResults) {
+            authorNames.put(record.getAuthorId(),
+                    userRepository.findUserNameById(record.getAuthorId()));
+
+            categoryNames.put(record.getCategoryId(),
+                    categoryRepository.findCategoryNameById(record.getCategoryId()));
+        }
+
+        model.addAttribute("authorNames", authorNames);
+        model.addAttribute("categoryNames", categoryNames);
         model.addAttribute("records", searchResults);
         model.addAttribute("searchTitle", title);
         model.addAttribute("searchLimit", limit);
 
-        return "records/listApproved"; // needs to be used in main page
+        return "records/searchResults";
+    }
+
+    @GetMapping("/pending/search")
+    public String searchPendingRecords(
+            @RequestParam String title,
+            @RequestParam(required = false) Integer limit,
+            Model model) {
+        List<RecordDto> searchResults = Collections.emptyList();
+
+        if (title != null && title.length() >= 2) {
+            searchResults = recordService.findPendingRecordsByTitle(title, limit);
+        }
+
+        Map<Long, String> authorNames = new HashMap<>();
+        Map<Long, String> categoryNames = new HashMap<>();
+
+        for (RecordDto record : searchResults) {
+            authorNames.put(record.getAuthorId(),
+                    userRepository.findUserNameById(record.getAuthorId()));
+
+            categoryNames.put(record.getCategoryId(),
+                    categoryRepository.findCategoryNameById(record.getCategoryId()));
+        }
+
+        model.addAttribute("records", searchResults);
+        model.addAttribute("authorNames", authorNames);
+        model.addAttribute("categoryNames", categoryNames);
+        model.addAttribute("records", searchResults);
+        model.addAttribute("searchTitle", title);
+        model.addAttribute("searchLimit", limit);
+
+        return "records/searchResults";
     }
 
     @PostMapping("/{recordId}/approve")
@@ -259,12 +315,12 @@ public class RecordWebController {
     }
 
     @GetMapping("/date/{date}")
-    public String getRecordsByDate(
+    public String getApprovedRecordsByDate(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            List<RecordDto> records = recordService.getRecordsByDate(date);
+            List<RecordDto> records = recordService.getApprovedRecordsByDate(date);
             model.addAttribute("records", records);
             model.addAttribute("selectedDate", date);
             return "records/listByDate";
@@ -274,11 +330,30 @@ public class RecordWebController {
         }
     }
 
+    @GetMapping("/pending/date/{date}")
+    public String getPendingRecordsByDate(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            List<RecordDto> records = recordService.getPendingRecordsByDate(date);
+            model.addAttribute("records", records);
+            model.addAttribute("selectedDate", date);
+            return "records/listByDatePending";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the specified date");
+            return "redirect:/web/records";
+        }
+    }
+
 
     @GetMapping("/categories/{categoryId}")
-    public String getRecordsByCategory(@PathVariable Long categoryId, Model model, RedirectAttributes redirectAttributes) {
+    public String getApprovedRecordsByCategory(
+            @PathVariable Long categoryId,
+            Model model,
+            RedirectAttributes redirectAttributes) {
         try {
-            List<RecordDto> records = recordService.getRecordsByCategory(categoryId);
+            List<RecordDto> records = recordService.getApprovedRecordsByCategory(categoryId);
             model.addAttribute("records", records);
             model.addAttribute("selectedCategoryId", categoryId);
             return "records/categoryRecords";
@@ -287,6 +362,7 @@ public class RecordWebController {
             return "redirect:/web/records";
         }
     }
+
 
     @GetMapping("/users/{userId}/status")
     public String getUserRecordsByStatus(

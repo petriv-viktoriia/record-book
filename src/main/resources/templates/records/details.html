@@ -25,13 +25,8 @@
             </div>
             <div class="mb-3">
                 <strong>Created:</strong>
-                <span th:text="${#temporals.format(record.createdAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                <span th:text="${#temporals.format(record.publishedDate, 'dd-MM-yyyy HH:mm')}">Date</span>
             </div>
-            <div class="mb-3">
-                <strong>Content:</strong>
-                <p th:text="${record.content}">Content</p>
-            </div>
-
             <div class="mb-3" th:if="${not #lists.isEmpty(files)}">
                 <strong>Attachments:</strong>
                 <ul class="list-group">

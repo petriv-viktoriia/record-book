@@ -55,7 +55,12 @@ public class RecordController {
 
     @GetMapping("/categories/{categoryId}")
     public List<RecordDto> getRecordsByCategory(@PathVariable Long categoryId) {
-        return recordService.getRecordsByCategory(categoryId);
+        return recordService.getApprovedRecordsByCategory(categoryId);
+    }
+
+    @GetMapping("pending/categories/{categoryId}")
+    public List<RecordDto> getPendingRecordsByCategory(@PathVariable Long categoryId) {
+        return recordService.getPendingRecordsByCategory(categoryId);
     }
 
     @GetMapping("/authors/{authorId}")
@@ -75,7 +80,12 @@ public class RecordController {
 
     @GetMapping("/date/{date}")
     public List<RecordDto> getRecordsByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return recordService.getRecordsByDate(date);
+        return recordService.getApprovedRecordsByDate(date);
+    }
+
+    @GetMapping("pending/date/{date}")
+    public List<RecordDto> getPendingRecordsByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return recordService.getPendingRecordsByDate(date);
     }
 
     @GetMapping("/users/{userId}")
@@ -94,12 +104,25 @@ public class RecordController {
     }
 
     @GetMapping("/search")
-    public List<RecordDto> searchRecordsByTitle(
+    public List<RecordDto> searchApprovedRecordsByTitle(
             @RequestParam String title,
             @RequestParam(required = false) Integer limit) {
         if (title.length() < 2) {
             return Collections.emptyList();
         }
-        return recordService.findRecordsByTitle(title, limit);
+        return recordService.findApprovedRecordsByTitle(title, limit);
     }
+
+    @GetMapping("pending/search")
+    public List<RecordDto> searchPendingRecordsByTitle(
+            @RequestParam String title,
+            @RequestParam(required = false) Integer limit) {
+        if (title.length() < 2) {
+            return Collections.emptyList();
+        }
+        return recordService.findPendingRecordsByTitle(title, limit);
+    }
+
+
+
 }

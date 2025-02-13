@@ -6,26 +6,26 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col text-end">
-            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/approved}" class="btn btn-primary">View Approved Records</a>
-            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
-            <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary">Create New Record</a>
-        </div>
-    </div>
-</div>
+<!--<div class="container mt-4">-->
+<!--    <div class="row mb-4">-->
+<!--        <div class="col text-end">-->
+<!--            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/approved}" class="btn btn-primary">View Approved Records</a>-->
+<!--            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>-->
+<!--            <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary">Create New Record</a>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col">
-            <h2>Records</h2>
+            <h2>Records of Precarpathian University</h2>
         </div>
     </div>
 
     <div class="row mb-4">
         <div class="col-md-6">
-            <form class="d-flex" th:action="@{/web/records/approved/search}" method="get">
+            <form class="d-flex" th:action="@{/web/records/search}" method="get">
                 <input class="form-control me-2" type="search" name="title" placeholder="Search by title" required>
                 <button class="btn btn-outline-primary" type="submit">Search</button>
             </form>
@@ -47,43 +47,27 @@
     <div class="row">
         <div th:each="record : ${records}" class="col-md-4 mb-4">
             <div class="card">
-                <!-- Main Image (First Image) -->
-                <div th:if="${record.images != null and !record.images.isEmpty()}">
-                    <img th:src="@{/images/{imageName}(imageName=${record.images[0]})}" class="card-img-top" alt="Record image">
-                </div>
-
-                <!-- PDF File -->
-                <div th:if="${record.pdf != null}">
-                    <a th:href="@{/pdf/{pdfName}(pdfName=${record.pdf})}" class="btn btn-outline-info btn-sm mt-2">View PDF</a>
-                </div>
-
-                <div th:if="${record.images != null and record.images.size() > 1}">
-                    <button class="btn btn-outline-info btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#imageModal-[[${record.id}]]">
-                        View Additional Images
-                    </button>
-                </div>
-
                 <div class="card-body">
                     <h5 class="card-title" th:text="${record.title}">Record Title</h5>
                     <p class="card-text" th:text="${record.category.name}">Category</p>
                     <p class="card-text" th:text="${record.author.name}">Author</p>
                     <p class="card-text" th:text="${#dates.format(record.date, 'yyyy-MM-dd')}">Date</p>
 
-                    <!-- Reaction (Likes and Dislikes) -->
-                    <div class="d-flex align-items-center">
-                        <div class="me-3">
-                            <span th:text="${record.likesCount}">0</span> Likes
-                            <button class="btn btn-outline-success btn-sm" th:onclick="'likeRecord(' + ${record.id} + ')'" type="button">
-                                Like
-                            </button>
-                        </div>
-                        <div class="me-3">
-                            <span th:text="${record.dislikesCount}">0</span> Dislikes
-                            <button class="btn btn-outline-danger btn-sm" th:onclick="'dislikeRecord(' + ${record.id} + ')'" type="button">
-                                Dislike
-                            </button>
-                        </div>
-                    </div>
+<!--                    &lt;!&ndash; Reaction (Likes and Dislikes) &ndash;&gt;-->
+<!--                    <div class="d-flex align-items-center">-->
+<!--                        <div class="me-3">-->
+<!--                            <span th:text="${record.likesCount}">0</span> Likes-->
+<!--                            <button class="btn btn-outline-success btn-sm" th:onclick="'likeRecord(' + ${record.id} + ')'" type="button">-->
+<!--                                Like-->
+<!--                            </button>-->
+<!--                        </div>-->
+<!--                        <div class="me-3">-->
+<!--                            <span th:text="${record.dislikesCount}">0</span> Dislikes-->
+<!--                            <button class="btn btn-outline-danger btn-sm" th:onclick="'dislikeRecord(' + ${record.id} + ')'" type="button">-->
+<!--                                Dislike-->
+<!--                            </button>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
                     <a th:href="@{/web/records/{id}(id=${record.id})}" class="btn btn-primary">View</a>
                     <a th:href="@{/web/records/{id}/edit(id=${record.id})}" class="btn btn-warning btn-sm">Edit</a>
@@ -103,42 +87,42 @@
     </div>
 </div>
 
-<!-- Modal for Additional Images -->
-<div th:each="record : ${records}" th:id="'imageModal-' + ${record.id}" class="modal fade" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" th:text="'Additional Images for ' + ${record.title}">Additional Images</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div th:each="image : ${record.images}" class="mb-3">
-                    <img th:src="@{/images/{imageName}(imageName=${image})}" class="img-fluid" alt="Additional image">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<!--&lt;!&ndash; Modal for Additional Images &ndash;&gt;-->
+<!--<div th:each="record : ${records}" th:id="'imageModal-' + ${record.id}" class="modal fade" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" th:text="'Additional Images for ' + ${record.title}">Additional Images</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <div th:each="image : ${record.images}" class="mb-3">-->
+<!--                    <img th:src="@{/images/{imageName}(imageName=${image})}" class="img-fluid" alt="Additional image">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function likeRecord(recordId) {
-        fetch(`/reactions/${recordId}/like`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                const likesElement = document.querySelector(`#likes-count-${recordId}`);
-                likesElement.textContent = data.likesCount;
-            });
-    }
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--<script>-->
+<!--    function likeRecord(recordId) {-->
+<!--        fetch(`/reactions/${recordId}/like`, { method: 'POST' })-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                const likesElement = document.querySelector(`#likes-count-${recordId}`);-->
+<!--                likesElement.textContent = data.likesCount;-->
+<!--            });-->
+<!--    }-->
 
-    function dislikeRecord(recordId) {
-        fetch(`/reactions/${recordId}/dislike`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                const dislikesElement = document.querySelector(`#dislikes-count-${recordId}`);
-                dislikesElement.textContent = data.dislikesCount;
-            });
-    }
-</script>
+<!--    function dislikeRecord(recordId) {-->
+<!--        fetch(`/reactions/${recordId}/dislike`, { method: 'POST' })-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                const dislikesElement = document.querySelector(`#dislikes-count-${recordId}`);-->
+<!--                dislikesElement.textContent = data.dislikesCount;-->
+<!--            });-->
+<!--    }-->
+<!--</script>-->
 </body>
 </html>
