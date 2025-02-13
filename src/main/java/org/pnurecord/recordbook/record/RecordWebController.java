@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.category.CategoryService;
 import org.pnurecord.recordbook.reaction.ReactionCountDto;
+import org.pnurecord.recordbook.reaction.ReactionDto;
 import org.pnurecord.recordbook.reaction.ReactionService;
 import org.pnurecord.recordbook.recordFile.RecordFileInfoDto;
 import org.pnurecord.recordbook.recordFile.RecordFileRepository;
@@ -207,8 +208,10 @@ public class RecordWebController {
                 .toUriString();
 
         List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(id, baseUrl);
+        ReactionCountDto reactionsCount = reactionService.getReactionsCount(record.getId());
 
         model.addAttribute("record", record);
+        model.addAttribute("reactions", reactionsCount);
         model.addAttribute("categoryName", categoryName);
         model.addAttribute("authorName", authorName);
         model.addAttribute("files", files);
