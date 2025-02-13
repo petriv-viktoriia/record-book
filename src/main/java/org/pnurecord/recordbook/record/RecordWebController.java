@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.category.CategoryService;
+import org.pnurecord.recordbook.reaction.ReactionCountDto;
+import org.pnurecord.recordbook.reaction.ReactionService;
 import org.pnurecord.recordbook.recordFile.RecordFileInfoDto;
 import org.pnurecord.recordbook.recordFile.RecordFileRepository;
 import org.pnurecord.recordbook.recordFile.RecordFileService;
@@ -32,6 +34,7 @@ public class RecordWebController {
     private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
     private final RecordFileRepository recordFileRepository;
+    private final ReactionService reactionService;
 
     //-----------for guests-------------
     @GetMapping()
@@ -39,6 +42,7 @@ public class RecordWebController {
         List<RecordDto> records = recordService.findAllApprovedRecords();
         Map<Long, String> authorNames = new HashMap<>();
         Map<Long, String> categoryNames = new HashMap<>();
+        Map<Long, ReactionCountDto> reactions = new HashMap<>();
 
         for (RecordDto record : records) {
             authorNames.put(record.getAuthorId(),
@@ -46,8 +50,12 @@ public class RecordWebController {
 
             categoryNames.put(record.getCategoryId(),
                     categoryRepository.findCategoryNameById(record.getCategoryId()));
+
+            ReactionCountDto reactionCount = reactionService.getReactionsCount(record.getId());
+            reactions.put(record.getId(), reactionCount);
         }
 
+        model.addAttribute("reactions", reactions);
         model.addAttribute("records", records);
         model.addAttribute("authorNames", authorNames);
         model.addAttribute("categoryNames", categoryNames);
@@ -63,6 +71,8 @@ public class RecordWebController {
 
         Map<Long, String> authorNames = new HashMap<>();
         Map<Long, String> categoryNames = new HashMap<>();
+        Map<Long, ReactionCountDto> reactions = new HashMap<>();
+
 
         for (RecordDto record : allRecords) {
             authorNames.put(record.getAuthorId(),
@@ -70,8 +80,13 @@ public class RecordWebController {
 
             categoryNames.put(record.getCategoryId(),
                     categoryRepository.findCategoryNameById(record.getCategoryId()));
+
+            ReactionCountDto reactionCount = reactionService.getReactionsCount(record.getId());
+            reactions.put(record.getId(), reactionCount);
         }
 
+
+        model.addAttribute("reactions", reactions);
         model.addAttribute("allRecords", allRecords);
         model.addAttribute("authorNames", authorNames);
         model.addAttribute("categoryNames", categoryNames);
