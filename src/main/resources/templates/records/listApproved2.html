@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Approved Records</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 <header class="bg-light py-3 w-100 d-flex justify-content-between align-items-center">
@@ -11,9 +12,20 @@
         <h1>Records Of PNU</h1>
         <div>
             <a href="/logout" class="btn btn-danger">Exit</a>
+            <a th:href="@{/web/categories/new}" class="btn btn-success">Add Category</a>
         </div>
     </div>
 </header>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col text-end">
+            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
+            <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary">Create New Record</a>
+            <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/my-requests}" class="btn btn-info">Мої Запити</a>
+        </div>
+    </div>
+</div>
 <div class="container mt-4">
     <h1 class="mb-4">All Records</h1>
 
@@ -25,7 +37,7 @@
             </form>
         </div>
         <div class="col-md-6">
-            <form th:action="@{/web/records/categories}" method="get">
+            <form th:action="@{/web/categories}" method="get">
                 <select class="form-select" name="categoryId" onchange="this.form.submit()">
                     <option value="">All Categories</option>
                     <option th:each="category : ${categories}"
@@ -44,6 +56,7 @@
                 <th scope="col">Title</th>
                 <th scope="col">Author</th>
                 <th scope="col">Category</th>
+                <th scope="col">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -51,9 +64,26 @@
                 <td>
                     <a th:href="@{/web/records/{id}(id=${record.id})}" th:text="${record.title}"></a>
                 </td>
-
                 <td th:text="${authorNames.get(record.authorId)}"></td>
                 <td th:text="${categoryNames.get(record.categoryId)}"></td>
+                <td>
+                    <!-- Like Button -->
+                    <form th:action="@{/reactions}" method="post" style="display:inline;">
+                        <input type="hidden" name="recordId" th:value="${record.id}">
+                        <input type="hidden" name="reactionType" value="like">
+                        <button class="btn btn-sm btn-success me-2" type="submit">
+                            <i class="fas fa-thumbs-up"></i> Like
+                        </button>
+                    </form>
+                    <!-- Dislike Button -->
+                    <form th:action="@{/reactions}" method="post" style="display:inline;">
+                        <input type="hidden" name="recordId" th:value="${record.id}">
+                        <input type="hidden" name="reactionType" value="dislike">
+                        <button class="btn btn-sm btn-danger" type="submit">
+                            <i class="fas fa-thumbs-down"></i> Dislike
+                        </button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -69,3 +99,8 @@
         </a>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+</body>
+</html>
