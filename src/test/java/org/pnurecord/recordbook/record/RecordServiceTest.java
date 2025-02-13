@@ -34,6 +34,7 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
     private RecordService recordService;
 
     private UserDto savedUser;
+    private UserDto savedUser2;
     private CategoryDto savedCategory;
     private RecordDto recordDto;
 
@@ -46,6 +47,13 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         userDto.setEmail(UUID.randomUUID().toString());
         userDto.setRole(Role.STUDENT);
         savedUser = userService.createUser(userDto);
+
+        UserCreateDto userDto2 = new UserCreateDto();
+        userDto2.setFirstName(UUID.randomUUID().toString());
+        userDto2.setLastName(UUID.randomUUID().toString());
+        userDto2.setEmail(UUID.randomUUID().toString());
+        userDto2.setRole(Role.ADMIN);
+        savedUser2 = userService.createUser(userDto2);
 
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setName(UUID.randomUUID().toString());
@@ -241,21 +249,24 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         recordDto2.setAuthorId(savedUser.getId());
         recordDto2.setTitle(UUID.randomUUID().toString());
         recordDto2.setDescription(UUID.randomUUID().toString());
-        recordDto2.setCategoryId(savedNewCategory.getId());
+        recordDto2.setCategoryId(savedCategory.getId());
         recordService.createRecord(recordDto2);
 
         RecordDto recordDto3 = new RecordDto();
-        recordDto3.setAuthorId(savedUser.getId());
+        recordDto3.setAuthorId(savedUser2.getId());
         recordDto3.setTitle(UUID.randomUUID().toString());
         recordDto3.setDescription(UUID.randomUUID().toString());
         recordDto3.setCategoryId(savedNewCategory.getId());
         recordService.createRecord(recordDto3);
 
-        List<RecordDto> foundByCategory = recordService.getRecordsByCategory(savedNewCategory.getId());
-        assertEquals(2, foundByCategory.size(), "There should be exactly 2 records in the new category");
+        List<RecordDto> foundByCategory = recordService.getPendingRecordsByCategory(savedCategory.getId());
+        assertEquals(2, foundByCategory.size(), "There should be exactly 2 records in the saved category");
+        assertEquals(RecordStatus.PENDING, foundByCategory.get(0).getStatus(), "Record status should be PENDING");
+        assertEquals(RecordStatus.PENDING, foundByCategory.get(1).getStatus(), "Record status should be PENDING");
 
-        List<RecordDto> foundByCategory2 = recordService.getRecordsByCategory(savedCategory.getId());
-        assertEquals(1, foundByCategory2.size(), "There should be exactly 1 record in the saved category");
+        List<RecordDto> foundByCategory2 = recordService.getApprovedRecordsByCategory(savedNewCategory.getId());
+        assertEquals(1, foundByCategory2.size(), "There should be exactly 1 record in the new category");
+        assertEquals(RecordStatus.APPROVED, foundByCategory2.get(0).getStatus(), "Record status should be APPROVED");
     }
 
 
@@ -292,7 +303,7 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
     }
 
     @Test
-    void testFindByDate() {
+    void testFindByPublishedDate() {
         recordService.createRecord(recordDto);
 
         RecordDto recordDto2 = new RecordDto();
@@ -304,29 +315,55 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         RecordDto createdRecord2 = recordService.createRecord(recordDto2);
         assertNotNull(createdRecord2.getId(), "RecordDto2 should be successfully created with an ID");
 
-        List<RecordDto> foundByDate = recordService.getRecordsByDate(LocalDate.now());
-        assertEquals(2, foundByDate.size(), "There should be exactly 2 records with the date today");
+        RecordDto recordDto3 = new RecordDto();
+        recordDto3.setAuthorId(savedUser2.getId());
+        recordDto3.setTitle(UUID.randomUUID().toString());
+        recordDto3.setDescription(UUID.randomUUID().toString());
+        recordDto3.setCategoryId(savedCategory.getId());
+
+        RecordDto createdRecord3 = recordService.createRecord(recordDto3);
+        assertNotNull(createdRecord3.getId(), "RecordDto3 should be successfully created with an ID");
+        assertEquals(RecordStatus.APPROVED, createdRecord3.getStatus());
+
+        List<RecordDto> foundByDatePending = recordService.getPendingRecordsByDate(LocalDate.now());
+        assertEquals(2, foundByDatePending.size(), "There should be exactly 2 pending records with today's published date");
+
+        for (RecordDto record : foundByDatePending) {
+            assertEquals(RecordStatus.PENDING, record.getStatus(), "Record should have PENDING status");
+        }
+
+        List<RecordDto> foundByDateApproved = recordService.getApprovedRecordsByDate(LocalDate.now());
+        assertEquals(1, foundByDateApproved.size(), "There should be exactly 1 approved record with today's published date");
+        assertEquals(RecordStatus.APPROVED, foundByDateApproved.get(0).getStatus(), "Record should have APPROVED status");
     }
 
 
     @Test
     void testFindRecordsByTitle() {
-        for (int i = 0; i < 10; i++) {
-            RecordDto record = new RecordDto();
-            record.setAuthorId(savedUser.getId());
-            record.setTitle("Test Title " + i);
-            record.setDescription("Description " + i);
-            record.setCategoryId(savedCategory.getId());
-            recordService.createRecord(record);
-        }
+        recordDto.setTitle("Test" + UUID.randomUUID());
+        recordService.createRecord(recordDto);
 
-        List<RecordDto> foundRecords = recordService.findRecordsByTitle("Test Title", null);
+        RecordDto recordDto2 = new RecordDto();
+        recordDto2.setAuthorId(savedUser2.getId());
+        recordDto2.setTitle("Test" + UUID.randomUUID());
+        recordDto2.setDescription(UUID.randomUUID().toString());
+        recordDto2.setCategoryId(savedCategory.getId());
+        recordService.createRecord(recordDto2);
 
-        assertEquals(7, foundRecords.size(), "The number of records should be limited to 7");
+        List<RecordDto> foundRecordsApproved = recordService.findApprovedRecordsByTitle("Test", null);
+        assertEquals(1, foundRecordsApproved.size(), "There should be exactly 1 approved record1");
+        assertTrue(foundRecordsApproved.get(0).getTitle().toLowerCase().contains("test"),
+                "Each record title should contain the search term (case-insensitive)");
+        assertEquals(RecordStatus.APPROVED, foundRecordsApproved.get(0).getStatus(), "Record should have APPROVED status");
+        assertEquals(savedUser2.getId(), foundRecordsApproved.get(0).getAuthorId(), "Only records created by ADMIN should be approved");
 
-        for (RecordDto record : foundRecords) {
-            assertTrue(record.getTitle().toLowerCase().contains("test title"),
-                    "Each record title should contain the search term (case-insensitive)");
-        }
+
+        List<RecordDto> foundRecordsPending = recordService.findPendingRecordsByTitle("Test", null);
+        assertEquals(1, foundRecordsPending.size(), "There should be exactly 1 pending record");
+
+        assertTrue(foundRecordsPending.get(0).getTitle().toLowerCase().contains("test"),
+                "Each record title should contain the search term (case-insensitive)");
+        assertEquals(RecordStatus.PENDING, foundRecordsPending.get(0).getStatus(), "Record should have PENDING status");
+        assertEquals(savedUser.getId(), foundRecordsPending.get(0).getAuthorId(), "Only records created by STUDENT should be pending");
     }
 }

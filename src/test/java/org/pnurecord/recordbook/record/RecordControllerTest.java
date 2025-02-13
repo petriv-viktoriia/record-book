@@ -103,12 +103,12 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
         newRecordDto.setAuthorId(savedUser.getId());
 
         String content = String.format("""
-            {
-                "title": "%s",
-                "description": "%s",
-                "categoryId": %d,
-                "authorId": %d
-            }""", newRecordDto.getTitle(), newRecordDto.getDescription(),
+                        {
+                            "title": "%s",
+                            "description": "%s",
+                            "categoryId": %d,
+                            "authorId": %d
+                        }""", newRecordDto.getTitle(), newRecordDto.getDescription(),
                 newRecordDto.getCategoryId(), newRecordDto.getAuthorId());
 
         mockMvc.perform(post("/records")
@@ -128,12 +128,12 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
         String updatedDescription = UUID.randomUUID().toString();
 
         String content = String.format("""
-            {
-                "title": "%s",
-                "description": "%s",
-                "categoryId": %d,
-                "authorId": %d
-            }""", updatedTitle, updatedDescription,
+                        {
+                            "title": "%s",
+                            "description": "%s",
+                            "categoryId": %d,
+                            "authorId": %d
+                        }""", updatedTitle, updatedDescription,
                 savedCategory.getId(), savedUser.getId());
 
         mockMvc.perform(put("/records/" + savedRecord.getId())
@@ -162,19 +162,47 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
     }
 
     @Test
-    void getRecordsByCategory() throws Exception {
-        mockMvc.perform(get("/records/categories/" + savedCategory.getId()))
+    void gePendingRecordsByCategory() throws Exception {
+        mockMvc.perform(get("/records/pending/categories/" + savedCategory.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].title").value(savedRecord.getTitle()))
                 .andExpect(jsonPath("$[0].categoryId").value(savedCategory.getId()))
-                .andExpect(jsonPath("$[0].id").value(savedRecord.getId()));
+                .andExpect(jsonPath("$[0].id").value(savedRecord.getId()))
+                .andExpect(jsonPath("$[0].status").value("PENDING"));
+        ;
 
-        List<RecordDto> records = recordService.getRecordsByCategory(savedCategory.getId());
+        List<RecordDto> records = recordService.getPendingRecordsByCategory(savedCategory.getId());
         assertEquals(1, records.size());
         assertEquals(savedRecord.getTitle(), records.get(0).getTitle());
         assertEquals(savedCategory.getId(), records.get(0).getCategoryId());
     }
+
+    @Test
+    void getApprovedRecordsByCategory() throws Exception {
+        UserCreateDto userDto2 = new UserCreateDto();
+        userDto2.setFirstName(UUID.randomUUID().toString());
+        userDto2.setLastName(UUID.randomUUID().toString());
+        userDto2.setEmail(UUID.randomUUID().toString());
+        userDto2.setRole(Role.ADMIN);
+        UserDto savedUser2 = userService.createUser(userDto2);
+
+        RecordDto recordDto2 = new RecordDto();
+        recordDto2.setTitle(UUID.randomUUID().toString());
+        recordDto2.setAuthorId(savedUser2.getId());
+        recordDto2.setDescription(UUID.randomUUID().toString());
+        recordDto2.setCategoryId(savedCategory.getId());
+        RecordDto savedRecord2 = recordService.createRecord(recordDto2);
+
+        mockMvc.perform(get("/records/categories/" + savedCategory.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].title").value(savedRecord2.getTitle()))
+                .andExpect(jsonPath("$[0].categoryId").value(savedCategory.getId()))
+                .andExpect(jsonPath("$[0].id").value(savedRecord2.getId()))
+                .andExpect(jsonPath("$[0].status").value("APPROVED"));
+    }
+
 
     @Test
     void getRecordsByAuthor() throws Exception {
@@ -210,11 +238,35 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
     }
 
     @Test
-    void getRecordsByDate() throws Exception {
+    void getPendingRecordsByDate() throws Exception {
+        mockMvc.perform(get("/records/pending/date/" + LocalDate.now()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value(savedRecord.getTitle()))
+                .andExpect(jsonPath("$[0].status").value("PENDING"));
+    }
+
+    @Test
+    void getApprovedRecordsByDate() throws Exception {
+        UserCreateDto userDto2 = new UserCreateDto();
+        userDto2.setFirstName(UUID.randomUUID().toString());
+        userDto2.setLastName(UUID.randomUUID().toString());
+        userDto2.setEmail(UUID.randomUUID().toString());
+        userDto2.setRole(Role.ADMIN);
+        UserDto savedUser2 = userService.createUser(userDto2);
+
+        RecordDto recordDto2 = new RecordDto();
+        recordDto2.setTitle(UUID.randomUUID().toString());
+        recordDto2.setAuthorId(savedUser2.getId());
+        recordDto2.setDescription(UUID.randomUUID().toString());
+        recordDto2.setCategoryId(savedCategory.getId());
+        RecordDto savedRecord2 = recordService.createRecord(recordDto2);
+
         mockMvc.perform(get("/records/date/" + LocalDate.now()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value(savedRecord.getTitle()));
+                .andExpect(jsonPath("$[0].title").value(savedRecord2.getTitle()))
+                .andExpect(jsonPath("$[0].status").value("APPROVED"));
     }
+
 
     @Test
     void getUserRecordsByStatus() throws Exception {
@@ -244,26 +296,39 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
     }
 
     @Test
-    void searchRecordsByTitle() throws Exception {
-        RecordDto recordDto2 = new RecordDto();
-        recordDto2.setTitle("Test" + UUID.randomUUID());
-        recordDto2.setAuthorId(savedUser.getId());
-        recordDto2.setDescription(UUID.randomUUID().toString());
-        recordDto2.setCategoryId(savedCategory.getId());
-        recordService.createRecord(recordDto2);
+    void searchApprovedOrPendingRecordsByTitle() throws Exception {
+        recordDto.setTitle("Test" + UUID.randomUUID());
+        savedRecord = recordService.createRecord(recordDto);
+        UserCreateDto adminDto = new UserCreateDto();
+        adminDto.setFirstName(UUID.randomUUID().toString());
+        adminDto.setLastName(UUID.randomUUID().toString());
+        adminDto.setEmail(UUID.randomUUID().toString());
+        adminDto.setRole(Role.ADMIN);
+        UserDto adminUser = userService.createUser(adminDto);
 
-        RecordDto recordDto3 = new RecordDto();
-        recordDto3.setTitle("Test" + UUID.randomUUID());
-        recordDto3.setAuthorId(savedUser.getId());
-        recordDto3.setDescription(UUID.randomUUID().toString());
-        recordDto3.setCategoryId(savedCategory.getId());
-        recordService.createRecord(recordDto3);
+        RecordDto approvedRecord = new RecordDto();
+        approvedRecord.setTitle("Test" + UUID.randomUUID());
+        approvedRecord.setAuthorId(adminUser.getId());
+        approvedRecord.setDescription(UUID.randomUUID().toString());
+        approvedRecord.setCategoryId(savedCategory.getId());
+        RecordDto savedApprovedRecord = recordService.createRecord(approvedRecord);
 
-        mockMvc.perform(get("/records/search?title=Test&limit=2"))
+        mockMvc.perform(get("/records/search")
+                        .param("title", "Test")
+                        .param("limit", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].title").value(recordDto2.getTitle()))
-                .andExpect(jsonPath("$[1].title").value(recordDto3.getTitle()));
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title").value(savedApprovedRecord.getTitle()))
+                .andExpect(jsonPath("$[0].status").value("APPROVED"));
+
+        mockMvc.perform(get("/records/pending/search")
+                        .param("title", "Test")
+                        .param("limit", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title").value(savedRecord.getTitle()))
+                .andExpect(jsonPath("$[0].status").value("PENDING"));
+
     }
 
     @Test
