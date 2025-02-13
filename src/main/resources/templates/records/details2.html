@@ -104,13 +104,15 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+
+                    <!-- Контейнер для кнопок (праворуч, з фіксованим розміром) -->
                     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-end ms-auto gap-2">
                         <a href="/logout" class="btn btn-danger text-center d-flex align-items-center justify-content-center collapse-btn">Exit</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn">Categories</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn">Users</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn">View Pending Records</a>
-                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn">Create New Record</a>
-                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/my-requests}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">My Requests</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn" >Categories</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn" >Users</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn" >View Pending Records</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
+                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/my-requests}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
                     </div>
                 </div>
             </div>
