@@ -17,44 +17,34 @@
     </div>
 </header>
 
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col text-end">
-            <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
-            <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/new}" class="btn btn-primary">Create New Record</a>
-        </div>
-    </div>
-</div>
+<!-- Пошук за назвою та категорією -->
+<form class="d-flex gap-2 align-items-center">
+    <input class="form-control" type="search" name="title" placeholder="Search by title" th:value="${searchTitle}" form="searchTitleForm">
+    <button class="btn btn-outline-primary" type="submit" form="searchTitleForm">Search</button>
 
-<div class="row mb-4">
-    <div class="col text-end">
-        <form class="d-flex" th:action="@{/web/records/search}" method="get">
-            <input class="form-control me-2" type="search" name="title" placeholder="Search by title" required>
-            <button class="btn btn-outline-primary" type="submit">Search</button>
-        </form>
-    </div>
-</div>
-<div class="row mb-4">
-    <div class="col-md-6">
-        <form th:action="@{/web/records/categories}" method="get">
-            <select class="form-select" name="categoryId" onchange="this.form.submit()">
-                <option value="">Search by Category</option>
-                <option th:each="category : ${categories}"
-                        th:value="${category.id}"
-                        th:text="${category.name}">
-                </option>
-            </select>
+    <select class="form-select" name="categoryId" form="searchCategoryForm" onchange="this.form.submit()">
+        <option value="">Select Category</option>
+        <option th:each="category : ${categories}"
+                th:value="${category.id}"
+                th:text="${category.name}"
+                th:selected="${category.id == selectedCategoryId}">
+        </option>
+    </select>
+</form>
+
+<div class="row mt-3">
+    <div class="col-md-4">
+        <form class="d-flex gap-2 align-items-center">
+            <input class="form-control" type="date" name="date" th:value="${selectedDate}" form="searchDateForm">
+            <button class="btn btn-outline-primary" type="submit" form="searchDateForm">Search by date</button>
         </form>
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-6">
-        <form th:action="@{/web/records/date}" method="get">
-            <input class="form-control" type="date" name="date" onchange="this.form.submit()">
-        </form>
-    </div>
-</div>
+
+<form id="searchTitleForm" th:action="@{/web/records/search}" method="get"></form>
+<form id="searchCategoryForm" th:action="@{/web/records/search/categories}" method="get"></form>
+<form id="searchDateForm" th:action="@{/web/records/search/date}" method="get"></form>
 
 
 <div class="table-responsive mt-4">

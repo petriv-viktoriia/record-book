@@ -329,28 +329,30 @@ public class RecordWebController {
         return "redirect:/web/records/" + recordId;
     }
 
-    @GetMapping("/date/{date}")
+    @GetMapping("/search/date")
     public String getApprovedRecordsByDate(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
             List<RecordDto> records = recordService.getApprovedRecordsByDate(date);
-
             Map<Long, String> authorNames = new HashMap<>();
             Map<Long, String> categoryNames = new HashMap<>();
+            Map<Long, ReactionCountDto> reactions = new HashMap<>();
 
             for (RecordDto record : records) {
                 authorNames.put(record.getAuthorId(),
                         userRepository.findUserNameById(record.getAuthorId()));
-
                 categoryNames.put(record.getCategoryId(),
                         categoryRepository.findCategoryNameById(record.getCategoryId()));
+                reactions.put(record.getId(), reactionService.getReactionsCount(record.getId()));
             }
+
             model.addAttribute("records", records);
             model.addAttribute("selectedDate", date);
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
+            model.addAttribute("reactions", reactions);
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the specified date");
@@ -358,56 +360,63 @@ public class RecordWebController {
         }
     }
 
-    @GetMapping("/pending/date/{date}")
+    @GetMapping("/pending/search/date")
     public String getPendingRecordsByDate(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
             List<RecordDto> records = recordService.getPendingRecordsByDate(date);
             Map<Long, String> authorNames = new HashMap<>();
             Map<Long, String> categoryNames = new HashMap<>();
+            Map<Long, ReactionCountDto> reactions = new HashMap<>();
 
             for (RecordDto record : records) {
                 authorNames.put(record.getAuthorId(),
                         userRepository.findUserNameById(record.getAuthorId()));
-
                 categoryNames.put(record.getCategoryId(),
                         categoryRepository.findCategoryNameById(record.getCategoryId()));
+                reactions.put(record.getId(), reactionService.getReactionsCount(record.getId()));
             }
+
             model.addAttribute("records", records);
             model.addAttribute("selectedDate", date);
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
+            model.addAttribute("reactions", reactions);
             return "records/searchResults";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the specified date");
-            return "redirect:/web/records";
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch pending records for the specified date");
+            return "redirect:/web/records/pending";
         }
     }
 
 
-    @GetMapping("/categories/{categoryId}")
+    @GetMapping("/search/categories")
     public String getApprovedRecordsByCategory(
-            @PathVariable Long categoryId,
+            @RequestParam Long categoryId,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
             List<RecordDto> records = recordService.getApprovedRecordsByCategory(categoryId);
             Map<Long, String> authorNames = new HashMap<>();
             Map<Long, String> categoryNames = new HashMap<>();
+            Map<Long, ReactionCountDto> reactions = new HashMap<>();
 
             for (RecordDto record : records) {
                 authorNames.put(record.getAuthorId(),
                         userRepository.findUserNameById(record.getAuthorId()));
-
                 categoryNames.put(record.getCategoryId(),
                         categoryRepository.findCategoryNameById(record.getCategoryId()));
+                reactions.put(record.getId(), reactionService.getReactionsCount(record.getId()));
             }
+
             model.addAttribute("records", records);
             model.addAttribute("selectedCategoryId", categoryId);
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
+            model.addAttribute("reactions", reactions);
+            model.addAttribute("categories", categoryService.getAllCategories());
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
@@ -415,9 +424,9 @@ public class RecordWebController {
         }
     }
 
-    @GetMapping("/pending/categories/{categoryId}")
+    @GetMapping("/pending/categories")
     public String getPendingRecordsByCategory(
-            @PathVariable Long categoryId,
+            @RequestParam Long categoryId,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
