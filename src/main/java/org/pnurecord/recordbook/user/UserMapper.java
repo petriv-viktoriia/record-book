@@ -1,6 +1,7 @@
 package org.pnurecord.recordbook.user;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -17,6 +18,6 @@ public interface UserMapper {
 
     UserUpdateDto toUserUpdateDto(User user);
 
+    @Mapping(target = "id", ignore = true)
     User toUserCreateDto(UserCreateDto userCreateDto);
-
 }

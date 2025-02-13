@@ -10,8 +10,11 @@ import org.pnurecord.recordbook.reaction.ReactionService;
 import org.pnurecord.recordbook.recordFile.RecordFileInfoDto;
 import org.pnurecord.recordbook.recordFile.RecordFileRepository;
 import org.pnurecord.recordbook.recordFile.RecordFileService;
+import org.pnurecord.recordbook.security.CustomOAuth2User;
 import org.pnurecord.recordbook.user.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -114,16 +117,18 @@ public class RecordWebController {
         }
 
         try {
-//            //needs to be changed with security
-//
-//            UserCreateDto newUser = new UserCreateDto();
-//            newUser.setRole(Role.STUDENT);
-//            newUser.setFirstName(UUID.randomUUID().toString());
-//            newUser.setLastName(UUID.randomUUID().toString());
-//            newUser.setEmail(UUID.randomUUID() + "@test.com");
-//
-//            UserDto userDto = userService.createUser(newUser);
-//            recordDto.setAuthorId(userDto.getId());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !(authentication.getPrincipal() instanceof CustomOAuth2User currentUser)) {
+                redirectAttributes.addFlashAttribute("error", "Не вдалося отримати інформацію про користувача.");
+                return "redirect:/web/records/create";
+            }
+
+            String userEmail = currentUser.getAttribute("email");
+
+            User user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new RuntimeException("Користувач не знайдений в базі"));
+
+            recordDto.setAuthorId(user.getId());
 
             RecordDto createdRecord = recordService.createRecord(recordDto);
 
