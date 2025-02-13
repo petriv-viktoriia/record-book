@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -156,19 +155,19 @@
                 </div>
                 <div th:each="file : ${files}">
                     <div class="mb-3">
-                        <div th:if="${file.getFileUrl().endsWith('jpg')  file.getFileUrl().endsWith('jpeg')  file.getFileUrl().endsWith('png')  file.getFileUrl().endsWith('gif')}">
+                        <div th:if="${file.getFileUrl().endsWith('jpg') or file.getFileUrl().endsWith('jpeg') or file.getFileUrl().endsWith('png') or file.getFileUrl().endsWith('gif')}">
                             <img th:src="@{${file.fileUrl}}" th:alt="${file.filename}" class="img-fluid mb-2" style="max-width: 300px;">
                         </div>
-                        <div th:unless="${file.getFileUrl().endsWith('jpg')  file.getFileUrl().endsWith('jpeg')  file.getFileUrl().endsWith('png')  file.getFileUrl().endsWith('gif')}">
-                            <a th:href="@{${file.fileUrl}}" th:text="${file.filename}" class="download-link" download>
-                                <i class="bi bi-download me-2"></i>Download
+                        <div th:unless="${file.getFileUrl().endsWith('jpg') or file.getFileUrl().endsWith('jpeg') or file.getFileUrl().endsWith('png') or file.getFileUrl().endsWith('gif')}">
+                            <a th:href="@{${file.fileUrl}}" th:text="${file.filename}" class="download-link">
+                                <i class="bi bi-download me-2"></i>Open
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-start gap-3 mt-4">
+    <div class="d-flex justify-content-start gap-3 mt-4">
                 <form th:action="@{/web/records/{id}/like(id=${record.id})}" method="post">
                     <button type="submit" class="btn btn-outline-primary">
                         Like <span th:text="${record.likes}"></span>
@@ -187,7 +186,6 @@
             <div class="d-flex justify-content-end">
                 <a href="/web/records" class="btn btn-secondary">Back to Records</a>
 
-                <!-- Show Edit button only if current user is a student/admin, the author of the record, and the record status is PENDING -->
                 <a th:href="@{/web/records/edit/{id}(id=${record.id})}" class="btn btn-primary">Edit Record</a>
 
                 <form th:action="@{/web/records/delete/{id}(id=${record.id})}" method="post" style="display:inline;">
