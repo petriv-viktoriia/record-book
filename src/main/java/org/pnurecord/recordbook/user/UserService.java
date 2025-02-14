@@ -3,9 +3,15 @@ package org.pnurecord.recordbook.user;
 import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.exceptions.DuplicateValueException;
 import org.pnurecord.recordbook.exceptions.NotFoundException;
+import org.pnurecord.recordbook.exceptions.UserNotAuthenticatedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.pnurecord.recordbook.security.CustomOAuth2User;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -69,4 +75,37 @@ public class UserService {
         user.setLastName(userUpdateDto.getLastName());
         userRepository.save(user);
     }
+
+
+    private String getCurrentUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UserNotAuthenticatedException("Користувач не авторизований");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof OAuth2User oAuth2User) {
+            return oAuth2User.getAttribute("email");
+        }
+
+        return null;
+    }
+
+    public String getCurrentUserRole() {
+        String email = getCurrentUserEmail();
+        if (email == null) {
+            return null;
+        }
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.map(u -> u.getRole().name())
+                .orElseThrow(() -> new NotFoundException("Роль не знайдено"));
+    }
+
+
+    public Long getCurrentUserId() {
+        String email = getCurrentUserEmail();
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.map(User::getId).orElseThrow(() -> new NotFoundException("Користувача не знайдено"));
+    }
+
 }
