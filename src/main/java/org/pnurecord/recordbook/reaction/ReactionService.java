@@ -3,6 +3,7 @@ package org.pnurecord.recordbook.reaction;
 import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.exceptions.DuplicateValueException;
 import org.pnurecord.recordbook.exceptions.NotFoundException;
+import org.pnurecord.recordbook.record.RecordRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 public class ReactionService {
     private final ReactionRepository reactionRepository;
     private final ReactionMapper reactionMapper;
+    private final RecordRepository recordRepository;
 
     public ReactionDto addReaction(ReactionDto reactionDto) {
         boolean exists = reactionRepository.existsByRecordIdAndUserId(reactionDto.getRecordId(), reactionDto.getUserId());
@@ -48,13 +50,13 @@ public class ReactionService {
 
     public ReactionCountDto getReactionsCount(Long recordId) {
 
-        if (reactionRepository.existsById(recordId)) {
+        if (recordRepository.existsById(recordId)) {
             int likes = reactionRepository.countByRecordIdAndLiked(recordId, true);
             int dislikes = reactionRepository.countByRecordIdAndLiked(recordId, false);
 
             return new ReactionCountDto(likes, dislikes);
         } else {
-            throw new NotFoundException("Reaction with id: %s not found".formatted(recordId));
+            throw new NotFoundException("Record with id: %s not found".formatted(recordId));
         }
     }
 

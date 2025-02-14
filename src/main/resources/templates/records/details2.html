@@ -174,13 +174,13 @@
     <div class="d-flex justify-content-start gap-3 mt-4">
                 <form th:action="@{/web/records/{id}/like(id=${record.id})}" method="post">
                     <button type="submit" class="btn btn-outline-primary">
-                        Like <span th:text="${record.likes}"></span>
+                        Like <span th:text="${reactions.likes}"></span>
                     </button>
                 </form>
 
                 <form th:action="@{/web/records/{id}/dislike(id=${record.id})}" method="post">
                     <button type="submit" class="btn btn-outline-danger">
-                        Dislike <span th:text="${record.dislikes}"></span>
+                        Dislike <span th:text="${reactions.dislikes}"></span>
                     </button>
                 </form>
             </div>

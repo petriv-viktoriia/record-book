@@ -1,7 +1,6 @@
 package org.pnurecord.recordbook.exceptions;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -56,6 +55,16 @@ public class GlobalExceptionHandler {
                 HttpStatus.PAYLOAD_TOO_LARGE.name(),
                 HttpStatus.PAYLOAD_TOO_LARGE.value(),
                 "File size exceeds the maximum allowed limit!"
+        );
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(UserNotAuthenticatedException.class)
+    public ResponseDto handleUserNotAuthenticatedException(UserNotAuthenticatedException ex) {
+        return new ResponseDto(
+                HttpStatus.FORBIDDEN.name(),
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage()
         );
     }
 }
