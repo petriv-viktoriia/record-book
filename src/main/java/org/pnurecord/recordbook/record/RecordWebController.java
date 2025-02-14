@@ -12,6 +12,8 @@ import org.pnurecord.recordbook.recordFile.RecordFileService;
 import org.pnurecord.recordbook.user.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -68,7 +70,7 @@ public class RecordWebController {
     }
     //-------------------------------------
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/all")
     public String showAllRecords(Model model) {
         List<RecordDto> allRecords = recordService.findAllRecords();
@@ -99,7 +101,7 @@ public class RecordWebController {
         return "records/listAllRecords";
     }
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("recordDto", new RecordDto());
@@ -108,7 +110,7 @@ public class RecordWebController {
         return "records/form2";
     }
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @PostMapping("/create")
     public String createRecord(@ModelAttribute @Valid RecordDto recordDto,
                                BindingResult bindingResult,
@@ -141,7 +143,7 @@ public class RecordWebController {
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @GetMapping("/edit/{recordId}")
     public String showEditForm(@PathVariable Long recordId, Model model) {
         RecordDto recordDto = recordService.findById(recordId);
@@ -151,7 +153,7 @@ public class RecordWebController {
         return "records/form2";
     }
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @PutMapping("/edit/{recordId}")
     public String updateRecord(@PathVariable Long recordId,
                                @ModelAttribute @Valid RecordDto recordDto,
@@ -163,7 +165,7 @@ public class RecordWebController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("role", userService.getCurrentUserRole());
-            return "records/form";
+            return "records/form2";
         }
 
         try {
@@ -185,7 +187,7 @@ public class RecordWebController {
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @DeleteMapping("/delete/{recordId}")
     public String deleteRecord(@PathVariable Long recordId, RedirectAttributes redirectAttributes) {
         try {
@@ -223,9 +225,12 @@ public class RecordWebController {
         return "records/details2";
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @GetMapping("/pending")
     public String showPendingRecords(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Current user authorities: " + auth.getAuthorities());
+
         List<RecordDto> records = recordService.findAllPendingRecords();
         Map<Long, String> authorNames = new HashMap<>();
         Map<Long, String> categoryNames = new HashMap<>();
@@ -281,7 +286,7 @@ public class RecordWebController {
         return "records/searchResults";
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/pending/search")
     public String searchPendingRecords(
             @RequestParam String title,
@@ -316,7 +321,7 @@ public class RecordWebController {
     }
 
     @PutMapping("/{recordId}/approve")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String approveRecord(
             @PathVariable Long recordId,
             RedirectAttributes redirectAttributes) {
@@ -329,7 +334,7 @@ public class RecordWebController {
         return "redirect:/web/records/pending";
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/{recordId}/reject")
     public String rejectRecord(
             @PathVariable Long recordId,
@@ -375,7 +380,7 @@ public class RecordWebController {
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/pending/search/date")
     public String getPendingRecordsByDate(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
@@ -442,7 +447,7 @@ public class RecordWebController {
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/pending/categories")
     public String getPendingRecordsByCategory(
             @RequestParam Long categoryId,
@@ -473,7 +478,7 @@ public class RecordWebController {
     }
 
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @GetMapping("/status")
     public String getUserRecordsByStatus(
             @RequestParam RecordStatus status,
