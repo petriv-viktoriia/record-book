@@ -33,7 +33,7 @@
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn" >Users</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn" >View Pending Records</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
-                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/my-requests}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
+                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
                     </div>
                 </div>
             </div>
@@ -72,14 +72,17 @@
     </div>
 
     <div class="mt-3">
-        <a href="/web/records" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to All Approved Records
+        <a th:href="@{/web/records/status(status=APPROVED)}"
+           th:class="${currentStatus == 'APPROVED'} ? 'btn btn-success active' : 'btn btn-outline-success'">
+            Approved Records
         </a>
-        <a href="/web/records" class="btn btn-outline-danger">
-            <i class="bi bi-arrow-left"></i> Rejected requests
+        <a th:href="@{/web/records/status(status=REJECTED)}"
+           th:class="${currentStatus == 'REJECTED'} ? 'btn btn-danger active' : 'btn btn-outline-danger'">
+            Rejected Records
         </a>
-        <a href="/web/records" class="btn btn-outline-warning">
-            <i class="bi bi-arrow-left"></i> Pending requests
+        <a th:href="@{/web/records/status(status=PENDING)}"
+           th:class="${currentStatus == 'PENDING'} ? 'btn btn-warning active' : 'btn btn-outline-warning'">
+            Pending Records
         </a>
     </div>
 </div>

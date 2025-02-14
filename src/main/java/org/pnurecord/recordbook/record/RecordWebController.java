@@ -488,7 +488,7 @@ public class RecordWebController {
         model.addAttribute("currentStatus", status);
         model.addAttribute("statuses", RecordStatus.values());
 
-        return "records/listByUserStatus";
+        return "records/userRecords";
 
     }
 
