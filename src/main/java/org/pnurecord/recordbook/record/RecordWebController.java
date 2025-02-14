@@ -5,16 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.category.CategoryService;
 import org.pnurecord.recordbook.reaction.ReactionCountDto;
-import org.pnurecord.recordbook.reaction.ReactionDto;
 import org.pnurecord.recordbook.reaction.ReactionService;
 import org.pnurecord.recordbook.recordFile.RecordFileInfoDto;
 import org.pnurecord.recordbook.recordFile.RecordFileRepository;
 import org.pnurecord.recordbook.recordFile.RecordFileService;
-import org.pnurecord.recordbook.security.CustomOAuth2User;
 import org.pnurecord.recordbook.user.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,6 +37,7 @@ public class RecordWebController {
     private final RecordFileRepository recordFileRepository;
     private final ReactionService reactionService;
 
+
     //-----------for guests-------------
     @GetMapping()
     public String showAllApprovedRecords(Model model) {
@@ -64,11 +62,13 @@ public class RecordWebController {
         model.addAttribute("authorNames", authorNames);
         model.addAttribute("categoryNames", categoryNames);
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("role", userService.getCurrentUserRole());
 
         return "records/listApproved2";
     }
     //-------------------------------------
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all")
     public String showAllRecords(Model model) {
         List<RecordDto> allRecords = recordService.findAllRecords();
@@ -94,17 +94,21 @@ public class RecordWebController {
         model.addAttribute("allRecords", allRecords);
         model.addAttribute("authorNames", authorNames);
         model.addAttribute("categoryNames", categoryNames);
+        model.addAttribute("role", userService.getCurrentUserRole());
 
         return "records/listAllRecords";
     }
 
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("recordDto", new RecordDto());
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("role", userService.getCurrentUserRole());
         return "records/form2";
     }
 
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
     @PostMapping("/create")
     public String createRecord(@ModelAttribute @Valid RecordDto recordDto,
                                BindingResult bindingResult,
@@ -113,23 +117,14 @@ public class RecordWebController {
                                Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("role", userService.getCurrentUserRole());
             return "records/form2";
         }
 
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !(authentication.getPrincipal() instanceof CustomOAuth2User currentUser)) {
-                redirectAttributes.addFlashAttribute("error", "Не вдалося отримати інформацію про користувача.");
-                return "redirect:/web/records/create";
-            }
 
-            String userEmail = currentUser.getAttribute("email");
-
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new RuntimeException("Користувач не знайдений в базі"));
-
-            recordDto.setAuthorId(user.getId());
-
+            Long currentUserId = userService.getCurrentUserId();
+            recordDto.setAuthorId(currentUserId);
             RecordDto createdRecord = recordService.createRecord(recordDto);
 
             if (file != null && !file.isEmpty()) {
@@ -146,15 +141,17 @@ public class RecordWebController {
         }
     }
 
-
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
     @GetMapping("/edit/{recordId}")
     public String showEditForm(@PathVariable Long recordId, Model model) {
         RecordDto recordDto = recordService.findById(recordId);
         model.addAttribute("recordDto", recordDto);
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("role", userService.getCurrentUserRole());
         return "records/form2";
     }
 
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
     @PutMapping("/edit/{recordId}")
     public String updateRecord(@PathVariable Long recordId,
                                @ModelAttribute @Valid RecordDto recordDto,
@@ -165,6 +162,7 @@ public class RecordWebController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("role", userService.getCurrentUserRole());
             return "records/form";
         }
 
@@ -187,7 +185,7 @@ public class RecordWebController {
         }
     }
 
-
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
     @DeleteMapping("/delete/{recordId}")
     public String deleteRecord(@PathVariable Long recordId, RedirectAttributes redirectAttributes) {
         try {
@@ -220,10 +218,12 @@ public class RecordWebController {
         model.addAttribute("categoryName", categoryName);
         model.addAttribute("authorName", authorName);
         model.addAttribute("files", files);
+        model.addAttribute("role", userService.getCurrentUserRole());
 
         return "records/details2";
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/pending")
     public String showPendingRecords(Model model) {
         List<RecordDto> records = recordService.findAllPendingRecords();
@@ -243,6 +243,7 @@ public class RecordWebController {
         model.addAttribute("authorNames", authorNames);
         model.addAttribute("categoryNames", categoryNames);
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("role", userService.getCurrentUserRole());
 
         return "records/listPending2";
     }
@@ -275,10 +276,12 @@ public class RecordWebController {
         model.addAttribute("records", searchResults);
         model.addAttribute("searchTitle", title);
         model.addAttribute("searchLimit", limit);
+        model.addAttribute("role", userService.getCurrentUserRole());
 
         return "records/searchResults";
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/pending/search")
     public String searchPendingRecords(
             @RequestParam String title,
@@ -307,10 +310,12 @@ public class RecordWebController {
         model.addAttribute("records", searchResults);
         model.addAttribute("searchTitle", title);
         model.addAttribute("searchLimit", limit);
+        model.addAttribute("role", userService.getCurrentUserRole());
 
         return "records/searchResults";
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/{recordId}/approve")
     public String approveRecord(
             @PathVariable Long recordId,
@@ -324,6 +329,7 @@ public class RecordWebController {
         return "redirect:/web/records/" + recordId;
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/{recordId}/reject")
     public String rejectRecord(
             @PathVariable Long recordId,
@@ -361,6 +367,7 @@ public class RecordWebController {
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
             model.addAttribute("reactions", reactions);
+            model.addAttribute("role", userService.getCurrentUserRole());
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the specified date");
@@ -368,6 +375,7 @@ public class RecordWebController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/pending/search/date")
     public String getPendingRecordsByDate(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
@@ -392,6 +400,7 @@ public class RecordWebController {
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
             model.addAttribute("reactions", reactions);
+            model.addAttribute("role", userService.getCurrentUserRole());
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch pending records for the specified date");
@@ -425,6 +434,7 @@ public class RecordWebController {
             model.addAttribute("categoryNames", categoryNames);
             model.addAttribute("reactions", reactions);
             model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("role", userService.getCurrentUserRole());
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
@@ -432,6 +442,7 @@ public class RecordWebController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/pending/categories")
     public String getPendingRecordsByCategory(
             @RequestParam Long categoryId,
@@ -453,6 +464,7 @@ public class RecordWebController {
             model.addAttribute("selectedCategoryId", categoryId);
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
+            model.addAttribute("role", userService.getCurrentUserRole());
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
@@ -461,6 +473,7 @@ public class RecordWebController {
     }
 
 
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'ADMIN')")
     @GetMapping("/status")
     public String getUserRecordsByStatus(
             @RequestParam RecordStatus status,
@@ -468,14 +481,16 @@ public class RecordWebController {
 
 //        needs to be changed with security
 
-        UserCreateDto currentUser = new UserCreateDto();
-        currentUser.setRole(Role.STUDENT);
-        currentUser.setFirstName(UUID.randomUUID().toString());
-        currentUser.setLastName(UUID.randomUUID().toString());
-        currentUser.setEmail(UUID.randomUUID() + "@test.com");
-        UserDto currentUserDto = userService.createUser(currentUser);
+//        UserCreateDto currentUser = new UserCreateDto();
+//        currentUser.setRole(Role.STUDENT);
+//        currentUser.setFirstName(UUID.randomUUID().toString());
+//        currentUser.setLastName(UUID.randomUUID().toString());
+//        currentUser.setEmail(UUID.randomUUID() + "@test.com");
+//        UserDto currentUserDto = userService.createUser(currentUser);
 
-        List<RecordDto> records = recordService.getRecordsByUserAndStatus(currentUserDto.getId(), status);
+        Long currentUserId = userService.getCurrentUserId();
+
+        List<RecordDto> records = recordService.getRecordsByUserAndStatus(currentUserId, status);
 
         Map<Long, String> categoryNames = new HashMap<>();
 
@@ -492,6 +507,7 @@ public class RecordWebController {
         model.addAttribute("records", records);
         model.addAttribute("currentStatus", status);
         model.addAttribute("statuses", RecordStatus.values());
+        model.addAttribute("role", userService.getCurrentUserRole());
 
         return "records/listByUserStatus";
 
