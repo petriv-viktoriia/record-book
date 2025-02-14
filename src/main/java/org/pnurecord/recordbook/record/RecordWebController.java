@@ -306,7 +306,7 @@ public class RecordWebController {
         return "records/searchResults";
     }
 
-    @PostMapping("/{recordId}/approve")
+    @PutMapping("/{recordId}/approve")
     public String approveRecord(
             @PathVariable Long recordId,
             RedirectAttributes redirectAttributes) {
@@ -316,10 +316,10 @@ public class RecordWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to approve record");
         }
-        return "redirect:/web/records/" + recordId;
+        return "redirect:/web/records/pending";
     }
 
-    @PostMapping("/{recordId}/reject")
+    @PutMapping("/{recordId}/reject")
     public String rejectRecord(
             @PathVariable Long recordId,
             RedirectAttributes redirectAttributes) {
@@ -329,7 +329,7 @@ public class RecordWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to reject record");
         }
-        return "redirect:/web/records/" + recordId;
+        return "redirect:/web/records/pending";
     }
 
     @GetMapping("/search/date")

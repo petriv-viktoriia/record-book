@@ -124,10 +124,12 @@
     <div class="card">
         <div th:if="${record.status == 'PENDING' and currentUser.role == 'ADMIN'}" class="d-flex gap-2 mt-3">
             <form th:action="@{/web/records/{id}/approve(id=${record.id})}" method="post">
+                <input type="hidden" name="_method" value="put"/>
                 <button type="submit" class="btn btn-success">Approve</button>
             </form>
 
             <form th:action="@{/web/records/{id}/reject(id=${record.id})}" method="post">
+                <input type="hidden" name="_method" value="put"/>
                 <button type="submit" class="btn btn-danger">Reject</button>
             </form>
         </div>
