@@ -78,6 +78,7 @@
                 <th scope="col">Author</th>
                 <th scope="col">Category</th>
                 <th scope="col">Date Added</th> <!-- Новий стовпець для дати -->
+                <th scope="col">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -88,6 +89,19 @@
                 <td th:text="${authorNames.get(record.authorId)}"></td>
                 <td th:text="${categoryNames.get(record.categoryId)}"></td>
                 <td th:text="${record.publishedDate}"></td>
+                <td>
+                    <div th:if="${!#lists.isEmpty(records)}" class="d-flex gap-2 ">
+                        <form th:action="@{/web/records/{id}/approve(id=${record.id})}" method="post">
+                            <input type="hidden" name="_method" value="put"/>
+                            <button type="submit" class="btn btn-success">Approve</button>
+                        </form>
+
+                        <form th:action="@{/web/records/{id}/reject(id=${record.id})}" method="post">
+                            <input type="hidden" name="_method" value="put"/>
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </form>
+                    </div>
+                </td>
             </tr>
             </tbody>
 
