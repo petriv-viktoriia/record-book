@@ -55,6 +55,12 @@ public class RecordService {
         Record record = recordRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Record not found"));
 
+        if (!record.getTitle().equals(recordDto.getTitle()) &&
+                recordRepository.existsByTitle(recordDto.getTitle())) {
+            throw new DuplicateValueException("Record with title: %s already exists"
+                    .formatted(recordDto.getTitle()));
+        }
+
         record.setTitle(recordDto.getTitle());
         record.setDescription(recordDto.getDescription());
 

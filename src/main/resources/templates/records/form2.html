@@ -51,11 +51,11 @@
         </div>
     </div>
 
-    <div th:if="${message}" class="alert alert-success" role="alert">
-        <span th:text="${message}"></span>
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
     </div>
-    <div th:if="${error}" class="alert alert-danger" role="alert">
-        <span th:text="${error}"></span>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
     </div>
 
     <form th:action="${recordDto.id == null ? '/web/records/create' : '/web/records/edit/' + recordDto.id}"

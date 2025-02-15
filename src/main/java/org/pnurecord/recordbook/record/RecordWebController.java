@@ -6,6 +6,7 @@ import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.category.CategoryService;
 import org.pnurecord.recordbook.reaction.ReactionCountDto;
 import org.pnurecord.recordbook.reaction.ReactionService;
+import org.pnurecord.recordbook.recordFile.RecordFile;
 import org.pnurecord.recordbook.recordFile.RecordFileInfoDto;
 import org.pnurecord.recordbook.recordFile.RecordFileRepository;
 import org.pnurecord.recordbook.recordFile.RecordFileService;
@@ -39,8 +40,6 @@ public class RecordWebController {
     private final RecordFileRepository recordFileRepository;
     private final ReactionService reactionService;
 
-
-    //-----------for guests-------------
     @GetMapping()
     public String showAllApprovedRecords(Model model) {
         List<RecordDto> records = recordService.findAllApprovedRecords();
@@ -67,38 +66,6 @@ public class RecordWebController {
         model.addAttribute("role", userService.getCurrentUserRole());
 
         return "records/listApproved2";
-    }
-    //-------------------------------------
-
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @GetMapping("/all")
-    public String showAllRecords(Model model) {
-        List<RecordDto> allRecords = recordService.findAllRecords();
-
-        Map<Long, String> authorNames = new HashMap<>();
-        Map<Long, String> categoryNames = new HashMap<>();
-        Map<Long, ReactionCountDto> reactions = new HashMap<>();
-
-
-        for (RecordDto record : allRecords) {
-            authorNames.put(record.getAuthorId(),
-                    userRepository.findUserNameById(record.getAuthorId()));
-
-            categoryNames.put(record.getCategoryId(),
-                    categoryRepository.findCategoryNameById(record.getCategoryId()));
-
-            ReactionCountDto reactionCount = reactionService.getReactionsCount(record.getId());
-            reactions.put(record.getId(), reactionCount);
-        }
-
-
-        model.addAttribute("reactions", reactions);
-        model.addAttribute("allRecords", allRecords);
-        model.addAttribute("authorNames", authorNames);
-        model.addAttribute("categoryNames", categoryNames);
-        model.addAttribute("role", userService.getCurrentUserRole());
-
-        return "records/listAllRecords";
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
@@ -131,14 +98,13 @@ public class RecordWebController {
 
             if (file != null && !file.isEmpty()) {
                 recordFileService.saveRecordFile(file, createdRecord.getId());
-                redirectAttributes.addFlashAttribute("message", "Record created and file uploaded successfully.");
+                redirectAttributes.addFlashAttribute("successMessage", "Record created and file uploaded successfully.");
             } else {
-                redirectAttributes.addFlashAttribute("message", "Record created successfully.");
+                redirectAttributes.addFlashAttribute("successMessage", "Record created successfully.");
             }
-
             return "redirect:/web/records/" + createdRecord.getId();
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to create record: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create record: " + e.getMessage());
             return "redirect:/web/records/create";
         }
     }
@@ -174,15 +140,15 @@ public class RecordWebController {
             if (file != null && !file.isEmpty()) {
                 recordFileRepository.deleteByRecordId(recordId);
                 recordFileService.saveRecordFile(file, recordId);
-                redirectAttributes.addFlashAttribute("message", "Record updated and new file uploaded successfully");
+                redirectAttributes.addFlashAttribute("successMessage", "Record updated and new file uploaded successfully");
             } else {
-                redirectAttributes.addFlashAttribute("message", "Record updated successfully");
+                redirectAttributes.addFlashAttribute("successMessage", "Record updated successfully");
             }
 
             return "redirect:/web/records/" + recordId;
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to update record: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update record: " + e.getMessage());
             return "redirect:/web/records/edit/" + recordId;
         }
     }
@@ -191,39 +157,48 @@ public class RecordWebController {
     @DeleteMapping("/delete/{recordId}")
     public String deleteRecord(@PathVariable Long recordId, RedirectAttributes redirectAttributes) {
         try {
+            List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(recordId, "");
+            for (RecordFileInfoDto file : files) {
+                recordFileService.deleteRecordFileById(file.getId());
+            }
             recordService.deleteRecord(recordId);
-            redirectAttributes.addFlashAttribute("message", "Record successfully deleted.");
+            redirectAttributes.addFlashAttribute("successMessage", "Record successfully deleted.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to delete record: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete record: " + e.getMessage());
         }
         return "redirect:/web/records";
     }
 
 
     @GetMapping("/{id}")
-    public String getRecordDetails(@PathVariable Long id, Model model) {
-        RecordDto record = recordService.findById(id);
-        String categoryName = categoryService.findById(record.getCategoryId()).getName();
+    public String getRecordDetails(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            RecordDto record = recordService.findById(id);
+            String categoryName = categoryService.findById(record.getCategoryId()).getName();
 
-        var author = userService.getUserById(record.getAuthorId());
-        String authorName = author.getFirstName() + " " + author.getLastName();
+            var author = userService.getUserById(record.getAuthorId());
+            String authorName = author.getFirstName() + " " + author.getLastName();
 
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .build()
-                .toUriString();
+            String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .build()
+                    .toUriString();
 
-        List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(id, baseUrl);
-        ReactionCountDto reactionsCount = reactionService.getReactionsCount(record.getId());
+            List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(id, baseUrl);
+            ReactionCountDto reactionsCount = reactionService.getReactionsCount(record.getId());
 
-        model.addAttribute("record", record);
-        model.addAttribute("reactions", reactionsCount);
-        model.addAttribute("categoryName", categoryName);
-        model.addAttribute("authorName", authorName);
-        model.addAttribute("files", files);
-        model.addAttribute("role", userService.getCurrentUserRole());
-        model.addAttribute("currentUserId", userService.getCurrentUserId());
+            model.addAttribute("record", record);
+            model.addAttribute("reactions", reactionsCount);
+            model.addAttribute("categoryName", categoryName);
+            model.addAttribute("authorName", authorName);
+            model.addAttribute("files", files);
+            model.addAttribute("role", userService.getCurrentUserRole());
+            model.addAttribute("currentUserId", userService.getCurrentUserId());
 
-        return "records/details2";
+            return "records/details2";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Record not found: " + e.getMessage());
+            return "redirect:/web/records";
+        }
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
@@ -259,32 +234,38 @@ public class RecordWebController {
     public String searchApprovedRecords(
             @RequestParam String title,
             @RequestParam(required = false) Integer limit,
-            Model model) {
-        List<RecordDto> searchResults = Collections.emptyList();
+            Model model, RedirectAttributes redirectAttributes) {
 
-        if (title != null && title.length() >= 2) {
-            searchResults = recordService.findApprovedRecordsByTitle(title, limit);
+        try {
+            List<RecordDto> searchResults = Collections.emptyList();
+
+            if (title != null && title.length() >= 2) {
+                searchResults = recordService.findApprovedRecordsByTitle(title, limit);
+            }
+
+            Map<Long, String> authorNames = new HashMap<>();
+            Map<Long, String> categoryNames = new HashMap<>();
+
+            for (RecordDto record : searchResults) {
+                authorNames.put(record.getAuthorId(),
+                        userRepository.findUserNameById(record.getAuthorId()));
+
+                categoryNames.put(record.getCategoryId(),
+                        categoryRepository.findCategoryNameById(record.getCategoryId()));
+            }
+
+            model.addAttribute("authorNames", authorNames);
+            model.addAttribute("categoryNames", categoryNames);
+            model.addAttribute("records", searchResults);
+            model.addAttribute("searchTitle", title);
+            model.addAttribute("searchLimit", limit);
+            model.addAttribute("role", userService.getCurrentUserRole());
+
+            return "records/searchResults";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records: " + e.getMessage());
+            return "redirect:/web/records";
         }
-
-        Map<Long, String> authorNames = new HashMap<>();
-        Map<Long, String> categoryNames = new HashMap<>();
-
-        for (RecordDto record : searchResults) {
-            authorNames.put(record.getAuthorId(),
-                    userRepository.findUserNameById(record.getAuthorId()));
-
-            categoryNames.put(record.getCategoryId(),
-                    categoryRepository.findCategoryNameById(record.getCategoryId()));
-        }
-
-        model.addAttribute("authorNames", authorNames);
-        model.addAttribute("categoryNames", categoryNames);
-        model.addAttribute("records", searchResults);
-        model.addAttribute("searchTitle", title);
-        model.addAttribute("searchLimit", limit);
-        model.addAttribute("role", userService.getCurrentUserRole());
-
-        return "records/searchResults";
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -292,33 +273,38 @@ public class RecordWebController {
     public String searchPendingRecords(
             @RequestParam String title,
             @RequestParam(required = false) Integer limit,
-            Model model) {
-        List<RecordDto> searchResults = Collections.emptyList();
+            Model model, RedirectAttributes redirectAttributes) {
+        try {
+            List<RecordDto> searchResults = Collections.emptyList();
 
-        if (title != null && title.length() >= 2) {
-            searchResults = recordService.findPendingRecordsByTitle(title, limit);
+            if (title != null && title.length() >= 2) {
+                searchResults = recordService.findPendingRecordsByTitle(title, limit);
+            }
+
+            Map<Long, String> authorNames = new HashMap<>();
+            Map<Long, String> categoryNames = new HashMap<>();
+
+            for (RecordDto record : searchResults) {
+                authorNames.put(record.getAuthorId(),
+                        userRepository.findUserNameById(record.getAuthorId()));
+
+                categoryNames.put(record.getCategoryId(),
+                        categoryRepository.findCategoryNameById(record.getCategoryId()));
+            }
+
+            model.addAttribute("records", searchResults);
+            model.addAttribute("authorNames", authorNames);
+            model.addAttribute("categoryNames", categoryNames);
+            model.addAttribute("records", searchResults);
+            model.addAttribute("searchTitle", title);
+            model.addAttribute("searchLimit", limit);
+            model.addAttribute("role", userService.getCurrentUserRole());
+
+            return "records/searchResults";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records: " + e.getMessage());
+            return "redirect:/web/records/pending";
         }
-
-        Map<Long, String> authorNames = new HashMap<>();
-        Map<Long, String> categoryNames = new HashMap<>();
-
-        for (RecordDto record : searchResults) {
-            authorNames.put(record.getAuthorId(),
-                    userRepository.findUserNameById(record.getAuthorId()));
-
-            categoryNames.put(record.getCategoryId(),
-                    categoryRepository.findCategoryNameById(record.getCategoryId()));
-        }
-
-        model.addAttribute("records", searchResults);
-        model.addAttribute("authorNames", authorNames);
-        model.addAttribute("categoryNames", categoryNames);
-        model.addAttribute("records", searchResults);
-        model.addAttribute("searchTitle", title);
-        model.addAttribute("searchLimit", limit);
-        model.addAttribute("role", userService.getCurrentUserRole());
-
-        return "records/searchResults";
     }
 
     @PutMapping("/{recordId}/approve")
@@ -329,10 +315,12 @@ public class RecordWebController {
         try {
             recordService.approveRecord(recordId);
             redirectAttributes.addFlashAttribute("successMessage", "Record successfully approved");
+            return "redirect:/web/records/pending";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to approve record");
+            return "redirect:/web/records/" + recordId;
         }
-        return "redirect:/web/records/pending";
+
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -343,18 +331,22 @@ public class RecordWebController {
         try {
             recordService.rejectRecord(recordId);
             redirectAttributes.addFlashAttribute("successMessage", "Record successfully rejected");
+            return "redirect:/web/records/pending";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to reject record");
+            return "redirect:/web/records/" + recordId;
         }
-        return "redirect:/web/records/pending";
     }
 
     @GetMapping("/search/date")
     public String getApprovedRecordsByDate(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+            @RequestParam(name = "date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
+            if (date == null) {
+                date = LocalDate.now();
+            }
             List<RecordDto> records = recordService.getApprovedRecordsByDate(date);
             Map<Long, String> authorNames = new HashMap<>();
             Map<Long, String> categoryNames = new HashMap<>();
@@ -384,10 +376,14 @@ public class RecordWebController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/pending/search/date")
     public String getPendingRecordsByDate(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+            @RequestParam(name = "date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
+            if (date == null) {
+                date = LocalDate.now();
+            }
+
             List<RecordDto> records = recordService.getPendingRecordsByDate(date);
             Map<Long, String> authorNames = new HashMap<>();
             Map<Long, String> categoryNames = new HashMap<>();
@@ -474,7 +470,7 @@ public class RecordWebController {
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
-            return "redirect:/web/records";
+            return "redirect:/web/records/pending";
         }
     }
 
@@ -483,49 +479,35 @@ public class RecordWebController {
     @GetMapping("/status")
     public String getUserRecordsByStatus(
             @RequestParam RecordStatus status,
-            Model model) {
+            Model model, RedirectAttributes redirectAttributes) {
 
-        Long currentUserId = userService.getCurrentUserId();
-        List<RecordDto> records = recordService.getRecordsByUserAndStatus(currentUserId, status);
+        try {
+            Long currentUserId = userService.getCurrentUserId();
+            List<RecordDto> records = recordService.getRecordsByUserAndStatus(currentUserId, status);
 
-        Map<Long, String> categoryNames = new HashMap<>();
+            Map<Long, String> categoryNames = new HashMap<>();
 
-        for (RecordDto record : records) {
-            categoryNames.put(record.getCategoryId(),
-                    categoryRepository.findCategoryNameById(record.getCategoryId()));
+            for (RecordDto record : records) {
+                categoryNames.put(record.getCategoryId(),
+                        categoryRepository.findCategoryNameById(record.getCategoryId()));
+            }
+
+            if (records == null) {
+                records = Collections.emptyList();
+            }
+
+            model.addAttribute("categoryNames", categoryNames);
+            model.addAttribute("records", records);
+            model.addAttribute("currentStatus", status);
+            model.addAttribute("statuses", RecordStatus.values());
+            model.addAttribute("role", userService.getCurrentUserRole());
+
+            return "records/userRecords";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for user: " + e.getMessage());
+            return "redirect:/web/records";
         }
-
-        if (records == null) {
-            records = Collections.emptyList();
-        }
-
-        model.addAttribute("categoryNames", categoryNames);
-        model.addAttribute("records", records);
-        model.addAttribute("currentStatus", status);
-        model.addAttribute("statuses", RecordStatus.values());
-        model.addAttribute("role", userService.getCurrentUserRole());
-
-        return "records/userRecords";
 
     }
-
-//    @GetMapping("/authors/{authorId}")
-//    public String getRecordsByAuthor(
-//            @PathVariable Long authorId,
-//            Model model,
-//            RedirectAttributes redirectAttributes) {
-//        try {
-//            List<RecordDto> records = recordService.getRecordsByAuthor(authorId);
-//            UserDto author = userService.getUserById(authorId);
-//
-//            model.addAttribute("records", records);
-//            model.addAttribute("author", author);
-//            return "records/authorRecords";
-//        } catch (Exception e) {
-//            redirectAttributes.addFlashAttribute("errorMessage",
-//                    "Failed to fetch records for the specified author.");
-//            return "redirect:/web/records";
-//        }
-//    }
 
 }

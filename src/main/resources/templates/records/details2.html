@@ -123,6 +123,12 @@
 </header>
 
 <div class="container mt-4">
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
     <div class="card">
         <div th:if="${record.status.toString() == 'PENDING' and role == 'ADMIN'}" class="d-flex gap-2 ">
             <form th:action="@{/web/records/{id}/approve(id=${record.id})}" method="post">

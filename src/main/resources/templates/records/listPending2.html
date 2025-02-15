@@ -30,14 +30,26 @@
 
                     <!-- Контейнер для кнопок (праворуч, з фіксованим розміром) -->
                     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-end ms-auto gap-2">
-                        <a th:if="${role == null}" href="/" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">Вхід</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn" >Categories</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/users}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn" >Users</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn" >View Pending Records</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
-                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/" class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My profile</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/logout" class="btn btn-danger text-center d-flex align-items-center justify-content-center collapse-btn">Exit</a>
+                        <a th:if="${role == null}" href="/"
+                           class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">Вхід</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}"
+                           class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn">Categories</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/users}"
+                           class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn">Users</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}"
+                           class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn">View
+                            Pending Records</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}"
+                           class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn">Create
+                            New Record</a>
+                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}"
+                           class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">My
+                            Requests</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/"
+                           class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My
+                            profile</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/logout"
+                           class="btn btn-danger text-center d-flex align-items-center justify-content-center collapse-btn">Exit</a>
                     </div>
                 </div>
             </div>
@@ -46,6 +58,13 @@
 </header>
 
 <div class="container mt-4">
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
     <h1 class="mb-4">All Pending Records</h1>
 
     <main class="container-custom">
