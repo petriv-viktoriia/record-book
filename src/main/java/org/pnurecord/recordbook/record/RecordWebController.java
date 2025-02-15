@@ -449,7 +449,7 @@ public class RecordWebController {
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @GetMapping("/pending/categories")
+    @GetMapping("/pending/search/categories")
     public String getPendingRecordsByCategory(
             @RequestParam Long categoryId,
             Model model,
