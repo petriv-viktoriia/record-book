@@ -24,17 +24,23 @@
     </style>
 </head>
 <body>
-<div th:if="${error}">
-    <p style="color: red;" th:text="${error}"></p>
-</div>
+
 
 <div class="register-container">
-    <h3 class="text-center mb-4">Sign Up</h3>
 
-    <div class="text-center mt-3">
+    <div class="text-center mt-3 mb-3">
+        <div th:if="${error}">
+            <p style="color: red;" th:text="${error}"></p>
+        </div>
+        <a th:href="@{/registration}" class="btn btn-dark w-100 d-flex align-items-center justify-content-center">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdi_igX8tYfn5RaGbzoioOLIzaxHrvWH0pWg&s" width="20" class="me-2">
+            Sign Up
+        </a>
+
+        <h3 class="text-center mb-3 mt-3">or</h3>
         <a href="/oauth2/authorization/google" class="btn btn-dark w-100">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/480px-Google_%22G%22_logo.svg.png" width="20" class="me-2">
-            Sign Up with Google
+            Log in with Google
         </a>
     </div>
 </div>
