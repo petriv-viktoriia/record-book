@@ -4,16 +4,40 @@
     <meta charset="UTF-8">
     <title>Approved Records</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        @media (max-width: 992px) {
-            .collapse-btn {
-                min-width: 250px;
-                max-width: 250px;
+        .container-custom {
+            width: 100%;  /* або max-width: 100% */
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Для більших екранів можна обмежити максимальну ширину */
+        @media screen and (min-width: 1024px) {
+            .container-custom {
+                max-width: 1000px;
             }
+        }
+
+        .header-custom {
+            background-color: #f8f9fa;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .search-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body>
+<body class="bg-light">
 <header class="bg-light py-3 w-100">
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
@@ -27,29 +51,15 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-
-                    <!-- Контейнер для кнопок (праворуч, з фіксованим розміром) -->
                     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-end ms-auto gap-2">
-                        <a th:if="${role == null}" href="/"
-                           class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">Вхід</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}"
-                           class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn">Categories</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/users}"
-                           class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn">Users</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}"
-                           class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn">View
-                            Pending Records</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}"
-                           class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn">Create
-                            New Record</a>
-                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}"
-                           class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">My
-                            Requests</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/"
-                           class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My
-                            profile</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/logout"
-                           class="btn btn-danger text-center d-flex align-items-center justify-content-center collapse-btn">Exit</a>
+                        <a th:if="${role == null}" href="/" class="btn btn-info">Вхід</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success">Categories</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/users}" class="btn btn-secondary">Users</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning">View Pending Records</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}" class="btn btn-primary">Create New Record</a>
+                        <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}" class="btn btn-info">My Requests</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/" class="btn btn-dark">My profile</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/logout" class="btn btn-danger">Exit</a>
                     </div>
                 </div>
             </div>
@@ -57,64 +67,57 @@
     </div>
 </header>
 
-<div class="container mt-4">
+<main class="container-custom">
     <div th:if="${successMessage}" class="alert alert-success" role="alert">
         <span th:text="${successMessage}"></span>
     </div>
     <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
         <span th:text="${errorMessage}"></span>
-    </div>
-
-    <h1 class="mb-4">All Pending Records</h1>
-
-    <main class="container-custom">
-        <div class="search-container mb-3">
-            <form class="row g-3">
-                <div class="col-md-6">
-                    <input class="form-control" type="search" name="title" placeholder="Search by title"
-                           th:value="${searchTitle}" form="searchTitleForm">
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-outline-primary w-100" type="submit" form="searchTitleForm">Search</button>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" name="categoryId" form="searchCategoryForm"
-                            onchange="this.form.submit()">
-                        <option value="">Select Category</option>
-                        <option th:each="category : ${categories}"
-                                th:value="${category.id}"
-                                th:text="${category.name}"
-                                th:selected="${category.id == selectedCategoryId}">
-                        </option>
-                    </select>
-                </div>
-            </form>
-
-            <form class="row g-3 mt-3">
-                <div class="col-md-6">
-                    <input class="form-control" type="date" name="date" th:value="${selectedDate}"
-                           form="searchDateForm">
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-outline-primary w-100" type="submit" form="searchDateForm">Search by date
-                    </button>
-                </div>
-            </form>
+    </div><div class="search-container">
+    <form class="row g-3">
+        <div class="col-md-6">
+            <input class="form-control" type="search" name="title" placeholder="Search by title"
+                   th:value="${searchTitle}" form="searchTitleForm">
         </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-primary w-100" type="submit" form="searchTitleForm">Search</button>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="categoryId" form="searchCategoryForm" onchange="this.form.submit()">
+                <option value="">Select Category</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}"
+                        th:selected="${category.id == selectedCategoryId}"></option>
+            </select>
+        </div>
+    </form>
 
-        <form id="searchTitleForm" th:action="@{/web/records/pending/search}" method="get"></form>
-        <form id="searchCategoryForm" th:action="@{/web/records/pending/search/categories}" method="get"></form>
-        <form id="searchDateForm" th:action="@{/web/records/pending/search/date}" method="get"></form>
+    <form class="row g-3 mt-3">
+        <div class="col-md-6">
+            <input class="form-control" type="date" name="date" th:value="${selectedDate}" form="searchDateForm">
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-primary w-100" type="submit" form="searchDateForm">Search by date
+            </button>
+        </div>
+    </form>
+</div>
 
+    <form id="searchTitleForm" th:action="@{/web/records/search}" method="get"></form>
+    <form id="searchCategoryForm" th:action="@{/web/records/search/categories}" method="get"></form>
+    <form id="searchDateForm" th:action="@{/web/records/search/date}" method="get"></form>
 
+    <div class="table-container">
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover mb-0">
                 <thead class="table-dark">
                 <tr>
                     <th scope="col">Title</th>
-                    <th scope="col">Author</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Date Added</th> <!-- Новий стовпець для дати -->
+                    <th scope="col" class="hidden-mobile">Author</th>
+                    <th scope="col" class="hidden-mobile">Category</th>
+                    <th scope="col" class="hidden-mobile">Date</th>
+                    <th scope="col">Reactions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -122,23 +125,36 @@
                     <td>
                         <a th:href="@{/web/records/{id}(id=${record.id})}" th:text="${record.title}"></a>
                     </td>
-                    <td th:text="${authorNames.get(record.authorId)}"></td>
-                    <td th:text="${categoryNames.get(record.categoryId)}"></td>
-                    <td th:text="${record.publishedDate}"></td>
+                    <td class="hidden-mobile" th:text="${authorNames.get(record.authorId)}"></td>
+                    <td class="hidden-mobile" th:text="${categoryNames.get(record.categoryId)}"></td>
+                    <td class="hidden-mobile" th:text="${record.publishedDate}"></td>
+                    <td>
+                        <span>
+                            <i class="fas fa-thumbs-up text-success"></i>
+                            <span th:text="${reactions.get(record.id)?.getLikes() ?: 0}">0</span>
+                        </span>
+                        <span class="ms-3">
+                            <i class="fas fa-thumbs-down text-danger"></i>
+                            <span th:text="${reactions.get(record.id)?.getDislikes() ?: 0}">0</span>
+                        </span>
+                    </td>
                 </tr>
                 </tbody>
-
             </table>
         </div>
+    </div>
 
-        <div th:if="${#lists.isEmpty(records)}" class="alert alert-info">
-            No records found.
-        </div>
+    <div th:if="${#lists.isEmpty(records)}" class="alert alert-info mt-3">
+        No records found.
+    </div>
 
-        <div class="mt-3">
-            <a href="/web/records" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back to All Approved Records
-            </a>
-        </div>
-    </main>
-</div>
+    <div class="mt-3">
+        <a href="/web/records" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to All Records
+        </a>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
