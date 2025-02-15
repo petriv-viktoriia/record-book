@@ -32,7 +32,7 @@
 
         .form-label {
             font-weight: 600;
-            color: #6c757d;
+            color: #767e88;
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -55,7 +55,7 @@
         }
 
         .btn-primary {
-            background-color: #0d6efd;
+            background-color: #0d6af3;
             border: none;
         }
 
@@ -81,7 +81,7 @@
 
         .download-link:hover {
             background-color: #e9ecef;
-            color: #0a58ca;
+            color: #0f5bcc;
         }
 
         @media (max-width: 992px) {
@@ -93,8 +93,8 @@
 
         @media (max-width: 768px) {
             .responsive-btn {
-                font-size: 12px; /* Менший шрифт */
-                padding: 5px 8px; /* Менші відступи */
+                font-size: 12px;
+                padding: 5px 8px;
             }
         }
     </style>
@@ -108,11 +108,8 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-
-                    <!-- Контейнер для кнопок (праворуч, з фіксованим розміром) -->
                     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-end ms-auto gap-2">
                         <a th:if="${role == null}" href="/" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">Вхід</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn" >Categories</a>
@@ -137,7 +134,7 @@
         <span th:text="${errorMessage}"></span>
     </div>
     <div class="card">
-        <div th:if="${record.status.toString() == 'PENDING' and role == 'ADMIN'}" class="d-flex gap-2 ">
+        <div th:if="${record.status.toString() == 'PENDING' and role == 'ADMIN'}" class="d-flex gap-2">
             <form th:action="@{/web/records/{id}/approve(id=${record.id})}" method="post">
                 <input type="hidden" name="_method" value="put"/>
                 <button type="submit" class="btn btn-success">Approve</button>
@@ -150,7 +147,6 @@
         </div>
         <div class="card-header">
             <h1 th:text="${record.title}"></h1>
-
         </div>
         <div class="card-body">
 
@@ -168,7 +164,6 @@
                 <label for="description" class="form-label">Description</label>
                 <p id="description" class="mb-0" th:text="${record.description}"></p>
             </div>
-
             <div class="attachments-section">
                 <label class="form-label">Attachments</label>
                 <div th:if="${#lists.isEmpty(files)}">
@@ -177,7 +172,9 @@
                 <div th:each="file : ${files}">
                     <div class="mb-3">
                         <div th:if="${file.getFileUrl().endsWith('jpg') or file.getFileUrl().endsWith('jpeg') or file.getFileUrl().endsWith('png') or file.getFileUrl().endsWith('gif')}">
-                            <img th:src="@{${file.fileUrl}}" th:alt="${file.filename}" class="img-fluid mb-2" style="max-width: 300px;">
+                            <a th:href="@{${file.fileUrl}}" target="_blank">
+                                <img th:src="@{${file.fileUrl}}" th:alt="${file.filename}" class="img-fluid mb-2" style="max-width: 300px;">
+                            </a>
                         </div>
                         <div th:unless="${file.getFileUrl().endsWith('jpg') or file.getFileUrl().endsWith('jpeg') or file.getFileUrl().endsWith('png') or file.getFileUrl().endsWith('gif')}">
                             <a th:href="@{${file.fileUrl}}" th:text="${file.filename}" class="download-link">
@@ -220,34 +217,18 @@
                 </a>
 
                 <form th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId}"
-                      th:action="@{/web/records/delete/{id}(id=${record.id})}"
-                      method="post"
-                      style="display:inline;">
-                    <input type="hidden" name="_method" value="DELETE"/>
-                    <button type="submit" class="btn btn-sm btn-danger responsive-btn"
-                            onclick="return confirm('Are you sure you want to delete this record?')">
-                        Delete
-                    </button>
-                </form>
-
-                <form th:if="${role == 'ADMIN' and record.status.toString() == 'APPROVED'}"
-                      th:action="@{/web/records/delete/{id}(id=${record.id})}"
-                      method="post"
-                      style="display:inline;">
-                    <input type="hidden" name="_method" value="DELETE"/>
-                    <button type="submit" class="btn btn-sm btn-danger responsive-btn"
-                            onclick="return confirm('Are you sure you want to delete this record?')">
+                      th:action="@{/web/records/{id}/delete(id=${record.id})}" method="post">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" class="btn btn-danger responsive-btn">
                         Delete
                     </button>
                 </form>
             </div>
-
         </div>
-
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
