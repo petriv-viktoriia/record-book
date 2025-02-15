@@ -24,6 +24,9 @@
     </style>
 </head>
 <body>
+<div th:if="${error}">
+    <p style="color: red;" th:text="${error}"></p>
+</div>
 
 <div class="register-container">
     <h3 class="text-center mb-4">Sign Up</h3>

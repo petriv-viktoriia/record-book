@@ -192,7 +192,7 @@
             <div class="d-flex justify-content-end gap-3"> <!-- gap-3 додає простір між кнопками -->
                 <a href="/web/records" class="btn btn-secondary">Back to Records</a>
 
-                <a th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.author.id == currentUserId}"
+                <a th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId}"
                    th:href="@{/web/records/edit/{id}(id=${record.id})}"
                    class="btn btn-primary">
                     Edit Record
@@ -205,7 +205,7 @@
                 </a>
 
 
-                <form th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.author.id == currentUserId}"
+                <form th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId}"
                       th:action="@{/web/records/delete/{id}(id=${record.id})}"
                       method="post"
                       style="display:inline;">

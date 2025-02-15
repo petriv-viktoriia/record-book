@@ -23,8 +23,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email %s not found".formatted(email)));
 
-        System.out.println("User authenticated: " + user.getEmail() + " with role " + user.getRole());
-
         return new CustomOAuth2User(oAuth2User, user);
     }
 }

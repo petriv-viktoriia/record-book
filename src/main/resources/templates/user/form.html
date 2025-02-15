@@ -30,7 +30,7 @@
                     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-end ms-auto gap-2">
                         <a href="/logout" class="btn btn-danger text-center d-flex align-items-center justify-content-center collapse-btn">Exit</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn" >Categories</a>
-                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn" >Users</a>
+                        <a th:if="${role == 'ADMIN'}" th:href="@{/web/users}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn" >Users</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn" >View Pending Records</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
                         <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
@@ -41,12 +41,9 @@
     </div>
 </header>
 <div class="container mt-4">
-    <h2 th:text="${user.id == null ? 'Create New User' : 'Edit User'}"></h2>
+    <h2>Create New User</h2>
 
-    <form th:action="${user.id == null ? '/web/users' : '/web/users/update/' + user.id}"
-          th:object="${user}" method="post" class="col-md-6">
-        <input type="hidden" th:field="*{id}" />
-
+    <form th:object="${user}" method="post" class="col-md-6">
         <div class="mb-3">
             <label for="firstName" class="form-label">First Name</label>
             <input type="text" class="form-control" id="firstName" th:field="*{firstName}" required>
@@ -56,9 +53,25 @@
             <label for="lastName" class="form-label">Last Name</label>
             <input type="text" class="form-control" id="lastName" th:field="*{lastName}" required>
         </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" th:field="*{email}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('email')}"></div>
+        </div>
+
+        <div class="mb-3" th:if="${role == 'ADMIN'}">
+            <label for="role" class="form-label">Role</label>
+            <select class="form-control" id="role" th:field="*{role}">
+                <option value="ADMIN">Admin</option>
+                <option value="STUDENT">Student</option>
+            </select>
+        </div>
+
+        <input type="hidden" th:unless="${role == 'ADMIN'}" value="STUDENT" name="role" />
 
         <div class="mb-3">
-            <button type="submit" class="btn btn-primary me-2">Save</button>
+            <button type="submit" class="btn btn-primary me-2"
+                    th:formaction="${role == 'ADMIN' ? '/web/users/create' : '/registration'}" >Create</button>
             <a th:href="@{/web/users}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>

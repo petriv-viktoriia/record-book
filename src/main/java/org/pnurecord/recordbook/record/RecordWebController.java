@@ -221,6 +221,7 @@ public class RecordWebController {
         model.addAttribute("authorName", authorName);
         model.addAttribute("files", files);
         model.addAttribute("role", userService.getCurrentUserRole());
+        model.addAttribute("currentUserId", userService.getCurrentUserId());
 
         return "records/details2";
     }
