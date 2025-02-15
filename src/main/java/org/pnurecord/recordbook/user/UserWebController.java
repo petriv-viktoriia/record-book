@@ -36,6 +36,7 @@ public class UserWebController {
             List<UserDto> users = userService.getUsers();
             model.addAttribute("users", users);
             model.addAttribute("role", userService.getCurrentUserRole());
+            model.addAttribute("currentUserId", userService.getCurrentUserId());
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error loading users: " + e.getMessage());
         }
