@@ -114,10 +114,10 @@
                 <thead class="table-dark">
                 <tr>
                     <th scope="col">Title</th>
-                    <th scope="col" class="hidden-mobile">Author</th>
-                    <th scope="col" class="hidden-mobile">Category</th>
-                    <th scope="col" class="hidden-mobile">Date</th>
-                    <th scope="col">Reactions</th>
+                    <th scope="col">Category</th>
+                    <th scope="col" class="d-none d-md-table-cell">Author</th>
+                    <th scope="col" class="d-none d-md-table-cell">Date</th>
+                    <th scope="col" class="d-none d-md-table-cell">Reactions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -125,23 +125,24 @@
                     <td>
                         <a th:href="@{/web/records/{id}(id=${record.id})}" th:text="${record.title}"></a>
                     </td>
-                    <td class="hidden-mobile" th:text="${authorNames.get(record.authorId)}"></td>
-                    <td class="hidden-mobile" th:text="${categoryNames.get(record.categoryId)}"></td>
-                    <td class="hidden-mobile" th:text="${record.publishedDate}"></td>
-                    <td>
-                        <span>
-                            <i class="fas fa-thumbs-up text-success"></i>
-                            <span th:text="${reactions.get(record.id)?.getLikes() ?: 0}">0</span>
-                        </span>
+                    <td th:text="${categoryNames.get(record.categoryId)}"></td>
+                    <td class="d-none d-md-table-cell" th:text="${authorNames.get(record.authorId)}"></td>
+                    <td class="d-none d-md-table-cell" th:text="${record.publishedDate}"></td>
+                    <td class="d-none d-md-table-cell">
+                <span>
+                    <i class="fas fa-thumbs-up text-success"></i>
+                    <span th:text="${reactions.get(record.id)?.getLikes() ?: 0}">0</span>
+                </span>
                         <span class="ms-3">
-                            <i class="fas fa-thumbs-down text-danger"></i>
-                            <span th:text="${reactions.get(record.id)?.getDislikes() ?: 0}">0</span>
-                        </span>
+                    <i class="fas fa-thumbs-down text-danger"></i>
+                    <span th:text="${reactions.get(record.id)?.getDislikes() ?: 0}">0</span>
+                </span>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
     </div>
 
     <div th:if="${#lists.isEmpty(records)}" class="alert alert-info mt-3">
