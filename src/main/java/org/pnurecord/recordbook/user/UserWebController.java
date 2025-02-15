@@ -25,16 +25,20 @@ public class UserWebController {
     private final UserRepository userRepository;
 
     @GetMapping
-    public String login(){
+    public String login() {
         return "user/login";
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/web/users")
-    public String getUsers(Model model){
-        List<UserDto> users = userService.getUsers();
-        model.addAttribute("users", users);
-        model.addAttribute("role", userService.getCurrentUserRole());
+    public String getUsers(Model model) {
+        try {
+            List<UserDto> users = userService.getUsers();
+            model.addAttribute("users", users);
+            model.addAttribute("role", userService.getCurrentUserRole());
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error loading users: " + e.getMessage());
+        }
         return "user/list";
     }
 
@@ -48,9 +52,15 @@ public class UserWebController {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/web/users/create")
-    public String createUser(@Valid UserCreateDto userCreateDto, Model model) {
-        model.addAttribute("user", userService.createUser(userCreateDto));
-        return "redirect:/web/users";
+    public String createUser(@Valid UserCreateDto userCreateDto, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            model.addAttribute("user", userService.createUser(userCreateDto));
+            redirectAttributes.addFlashAttribute("successMessage", "User successfully created");
+            return "redirect:/web/users";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error creating a user: " + e.getMessage());
+            return "redirect:/web/users/create";
+        }
     }
 
 
@@ -61,9 +71,16 @@ public class UserWebController {
     }
 
     @PostMapping("/registration")
-    public String registerUser(@Valid UserCreateDto userCreateDto, Model model) {
-        model.addAttribute("user", userService.createUser(userCreateDto));
-        return "redirect:http://localhost:8080";
+    public String registerUser(@Valid UserCreateDto userCreateDto, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            model.addAttribute("user", userService.createUser(userCreateDto));
+            redirectAttributes.addFlashAttribute("successMessage", "User successfully registered");
+            return "redirect:http://localhost:8080";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error during registration: " + e.getMessage());
+            return "redirect:/registration";
+        }
+
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
@@ -82,31 +99,48 @@ public class UserWebController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @PutMapping("/web/users/edit/{id}")
-    public String updateUser(@PathVariable Long id, @ModelAttribute @Valid UserUpdateDto userUpdateDto, Model model) {
-        userService.updateUser(id, userUpdateDto);
-        return "redirect:/web/users";
+    public String updateUser(@PathVariable Long id, @ModelAttribute @Valid UserUpdateDto userUpdateDto, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            userService.updateUser(id, userUpdateDto);
+            redirectAttributes.addFlashAttribute("successMessage", "User successfully updated");
+            return "redirect:/web/users";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error during update: " + e.getMessage());
+            return "redirect:/web/users/edit/" + id;
+        }
     }
 
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/web/users/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return "redirect:/web/users";
+    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(id);
+            redirectAttributes.addFlashAttribute("successMessage", "User successfully deleted");
+            return "redirect:/web/users";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error during deleting: " + e.getMessage());
+            return "redirect:/web/users"; //check it
+        }
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/web/users/{id}/role")
-    public String setUserRole(@PathVariable Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new IllegalStateException("User with id " + id + " not found")
-        );
+    public String setUserRole(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            User user = userRepository.findById(id).orElseThrow(
+                    () -> new IllegalStateException("User with id " + id + " not found")
+            );
 
-        if (user.getRole().equals(Role.STUDENT)){
-            userService.setUserRole(id, Role.ADMIN);
+            if (user.getRole().equals(Role.STUDENT)) {
+                userService.setUserRole(id, Role.ADMIN);
+            }
+
+            return "redirect:/web/users";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error during role change: " + e.getMessage());
+            return "redirect:/web/users"; //check it
         }
-
-        return "redirect:/web/users";
     }
 
 
