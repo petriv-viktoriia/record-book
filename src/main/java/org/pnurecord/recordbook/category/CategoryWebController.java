@@ -37,9 +37,10 @@ public class CategoryWebController {
     public String createCategory(@ModelAttribute CategoryDto categoryDto, RedirectAttributes redirectAttributes) {
         try {
             categoryService.createCategory(categoryDto);
+            redirectAttributes.addFlashAttribute("successMessage", "Category was successfully created");
             return "redirect:/web/categories";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error creating category: " + e.getMessage());
             return "redirect:/web/categories/new";
         }
     }
@@ -57,17 +58,25 @@ public class CategoryWebController {
     public String updateCategory(@PathVariable Long categoryId, @ModelAttribute CategoryDto categoryDto, RedirectAttributes redirectAttributes) {
         try {
             categoryService.updateCategory(categoryId, categoryDto);
+            redirectAttributes.addFlashAttribute("successMessage", "Category was successfully updated");
             return "redirect:/web/categories";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error during update: " + e.getMessage());
             return "redirect:/web/categories/edit/" + categoryId;
         }
     }
 
     @DeleteMapping("/delete/{categoryId}")
-    public String deleteCategory(@PathVariable Long categoryId) {
-        categoryService.deleteCategory(categoryId);
-        return "redirect:/web/categories";
+    public String deleteCategory(@PathVariable Long categoryId, RedirectAttributes redirectAttributes) {
+        try {
+            categoryService.deleteCategory(categoryId);
+            redirectAttributes.addFlashAttribute("successMessage", "Category was successfully deleted");
+            return "redirect:/web/categories";
+        }
+        catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error during delete: " + e.getMessage());
+            return "redirect:/web/categories";
+        }
     }
 
 }
