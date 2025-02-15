@@ -90,6 +90,13 @@
                 max-width: 250px;
             }
         }
+
+        @media (max-width: 768px) {
+            .responsive-btn {
+                font-size: 12px; /* Менший шрифт */
+                padding: 5px 8px; /* Менші відступи */
+            }
+        }
     </style>
 </head>
 <body>
@@ -197,28 +204,27 @@
         </div>
 
         <div class="card-footer">
-            <div class="d-flex justify-content-end gap-3"> <!-- gap-3 додає простір між кнопками -->
-                <a href="/web/records" class="btn btn-secondary">Back to Records</a>
+            <div class="d-flex justify-content-end gap-2 gap-md-3">
+                <a href="/web/records" class="btn btn-secondary responsive-btn">Back</a>
 
                 <a th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId}"
                    th:href="@{/web/records/edit/{id}(id=${record.id})}"
-                   class="btn btn-primary">
-                    Edit Record
+                   class="btn btn-primary responsive-btn">
+                    Edit
                 </a>
 
                 <a th:if="${role == 'ADMIN' and record.status.toString() == 'APPROVED'}"
                    th:href="@{/web/records/edit/{id}(id=${record.id})}"
-                   class="btn btn-primary">
-                    Edit Record
+                   class="btn btn-primary responsive-btn">
+                    Edit
                 </a>
-
 
                 <form th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId}"
                       th:action="@{/web/records/delete/{id}(id=${record.id})}"
                       method="post"
                       style="display:inline;">
                     <input type="hidden" name="_method" value="DELETE"/>
-                    <button type="submit" class="btn btn-sm btn-danger"
+                    <button type="submit" class="btn btn-sm btn-danger responsive-btn"
                             onclick="return confirm('Are you sure you want to delete this record?')">
                         Delete
                     </button>
@@ -229,7 +235,7 @@
                       method="post"
                       style="display:inline;">
                     <input type="hidden" name="_method" value="DELETE"/>
-                    <button type="submit" class="btn btn-sm btn-danger"
+                    <button type="submit" class="btn btn-sm btn-danger responsive-btn"
                             onclick="return confirm('Are you sure you want to delete this record?')">
                         Delete
                     </button>

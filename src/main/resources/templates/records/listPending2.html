@@ -112,9 +112,9 @@
                 <thead class="table-dark">
                 <tr>
                     <th scope="col">Title</th>
-                    <th scope="col">Author</th>
+                    <th scope="col" class="d-none d-md-table-cell">Author</th>
                     <th scope="col">Category</th>
-                    <th scope="col">Date Added</th> <!-- Новий стовпець для дати -->
+                    <th scope="col" class="d-none d-md-table-cell">Date Added</th> <!-- Новий стовпець для дати -->
                 </tr>
                 </thead>
                 <tbody>
@@ -122,14 +122,14 @@
                     <td>
                         <a th:href="@{/web/records/{id}(id=${record.id})}" th:text="${record.title}"></a>
                     </td>
-                    <td th:text="${authorNames.get(record.authorId)}"></td>
+                    <td class="d-none d-md-table-cell" th:text="${authorNames.get(record.authorId)}"></td>
                     <td th:text="${categoryNames.get(record.categoryId)}"></td>
-                    <td th:text="${record.publishedDate}"></td>
+                    <td class="d-none d-md-table-cell" th:text="${record.publishedDate}"></td>
                 </tr>
                 </tbody>
-
             </table>
         </div>
+
 
         <div th:if="${#lists.isEmpty(records)}" class="alert alert-info">
             No records found.
@@ -142,3 +142,8 @@
         </div>
     </main>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
