@@ -104,7 +104,7 @@
                     <td th:text="${user.email}" class="user-email"></td>
                     <td th:text="${user.role}" class="user-role"></td>
                     <td class="text-end">
-                        <form th:if="${user.role.toString() == 'ADMIN'}"
+                        <form th:if="${user.role.toString() != 'ADMIN'}"
                               th:action="@{/web/users/{id}/role(id=${user.id})}" method="post" class="d-inline">
                             <input type="hidden" name="_method" value="put"/>
                             <button type="submit" class="btn btn-sm btn-outline-primary me-2">
