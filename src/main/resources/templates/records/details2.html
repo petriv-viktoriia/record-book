@@ -185,14 +185,16 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-start gap-3 mt-4">
+            <div class="d-flex justify-content-start gap-3 mt-4" th:if="${currentUserId != null}">
                 <form th:action="@{/web/records/{id}/like(id=${record.id})}" method="post">
+                    <input type="hidden" name="userId" th:value="${currentUserId}" />
                     <button type="submit" class="btn btn-outline-primary">
                         Like <span th:text="${reactions.likes}"></span>
                     </button>
                 </form>
 
                 <form th:action="@{/web/records/{id}/dislike(id=${record.id})}" method="post">
+                    <input type="hidden" name="userId" th:value="${currentUserId}" />
                     <button type="submit" class="btn btn-outline-danger">
                         Dislike <span th:text="${reactions.dislikes}"></span>
                     </button>

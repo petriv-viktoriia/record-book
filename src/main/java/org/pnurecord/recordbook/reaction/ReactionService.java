@@ -66,4 +66,25 @@ public class ReactionService {
         );
         return reactionMapper.toReactionDto(reaction);
     }
+
+
+    public ReactionDto addOrUpdateReaction(ReactionDto reactionDto) {
+        Reaction existingReaction = reactionRepository.findByRecordIdAndUserId(
+                reactionDto.getRecordId(), reactionDto.getUserId()
+        );
+
+        if (existingReaction != null) {
+            if (existingReaction.isLiked() == reactionDto.isLiked()) {
+                reactionRepository.delete(existingReaction);
+                return null;
+            } else {
+                existingReaction.setLiked(reactionDto.isLiked());
+                return reactionMapper.toReactionDto(reactionRepository.save(existingReaction));
+            }
+        } else {
+            Reaction reaction = reactionMapper.toReaction(reactionDto);
+            return reactionMapper.toReactionDto(reactionRepository.save(reaction));
+        }
+    }
+
 }

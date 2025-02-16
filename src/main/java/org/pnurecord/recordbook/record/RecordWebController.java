@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.category.CategoryService;
 import org.pnurecord.recordbook.reaction.ReactionCountDto;
+import org.pnurecord.recordbook.reaction.ReactionDto;
 import org.pnurecord.recordbook.reaction.ReactionService;
 import org.pnurecord.recordbook.recordFile.RecordFile;
 import org.pnurecord.recordbook.recordFile.RecordFileInfoDto;
@@ -186,13 +187,27 @@ public class RecordWebController {
             List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(id, baseUrl);
             ReactionCountDto reactionsCount = reactionService.getReactionsCount(record.getId());
 
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            // Якщо користувач авторизований, отримуємо його роль та ID
+            String role = "ROLE_ANONYMOUS";
+            Long currentUserId = null;
+
+            if (authentication != null && authentication.isAuthenticated()
+                    && !authentication.getPrincipal().equals("anonymousUser")) {
+                role = userService.getCurrentUserRole();
+                currentUserId = userService.getCurrentUserId();
+            }
+
+
             model.addAttribute("record", record);
             model.addAttribute("reactions", reactionsCount);
             model.addAttribute("categoryName", categoryName);
             model.addAttribute("authorName", authorName);
             model.addAttribute("files", files);
-            model.addAttribute("role", userService.getCurrentUserRole());
-            model.addAttribute("currentUserId", userService.getCurrentUserId());
+            model.addAttribute("role", role);
+            model.addAttribute("currentUserId", currentUserId);
 
             return "records/details2";
         } catch (Exception e) {
@@ -508,6 +523,28 @@ public class RecordWebController {
             return "redirect:/web/records";
         }
 
+    }
+
+
+
+    @PostMapping("/{id}/like")
+    public String likeRecord(@PathVariable Long id, @RequestParam Long userId) {
+        ReactionDto reactionDto = new ReactionDto();
+        reactionDto.setRecordId(id);
+        reactionDto.setUserId(userId);
+        reactionDto.setLiked(true);
+        reactionService.addOrUpdateReaction(reactionDto);
+        return "redirect:/web/records/" + id;
+    }
+
+    @PostMapping("/{id}/dislike")
+    public String dislikeRecord(@PathVariable Long id, @RequestParam Long userId) {
+        ReactionDto reactionDto = new ReactionDto();
+        reactionDto.setRecordId(id);
+        reactionDto.setUserId(userId);
+        reactionDto.setLiked(false);
+        reactionService.addOrUpdateReaction(reactionDto);
+        return "redirect:/web/records/" + id;
     }
 
 }
