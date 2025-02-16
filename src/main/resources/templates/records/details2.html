@@ -134,17 +134,7 @@
         <span th:text="${errorMessage}"></span>
     </div>
     <div class="card">
-        <div th:if="${record.status.toString() == 'PENDING' and role == 'ADMIN'}" class="d-flex gap-2">
-            <form th:action="@{/web/records/{id}/approve(id=${record.id})}" method="post">
-                <input type="hidden" name="_method" value="put"/>
-                <button type="submit" class="btn btn-success">Approve</button>
-            </form>
 
-            <form th:action="@{/web/records/{id}/reject(id=${record.id})}" method="post">
-                <input type="hidden" name="_method" value="put"/>
-                <button type="submit" class="btn btn-danger">Reject</button>
-            </form>
-        </div>
         <div class="card-header">
             <h1 th:text="${record.title}"></h1>
         </div>
@@ -206,6 +196,19 @@
             <div class="d-flex justify-content-end gap-2 gap-md-3">
                 <a href="/web/records" class="btn btn-secondary responsive-btn">Back</a>
 
+                <div th:if="${record.status.toString()=='PENDING' and role=='ADMIN'}" class="d-flex gap-2">
+                    <form th:action="@{/web/records/{id}/approve(id=${record.id})}"  method="post">
+                        <input type="hidden" name="_method" value="put"/>
+                        <button type="submit" class="btn btn-success responsive-btn">Approve</button>
+                    </form>
+
+                    <form th:action="@{/web/records/{id}/reject(id=${record.id})}" method="post">
+                        <input type="hidden" name="_method" value="put"/>
+                        <button type="submit" class="btn btn-danger responsive-btn">Reject</button>
+                    </form>
+                </div>
+
+
                 <a th:if="${(role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId) or (role == 'ADMIN')}"
                    th:href="@{/web/records/edit/{id}(id=${record.id})}"
                    class="btn btn-primary responsive-btn">
@@ -214,7 +217,15 @@
 
 
                 <form th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId}"
-                      th:action="@{/web/records/{id}/delete(id=${record.id})}" method="post">
+                      th:action="@{/web/records/delete/{id}(id=${record.id})}" method="post">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" class="btn btn-danger responsive-btn">
+                        Delete
+                    </button>
+                </form>
+
+                <form th:if="${role == 'ADMIN' and record.status.toString() == 'APPROVED'}"
+                      th:action="@{/web/records/delete/{id}(id=${record.id})}" method="post">
                     <input type="hidden" name="_method" value="delete"/>
                     <button type="submit" class="btn btn-danger responsive-btn">
                         Delete
