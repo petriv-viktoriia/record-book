@@ -190,7 +190,6 @@ public class RecordWebController {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            // Якщо користувач авторизований, отримуємо його роль та ID
             String role = "ROLE_ANONYMOUS";
             Long currentUserId = null;
 
@@ -269,12 +268,23 @@ public class RecordWebController {
                         categoryRepository.findCategoryNameById(record.getCategoryId()));
             }
 
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            String role = "ROLE_ANONYMOUS";
+            Long currentUserId = null;
+
+            if (authentication != null && authentication.isAuthenticated()
+                    && !authentication.getPrincipal().equals("anonymousUser")) {
+                role = userService.getCurrentUserRole();
+                currentUserId = userService.getCurrentUserId();
+            }
+
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
             model.addAttribute("records", searchResults);
             model.addAttribute("searchTitle", title);
             model.addAttribute("searchLimit", limit);
-            model.addAttribute("role", userService.getCurrentUserRole());
+            model.addAttribute("role", role);
 
             return "records/searchResults";
         } catch (Exception e) {
@@ -375,12 +385,23 @@ public class RecordWebController {
                 reactions.put(record.getId(), reactionService.getReactionsCount(record.getId()));
             }
 
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            String role = "ROLE_ANONYMOUS";
+            Long currentUserId = null;
+
+            if (authentication != null && authentication.isAuthenticated()
+                    && !authentication.getPrincipal().equals("anonymousUser")) {
+                role = userService.getCurrentUserRole();
+                currentUserId = userService.getCurrentUserId();
+            }
+
             model.addAttribute("records", records);
             model.addAttribute("selectedDate", date);
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
             model.addAttribute("reactions", reactions);
-            model.addAttribute("role", userService.getCurrentUserRole());
+            model.addAttribute("role", role);
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the specified date");
@@ -445,13 +466,24 @@ public class RecordWebController {
                 reactions.put(record.getId(), reactionService.getReactionsCount(record.getId()));
             }
 
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            String role = "ROLE_ANONYMOUS";
+            Long currentUserId = null;
+
+            if (authentication != null && authentication.isAuthenticated()
+                    && !authentication.getPrincipal().equals("anonymousUser")) {
+                role = userService.getCurrentUserRole();
+                currentUserId = userService.getCurrentUserId();
+            }
+
             model.addAttribute("records", records);
             model.addAttribute("selectedCategoryId", categoryId);
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
             model.addAttribute("reactions", reactions);
             model.addAttribute("categories", categoryService.getAllCategories());
-            model.addAttribute("role", userService.getCurrentUserRole());
+            model.addAttribute("role", role);
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
@@ -525,8 +557,7 @@ public class RecordWebController {
 
     }
 
-
-
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @PostMapping("/{id}/like")
     public String likeRecord(@PathVariable Long id, @RequestParam Long userId) {
         ReactionDto reactionDto = new ReactionDto();
@@ -537,6 +568,7 @@ public class RecordWebController {
         return "redirect:/web/records/" + id;
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @PostMapping("/{id}/dislike")
     public String dislikeRecord(@PathVariable Long id, @RequestParam Long userId) {
         ReactionDto reactionDto = new ReactionDto();
@@ -546,5 +578,4 @@ public class RecordWebController {
         reactionService.addOrUpdateReaction(reactionDto);
         return "redirect:/web/records/" + id;
     }
-
 }
