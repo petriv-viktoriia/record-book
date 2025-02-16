@@ -1,8 +1,10 @@
 package org.pnurecord.recordbook.record;
 
+import jakarta.transaction.Transactional;
 import org.pnurecord.recordbook.category.Category;
 import org.pnurecord.recordbook.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -42,4 +44,8 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     @Query("SELECT r FROM Record r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :title, '%')) AND r.status = 'PENDING'")
     List<Record> findPendingRecordsByTitleContainingIgnoreCase(@Param("title") String title);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Record r SET r.author.id = NULL WHERE r.author.id = :authorId")
+    void setAuthorIdToNull(@Param("authorId") Long authorId);
 }
