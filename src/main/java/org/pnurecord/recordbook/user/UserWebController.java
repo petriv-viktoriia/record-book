@@ -2,6 +2,8 @@ package org.pnurecord.recordbook.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.pnurecord.recordbook.record.RecordDto;
+import org.pnurecord.recordbook.record.RecordService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,7 @@ public class UserWebController {
     private final UserService userService;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+    private final RecordService recordService;
 
     @GetMapping
     public String login() {
@@ -138,11 +141,18 @@ public class UserWebController {
     }
 
 
-
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/web/users/delete/{id}")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
+            long currentUserId = userService.getCurrentUserId();
+            String role = userService.getCurrentUserRole();
+
+            if (currentUserId == id && role.equals("ADMIN")) {
+                redirectAttributes.addFlashAttribute("errorMessage", "You cannot delete yourself!");
+                return "redirect:/web/users";
+            }
+            recordService.nullifyAuthorReferences(id);
             userService.deleteUser(id);
             redirectAttributes.addFlashAttribute("successMessage", "User successfully deleted");
             return "redirect:/web/users";
