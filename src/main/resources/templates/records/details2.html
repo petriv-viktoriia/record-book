@@ -204,17 +204,12 @@
             <div class="d-flex justify-content-end gap-2 gap-md-3">
                 <a href="/web/records" class="btn btn-secondary responsive-btn">Back</a>
 
-                <a th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId}"
+                <a th:if="${(role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId) or (role == 'ADMIN')}"
                    th:href="@{/web/records/edit/{id}(id=${record.id})}"
                    class="btn btn-primary responsive-btn">
                     Edit
                 </a>
 
-                <a th:if="${role == 'ADMIN' and record.status.toString() == 'APPROVED'}"
-                   th:href="@{/web/records/edit/{id}(id=${record.id})}"
-                   class="btn btn-primary responsive-btn">
-                    Edit
-                </a>
 
                 <form th:if="${role == 'STUDENT' and record.status.toString() == 'PENDING' and record.authorId == currentUserId}"
                       th:action="@{/web/records/{id}/delete(id=${record.id})}" method="post">
