@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Controller
@@ -41,6 +42,21 @@ public class UserWebController {
             model.addAttribute("errorMessage", "Error loading users: " + e.getMessage());
         }
         return "user/list";
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
+    @GetMapping("/web/users/profile")
+    public String getUser(Model model) {
+        try {
+            long userId = userService.getCurrentUserId();
+            User user = userRepository.findById(userId).orElse(null);
+            model.addAttribute("user", user);
+            model.addAttribute("role", userService.getCurrentUserRole());
+            model.addAttribute("currentUserId", userId);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error loading user: " + e.getMessage());
+        }
+        return "user/profile";
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -100,16 +116,27 @@ public class UserWebController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @PutMapping("/web/users/edit/{id}")
-    public String updateUser(@PathVariable Long id, @ModelAttribute @Valid UserUpdateDto userUpdateDto, Model model, RedirectAttributes redirectAttributes) {
+    public String updateUser(@PathVariable Long id,
+                             @ModelAttribute @Valid UserUpdateDto userUpdateDto,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         try {
             userService.updateUser(id, userUpdateDto);
             redirectAttributes.addFlashAttribute("successMessage", "User successfully updated");
-            return "redirect:/web/users";
+
+            String role = userService.getCurrentUserRole();
+            if (Objects.equals(role, "STUDENT")) {
+                return "redirect:/web/users/profile";
+            } else if (Objects.equals(role, "ADMIN")) {
+                return "redirect:/web/users";
+            }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error during update: " + e.getMessage());
             return "redirect:/web/users/edit/" + id;
         }
+        return "redirect:/web/users/profile";
     }
+
 
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

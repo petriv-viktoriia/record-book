@@ -117,7 +117,7 @@
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn" >View Pending Records</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
                         <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/" class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My profile</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/web/users/profile" class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My profile</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/logout" class="btn btn-danger text-center d-flex align-items-center justify-content-center collapse-btn">Exit</a>
                     </div>
                 </div>
@@ -185,7 +185,7 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-start gap-3 mt-4" th:if="${currentUserId != null}">
+            <div class="d-flex justify-content-start gap-3 mt-4" th:if="${currentUserId != null and record.status.toString()=='APPROVED'}">
                 <form th:action="@{/web/records/{id}/like(id=${record.id})}" method="post">
                     <input type="hidden" name="userId" th:value="${currentUserId}" />
                     <button type="submit" class="btn btn-outline-primary">

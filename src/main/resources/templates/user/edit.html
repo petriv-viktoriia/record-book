@@ -45,7 +45,7 @@
                         <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}"
                            class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">My
                             Requests</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/"
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/web/users/profile"
                            class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My
                             profile</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/logout"
@@ -85,7 +85,9 @@
 
         <div class="mb-3">
             <button type="submit" class="btn btn-primary me-2">Save</button>
-            <a th:href="@{/web/users}" class="btn btn-secondary">Cancel</a>
+                <a th:if="${role == 'ADMIN'}" th:href="@{/web/users}" class="btn btn-secondary">Cancel</a>
+
+                <a th:if="${role == 'STUDENT'}" th:href="@{/web/users/profile}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
