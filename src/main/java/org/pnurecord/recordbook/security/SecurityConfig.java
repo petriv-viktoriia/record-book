@@ -20,7 +20,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/web/records", "/registration", "/web/records/{id}").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
+
+                        .requestMatchers("/", "/login", "/web/records", "/registration", "/web/records/{id}",
+                                "/web/records/search/categories", "/web/records/search/date",
+                                "/files/{filename}").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
@@ -33,7 +37,7 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/web/records", true)
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/web/records")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")

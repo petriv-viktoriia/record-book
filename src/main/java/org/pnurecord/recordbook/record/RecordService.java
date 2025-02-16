@@ -1,5 +1,6 @@
 package org.pnurecord.recordbook.record;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.category.Category;
 import org.pnurecord.recordbook.category.CategoryRepository;
@@ -22,6 +23,10 @@ public class RecordService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
+    @Transactional
+    public void nullifyAuthorReferences(Long authorId) {
+        recordRepository.setAuthorIdToNull(authorId);
+    }
 
     public RecordDto createRecord(RecordDto recordDto) {
 
