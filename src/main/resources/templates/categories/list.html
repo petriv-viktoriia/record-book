@@ -88,8 +88,11 @@
             <tbody>
 
             <tr th:each="category : ${categories}">
-                <td th:text="${category.name != null ? category.name : 'Без категорії'}">Category Name</td>
-                <td>
+                <td th:text="${category.name != null ? category.name : 'Без категорії'}"
+                    th:colspan="${category.name == null or category.name == 'Без категорії' ? 2 : 1}">
+                    Category Name
+                </td>
+                <td th:if="${category.name != null and category.name != 'Без категорії'}">
                     <a th:href="@{/web/categories/edit/{id}(id=${category.id})}"
                        class="btn btn-sm btn-warning me-2">Edit</a>
                     <form th:action="@{/web/categories/delete/{id}(id=${category.id})}" method="post"

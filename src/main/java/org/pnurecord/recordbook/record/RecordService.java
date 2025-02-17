@@ -172,7 +172,7 @@ public class RecordService {
 
 
     public List<RecordDto> findApprovedRecordsByTitle(String title, Integer limit) {
-        int defaultLimit = 7;
+        int defaultLimit = 20;
         int searchLimit = limit != null ? limit : defaultLimit;
 
         List<Record> records = recordRepository.findApprovedRecordsByTitleContainingIgnoreCase(title);
@@ -183,7 +183,7 @@ public class RecordService {
     }
 
     public List<RecordDto> findPendingRecordsByTitle(String title, Integer limit) {
-        int defaultLimit = 7;
+        int defaultLimit = 20;
         int searchLimit = limit != null ? limit : defaultLimit;
 
         List<Record> records = recordRepository.findPendingRecordsByTitleContainingIgnoreCase(title);
