@@ -79,7 +79,7 @@
             <tbody>
 
             <tr th:each="category : ${categories}">
-                <td th:text="${category.name}">Category Name</td>
+                <td th:text="${category.name != null ? category.name : 'Без категорії'}">Category Name</td>
                 <td>
                     <a th:href="@{/web/categories/edit/{id}(id=${category.id})}"
                        class="btn btn-sm btn-warning me-2">Edit</a>

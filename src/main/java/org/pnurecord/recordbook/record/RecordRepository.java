@@ -48,4 +48,7 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     @Transactional
     @Query("UPDATE Record r SET r.author.id = NULL WHERE r.author.id = :authorId")
     void setAuthorIdToNull(@Param("authorId") Long authorId);
+
+    List<Record> findByCategoryId(Long categoryId);
+
 }

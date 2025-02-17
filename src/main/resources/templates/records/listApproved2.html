@@ -113,7 +113,7 @@
                     <option value="">Select Category</option>
                     <option th:each="category : ${categories}"
                             th:value="${category.id}"
-                            th:text="${category.name}"
+                            th:text="${category.name != null ? category.name : 'Без категорії'}"
                             th:selected="${category.id == selectedCategoryId}"></option>
                 </select>
             </div>
