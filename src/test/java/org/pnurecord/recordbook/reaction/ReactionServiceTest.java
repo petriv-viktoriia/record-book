@@ -206,6 +206,47 @@ public class ReactionServiceTest extends AbstractTestContainerBaseTest {
         assertThat(deletedReaction).isNull();
     }
 
+    @Test
+    void testDeleteUserReactions() {
+        UserDto anotherUser = createUser();
+
+        addReaction(savedUser, savedRecord, true);
+        addReaction(anotherUser, savedRecord, false);
+
+        RecordDto secondRecord = recordService.createRecord(createRecordDto(savedUser, savedCategory));
+        addReaction(savedUser, secondRecord, true);
+        addReaction(anotherUser, secondRecord, true);
+
+        reactionService.deleteUserReactions(savedUser.getId());
+
+        List<ReactionDto> remainingReactions = reactionService.getReactions();
+        assertNotNull(remainingReactions, "Remaining reactions list should not be null");
+        assertEquals(2, remainingReactions.size(), "Should have only reactions from another user");
+        assertTrue(remainingReactions.stream()
+                        .allMatch(reaction -> reaction.getUserId().equals(anotherUser.getId())),
+                "All remaining reactions should belong to another user");
+    }
+
+    @Test
+    void testDeleteReactionsByRecordId() {
+        UserDto anotherUser = createUser();
+        addReaction(savedUser, savedRecord, true);
+        addReaction(anotherUser, savedRecord, false);
+
+        RecordDto secondRecord = recordService.createRecord(createRecordDto(savedUser, savedCategory));
+        addReaction(savedUser, secondRecord, true);
+        addReaction(anotherUser, secondRecord, true);
+
+        reactionService.deleteReactionsByRecordId(savedRecord.getId());
+
+        List<ReactionDto> remainingReactions = reactionService.getReactions();
+        assertNotNull(remainingReactions, "Remaining reactions list should not be null");
+        assertEquals(2, remainingReactions.size(), "Should have only reactions from second record");
+        assertTrue(remainingReactions.stream()
+                        .allMatch(reaction -> reaction.getRecordId().equals(secondRecord.getId())),
+                "All remaining reactions should belong to second record");
+    }
+
 
     private RecordDto createRecordDto(UserDto user, CategoryDto category) {
         RecordDto recordDto = new RecordDto();
