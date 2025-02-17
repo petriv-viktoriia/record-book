@@ -178,8 +178,12 @@ public class RecordWebController {
             RecordDto record = recordService.findById(id);
             String categoryName = categoryService.findById(record.getCategoryId()).getName();
 
-            var author = userService.getUserById(record.getAuthorId());
-            String authorName = author.getFirstName() + " " + author.getLastName();
+            String authorName = "null";
+
+            if (record.getAuthorId() != null) {
+                var author = userService.getUserById(record.getAuthorId());
+                authorName = author.getFirstName() + " " + author.getLastName();
+            }
 
             String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .build()

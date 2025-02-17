@@ -153,7 +153,7 @@
                 <p id="category" class="mb-0" th:text="${categoryName != null ? categoryName : 'Без категорії'}"></p>
             </div>
 
-            <div class="mb-4">
+            <div th:if="${authorName != 'null' and authorName != ''}" class="mb-4">
                 <label for="author" class="form-label">Author</label>
                 <p id="author" class="mb-0" th:text="${authorName}"></p>
             </div>
