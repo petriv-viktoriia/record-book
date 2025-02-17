@@ -162,6 +162,7 @@ public class RecordWebController {
             for (RecordFileInfoDto file : files) {
                 recordFileService.deleteRecordFileById(file.getId());
             }
+            reactionService.deleteReactionsByRecordId(recordId);
             recordService.deleteRecord(recordId);
             redirectAttributes.addFlashAttribute("successMessage", "Record successfully deleted.");
         } catch (Exception e) {

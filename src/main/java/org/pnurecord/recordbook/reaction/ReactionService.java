@@ -1,5 +1,6 @@
 package org.pnurecord.recordbook.reaction;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.exceptions.DuplicateValueException;
 import org.pnurecord.recordbook.exceptions.NotFoundException;
@@ -85,6 +86,18 @@ public class ReactionService {
             Reaction reaction = reactionMapper.toReaction(reactionDto);
             return reactionMapper.toReactionDto(reactionRepository.save(reaction));
         }
+    }
+
+
+    @Transactional
+    public void deleteUserReactions(Long userId) {
+        reactionRepository.deleteByUserId(userId);
+    }
+
+
+    @Transactional
+    public void deleteReactionsByRecordId(Long recordId) {
+        reactionRepository.deleteByRecordId(recordId);
     }
 
 }
