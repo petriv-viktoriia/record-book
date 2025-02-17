@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -21,6 +22,10 @@ public class CategoryWebController {
     @GetMapping
     public String getAllCategories(Model model) {
         List<CategoryDto> categories = categoryService.getAllCategories();
+
+        categories.sort(Comparator.comparing(CategoryDto::getName,
+                Comparator.nullsLast(Comparator.naturalOrder())));
+
         model.addAttribute("categories", categories);
         model.addAttribute("role", userService.getCurrentUserRole());
         return "categories/list"; // resources/templates/categories/list.html

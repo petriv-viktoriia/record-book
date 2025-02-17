@@ -102,7 +102,7 @@
                 <option value="">Select Category</option>
                 <option th:each="category : ${categories}"
                         th:value="${category.id}"
-                        th:text="${category.name}"></option>
+                        th:text="${category.name != null ? category.name : 'Без категорії'}"></option>
             </select>
             <div class="text-danger" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
         </div>
