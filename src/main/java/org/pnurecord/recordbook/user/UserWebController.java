@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,6 +41,9 @@ public class UserWebController {
     public String getUsers(Model model) {
         try {
             List<UserDto> users = userService.getUsers();
+
+            users.sort(Comparator.comparing(UserDto::getId));
+
             model.addAttribute("users", users);
             model.addAttribute("role", userService.getCurrentUserRole());
             model.addAttribute("currentUserId", userService.getCurrentUserId());

@@ -59,6 +59,8 @@ public class RecordWebController {
             reactions.put(record.getId(), reactionCount);
         }
 
+        records.sort(Comparator.comparing(RecordDto::getPublishedDate).reversed());
+
         model.addAttribute("reactions", reactions);
         model.addAttribute("records", records);
         model.addAttribute("authorNames", authorNames);
@@ -238,6 +240,7 @@ public class RecordWebController {
                     categoryRepository.findCategoryNameById(record.getCategoryId()));
         }
 
+        records.sort(Comparator.comparing(RecordDto::getPublishedDate).reversed());
 
         model.addAttribute("records", records);
         model.addAttribute("authorNames", authorNames);

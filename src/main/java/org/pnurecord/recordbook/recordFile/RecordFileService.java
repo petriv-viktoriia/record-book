@@ -12,6 +12,7 @@ import org.pnurecord.recordbook.record.Record;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -59,16 +60,30 @@ public class RecordFileService {
             throw new NotFoundException("Record not found");
         }
 
-        if (recordFileRepository.existsByFilenameIgnoreCaseAndRecordId(file.getOriginalFilename(), recordId)) {
-            log.info("File {} already exists for record {}", file.getOriginalFilename(), recordId);
-            throw new DuplicateValueException("File with name '%s' for record with id %s already exists".formatted(file.getOriginalFilename(), recordId));
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) {
+            throw new IllegalArgumentException("Original filename cannot be null");
+        }
+
+        boolean fileExists = recordFileRepository.findByRecordId(recordId)
+                .stream()
+                .anyMatch(existingFile -> {
+                    String existingOriginalName = existingFile.getFilename().substring(existingFile.getFilename().indexOf("_") + 1);
+                    return existingOriginalName.equalsIgnoreCase(originalFilename) &&
+                            existingFile.getType().equals(file.getContentType());
+                });
+
+        if (fileExists) {
+            throw new DuplicateValueException("File with name '%s' for record with id %s already exists"
+                    .formatted(originalFilename, recordId));
         }
 
         Record record = new Record();
         record.setId(recordId);
 
+        String uuidNumber = UUID.randomUUID().toString();
         var recordFile = RecordFile.builder()
-                .filename(file.getOriginalFilename())
+                .filename(uuidNumber + "_" + file.getOriginalFilename())
                 .type(file.getContentType())
                 .data(file.getBytes())
                 .record(record)
