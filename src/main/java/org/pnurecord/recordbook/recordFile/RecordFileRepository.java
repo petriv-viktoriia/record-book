@@ -14,8 +14,6 @@ import java.util.Optional;
 public interface RecordFileRepository extends CrudRepository<RecordFile, Long> {
     Optional<RecordFile> findByFilename(String filename);
 
-    boolean existsByFilenameIgnoreCaseAndRecordId(String filename, Long recordId);
-
     @Query("SELECT rf.filename FROM RecordFile rf WHERE rf.record.id = :recordId")
     List<String> findFilenamesByRecordId(@Param("recordId") Long recordId);
 

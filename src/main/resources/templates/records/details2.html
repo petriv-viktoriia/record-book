@@ -171,11 +171,11 @@
                     <div class="mb-3">
                         <div th:if="${file.getFileUrl().endsWith('jpg') or file.getFileUrl().endsWith('jpeg') or file.getFileUrl().endsWith('png') or file.getFileUrl().endsWith('gif')}">
                             <a th:href="@{${file.fileUrl}}" target="_blank">
-                                <img th:src="@{${file.fileUrl}}" th:alt="${file.filename}" class="img-fluid mb-2" style="max-width: 300px;">
+                                <img th:src="@{${file.fileUrl}}" th:alt="${#strings.substringAfter(file.filename, '_')}" class="img-fluid mb-2" style="max-width: 300px;">
                             </a>
                         </div>
                         <div th:unless="${file.getFileUrl().endsWith('jpg') or file.getFileUrl().endsWith('jpeg') or file.getFileUrl().endsWith('png') or file.getFileUrl().endsWith('gif')}">
-                            <a th:href="@{${file.fileUrl}}" th:text="${file.filename}" class="download-link">
+                            <a th:href="@{${file.fileUrl}}" th:text="${#strings.substringAfter(file.filename, '_')}" class="download-link">
                                 <i class="bi bi-download me-2"></i>Open
                             </a>
                         </div>
