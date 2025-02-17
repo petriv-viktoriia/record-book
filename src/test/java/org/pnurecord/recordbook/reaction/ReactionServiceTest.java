@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -178,6 +179,31 @@ public class ReactionServiceTest extends AbstractTestContainerBaseTest {
         assertEquals(savedReaction.getRecordId(), foundById.getRecordId(), "Record ID should match");
         assertEquals(savedReaction.isLiked(), foundById.isLiked(), "Liked status should match");
         assertEquals(savedReaction.getUserId(), foundById.getUserId(), "User ID should match");
+    }
+
+    @Test
+    void shouldAddOrUpdateReaction() {
+        ReactionDto reactionDto = new ReactionDto();
+        reactionDto.setRecordId(savedRecord.getId());
+        reactionDto.setUserId(savedUser.getId());
+        reactionDto.setLiked(true);
+
+        ReactionDto addedReaction = reactionService.addOrUpdateReaction(reactionDto);
+        assertThat(addedReaction).isNotNull();
+        assertThat(addedReaction.getRecordId()).isEqualTo(savedRecord.getId());
+        assertThat(addedReaction.getUserId()).isEqualTo(savedUser.getId());
+        assertThat(addedReaction.isLiked()).isTrue();
+
+        reactionDto.setLiked(false);
+        ReactionDto updatedReaction = reactionService.addOrUpdateReaction(reactionDto);
+        assertThat(updatedReaction).isNotNull();
+        assertThat(updatedReaction.getRecordId()).isEqualTo(savedRecord.getId());
+        assertThat(updatedReaction.getUserId()).isEqualTo(savedUser.getId());
+        assertThat(updatedReaction.isLiked()).isFalse();
+
+        reactionDto.setLiked(false);
+        ReactionDto deletedReaction = reactionService.addOrUpdateReaction(reactionDto);
+        assertThat(deletedReaction).isNull();
     }
 
 

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -365,5 +366,14 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
                 "Each record title should contain the search term (case-insensitive)");
         assertEquals(RecordStatus.PENDING, foundRecordsPending.get(0).getStatus(), "Record should have PENDING status");
         assertEquals(savedUser.getId(), foundRecordsPending.get(0).getAuthorId(), "Only records created by STUDENT should be pending");
+    }
+
+    @Test
+    void shouldNullifyAuthorReferences() {
+        RecordDto savedRecord = recordService.createRecord(recordDto);
+        assertEquals(savedRecord.getAuthorId(), savedUser.getId());
+        recordService.nullifyAuthorReferences(savedUser.getId());
+        RecordDto updatedRecord = recordService.findById(savedRecord.getId());
+        assertEquals(updatedRecord.getAuthorId(), null);
     }
 }

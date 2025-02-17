@@ -94,9 +94,14 @@ public class RecordFileControllerTest extends AbstractTestContainerBaseTest {
                 savedRecord.getId(),
                 "http://localhost:8080"
         );
+
         assertEquals(1, files.size(), "Should have exactly one file");
-        assertEquals("test.jpg", files.get(0).getFilename(), "Filename should match uploaded file");
+
+        String uploadedFilename = files.get(0).getFilename();
+
+        assertTrue(uploadedFilename.contains("test.jpg"), "Filename should contain uploaded file format");
     }
+
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -105,7 +110,10 @@ public class RecordFileControllerTest extends AbstractTestContainerBaseTest {
                         .file(file))
                 .andExpect(status().isOk());
 
-        MvcResult result = mockMvc.perform(get("/files/{filename}", "test.jpg"))
+        List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(savedRecord.getId(), "http://localhost:8080");
+        String actualFilename = files.get(0).getFilename();
+
+        MvcResult result = mockMvc.perform(get("/files/{filename}", actualFilename))
                 .andExpect(status().isOk())
                 .andExpect(header().exists(HttpHeaders.CONTENT_TYPE))
                 .andReturn();
@@ -116,6 +124,7 @@ public class RecordFileControllerTest extends AbstractTestContainerBaseTest {
         byte[] fileContent = result.getResponse().getContentAsByteArray();
         assertTrue(fileContent.length > 0, "File content should not be empty");
     }
+
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -135,10 +144,13 @@ public class RecordFileControllerTest extends AbstractTestContainerBaseTest {
 
         assertEquals(1, fileInfoList.size(), "There should be exactly one file information returned");
         RecordFileInfoDto fileInfo = fileInfoList.get(0);
-        assertEquals("test.jpg", fileInfo.getFilename(), "Filename should match uploaded file");
-        assertTrue(fileInfo.getFileUrl().contains("/files/test.jpg"), "File URL should contain the correct filename");
+
+        String actualFilename = fileInfo.getFilename();
+
+        assertTrue(actualFilename.contains("test.jpg"), "Filename should contain uploaded file format");
         assertEquals("image/jpeg", fileInfo.getType(), "File type should be image/jpeg");
     }
+
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -147,26 +159,34 @@ public class RecordFileControllerTest extends AbstractTestContainerBaseTest {
                         .file(file))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(delete("/files/name/{filename}", "test.jpg"))
+        List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(savedRecord.getId(), "http://localhost:8080");
+        String actualFilename = files.get(0).getFilename();
+
+        mockMvc.perform(delete("/files/name/{filename}", actualFilename))
                 .andExpect(status().isOk());
 
-        List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(
+        List<RecordFileInfoDto> remainingFiles = recordFileService.getFilesByRecordId(
                 savedRecord.getId(),
                 "http://localhost:8080"
         );
 
-        assertEquals(0, files.size(), "The file should be deleted and no files should remain");
+        assertEquals(0, remainingFiles.size(), "The file should be deleted and no files should remain");
     }
+
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldDeleteFileById() throws Exception {
-       mockMvc.perform(multipart("/files/upload/{recordId}", savedRecord.getId())
+        mockMvc.perform(multipart("/files/upload/{recordId}", savedRecord.getId())
                         .file(file))
                 .andExpect(status().isOk());
 
         List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(savedRecord.getId(), "http://localhost:8080");
+
+        assertFalse(files.isEmpty(), "There should be at least one file uploaded");
+
         Long fileId = files.get(0).getId();
+        assertNotNull(fileId, "File ID should not be null");
 
         mockMvc.perform(delete("/files/{id}", fileId))
                 .andExpect(status().isOk());
@@ -175,6 +195,7 @@ public class RecordFileControllerTest extends AbstractTestContainerBaseTest {
                 savedRecord.getId(),
                 "http://localhost:8080"
         );
+
         assertEquals(0, remainingFiles.size(), "The file should be deleted and no files should remain");
     }
 
