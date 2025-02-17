@@ -48,22 +48,6 @@
             border-radius: 6px;
         }
 
-        .btn {
-            padding: 0.5rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        .btn-primary {
-            background-color: #0d6af3;
-            border: none;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border: none;
-        }
-
         img.img-fluid {
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -97,6 +81,25 @@
                 padding: 5px 8px;
             }
         }
+
+        body{
+            font-family: "Segoe UI";
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        html {
+            overflow: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        html::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
     </style>
 </head>
 <body>
@@ -105,19 +108,24 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
             <div class="container-fluid">
                 <a class="navbar-brand" th:href="@{/web/records}"><h1>Records Of PNU</h1></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+
+                    <!-- Контейнер для кнопок (праворуч, з фіксованим розміром) -->
                     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-end ms-auto gap-2">
-                        <a th:if="${role == null}" href="/" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">Вхід</a>
+                        <a th:if="${role == null}" href="/" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">Log In</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn" >Categories</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/users}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn" >Users</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn" >View Pending Records</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
                         <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/web/users/profile" class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My profile</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/web/users/profile" class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My Profile</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/logout" class="btn btn-danger text-center d-flex align-items-center justify-content-center collapse-btn">Exit</a>
                     </div>
                 </div>
@@ -142,7 +150,7 @@
 
             <div class="mb-4">
                 <label for="category" class="form-label">Category</label>
-                <p id="category" class="mb-0" th:text="${categoryName}"></p>
+                <p id="category" class="mb-0" th:text="${categoryName != null ? categoryName : 'Без категорії'}"></p>
             </div>
 
             <div class="mb-4">

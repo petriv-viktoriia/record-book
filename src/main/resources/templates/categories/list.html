@@ -11,6 +11,24 @@
                 max-width: 250px;
             }
         }
+        body{
+            font-family: "Segoe UI";
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        html {
+            overflow: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        html::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
     </style>
 </head>
 <body>
@@ -28,13 +46,13 @@
 
                     <!-- Контейнер для кнопок (праворуч, з фіксованим розміром) -->
                     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-end ms-auto gap-2">
-                        <a th:if="${role == null}" href="/" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">Вхід</a>
+                        <a th:if="${role == null}" href="/" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn">Log In</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/categories}" class="btn btn-success text-center d-flex align-items-center justify-content-center collapse-btn" >Categories</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/users}" class="btn btn-secondary text-center d-flex align-items-center justify-content-center collapse-btn" >Users</a>
                         <a th:if="${role == 'ADMIN'}" th:href="@{/web/records/pending}" class="btn btn-warning text-center d-flex align-items-center justify-content-center collapse-btn" >View Pending Records</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" th:href="@{/web/records/create}" class="btn btn-primary text-center d-flex align-items-center justify-content-center collapse-btn" >Create New Record</a>
                         <a th:if="${role == 'STUDENT'}" th:href="@{/web/records/status(status='APPROVED')}" class="btn btn-info text-center d-flex align-items-center justify-content-center collapse-btn" >My Requests</a>
-                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/web/users/profile" class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My profile</a>
+                        <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/web/users/profile" class="btn btn btn-dark text-center d-flex align-items-center justify-content-center collapse-btn">My Profile</a>
                         <a th:if="${role == 'STUDENT' or role == 'ADMIN'}" href="/logout" class="btn btn-danger text-center d-flex align-items-center justify-content-center collapse-btn">Exit</a>
                     </div>
                 </div>
@@ -70,7 +88,7 @@
             <tbody>
 
             <tr th:each="category : ${categories}">
-                <td th:text="${category.name}">Category Name</td>
+                <td th:text="${category.name != null ? category.name : 'Без категорії'}">Category Name</td>
                 <td>
                     <a th:href="@{/web/categories/edit/{id}(id=${category.id})}"
                        class="btn btn-sm btn-warning me-2">Edit</a>

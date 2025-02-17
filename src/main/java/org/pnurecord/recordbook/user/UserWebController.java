@@ -2,6 +2,7 @@ package org.pnurecord.recordbook.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.pnurecord.recordbook.reaction.ReactionService;
 import org.pnurecord.recordbook.record.RecordDto;
 import org.pnurecord.recordbook.record.RecordService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,7 @@ public class UserWebController {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final RecordService recordService;
+    private final ReactionService reactionService;
 
     @GetMapping
     public String login() {
@@ -153,6 +155,7 @@ public class UserWebController {
                 return "redirect:/web/users";
             }
             recordService.nullifyAuthorReferences(id);
+            reactionService.deleteUserReactions(id);
             userService.deleteUser(id);
             redirectAttributes.addFlashAttribute("successMessage", "User successfully deleted");
             return "redirect:/web/users";
