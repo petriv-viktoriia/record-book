@@ -44,9 +44,9 @@ public class RecordFileController {
     @PostMapping("/upload/{recordId}")
     public void upload(
             @PathVariable Long recordId,
-            @RequestPart MultipartFile file) {
+            @RequestPart List<MultipartFile> files) {
         try {
-            recordFileService.saveRecordFile(file, recordId);
+            recordFileService.saveRecordFile(files, recordId);
         } catch (Exception e) {
             log.error("File upload error: {}", e.getMessage());
             throw new RuntimeException("File upload error", e);

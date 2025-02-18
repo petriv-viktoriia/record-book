@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.pnurecord.recordbook.record.Record;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -53,44 +54,60 @@ public class RecordFileService {
         }
     }
 
-    public void saveRecordFile(MultipartFile file, Long recordId) throws Exception {
-        validateFileType(file);
+    public void saveRecordFile(List<MultipartFile> files, Long recordId) throws Exception {
+//        if (files == null || files.isEmpty()) {
+//            throw new IllegalArgumentException("File list cannot be empty");
+//        }
 
         if (!recordRepository.existsById(recordId)) {
             throw new NotFoundException("Record not found");
         }
 
-        String originalFilename = file.getOriginalFilename();
-        if (originalFilename == null) {
-            throw new IllegalArgumentException("Original filename cannot be null");
-        }
-
-        boolean fileExists = recordFileRepository.findByRecordId(recordId)
-                .stream()
-                .anyMatch(existingFile -> {
-                    String existingOriginalName = existingFile.getFilename().substring(existingFile.getFilename().indexOf("_") + 1);
-                    return existingOriginalName.equalsIgnoreCase(originalFilename) &&
-                            existingFile.getType().equals(file.getContentType());
-                });
-
-        if (fileExists) {
-            throw new DuplicateValueException("File with name '%s' for record with id %s already exists"
-                    .formatted(originalFilename, recordId));
+        if (files == null || files.isEmpty() || files.get(0).isEmpty()) {
+            return;
         }
 
         Record record = new Record();
         record.setId(recordId);
 
-        String uuidNumber = UUID.randomUUID().toString();
-        var recordFile = RecordFile.builder()
-                .filename(uuidNumber + "_" + file.getOriginalFilename())
-                .type(file.getContentType())
-                .data(file.getBytes())
-                .record(record)
-                .build();
+        List<RecordFile> savedFiles = new ArrayList<>();
 
-        recordFileMapper.toRecordFileDto(recordFileRepository.save(recordFile));
+        for (MultipartFile file : files) {
+            validateFileType(file);
+
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null) {
+                throw new IllegalArgumentException("Original filename cannot be null");
+            }
+
+            boolean fileExists = recordFileRepository.findByRecordId(recordId)
+                    .stream()
+                    .anyMatch(existingFile -> {
+                        String existingOriginalName = existingFile.getFilename().substring(existingFile.getFilename().indexOf("_") + 1);
+                        return existingOriginalName.equalsIgnoreCase(originalFilename) &&
+                                existingFile.getType().equals(file.getContentType());
+                    });
+
+            if (fileExists) {
+//                throw new DuplicateValueException("File with name '%s' for record with id %s already exists"
+//                        .formatted(originalFilename, recordId));
+                continue;
+            }
+
+            String uuidNumber = UUID.randomUUID().toString();
+            RecordFile recordFile = RecordFile.builder()
+                    .filename(uuidNumber + "_" + originalFilename)
+                    .type(file.getContentType())
+                    .data(file.getBytes())
+                    .record(record)
+                    .build();
+
+            savedFiles.add(recordFile);
+        }
+
+        recordFileRepository.saveAll(savedFiles);
     }
+
 
     public void deleteRecordFile(String filename) {
         recordFileRepository.deleteByFilename(filename);

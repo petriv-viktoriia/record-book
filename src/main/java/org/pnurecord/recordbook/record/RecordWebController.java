@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pnurecord.recordbook.category.CategoryRepository;
 import org.pnurecord.recordbook.category.CategoryService;
+import org.pnurecord.recordbook.exceptions.NotFoundException;
 import org.pnurecord.recordbook.reaction.ReactionCountDto;
 import org.pnurecord.recordbook.reaction.ReactionDto;
 import org.pnurecord.recordbook.reaction.ReactionService;
@@ -77,6 +78,7 @@ public class RecordWebController {
         model.addAttribute("recordDto", new RecordDto());
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("role", userService.getCurrentUserRole());
+        model.addAttribute("files", new ArrayList<>());
         return "records/form2";
     }
 
@@ -84,7 +86,7 @@ public class RecordWebController {
     @PostMapping("/create")
     public String createRecord(@ModelAttribute @Valid RecordDto recordDto,
                                BindingResult bindingResult,
-                               @RequestParam(value = "file", required = false) MultipartFile file,
+                               @RequestParam(value = "file", required = false) List<MultipartFile> files,
                                RedirectAttributes redirectAttributes,
                                Model model) {
         if (bindingResult.hasErrors()) {
@@ -99,8 +101,8 @@ public class RecordWebController {
             recordDto.setAuthorId(currentUserId);
             RecordDto createdRecord = recordService.createRecord(recordDto);
 
-            if (file != null && !file.isEmpty()) {
-                recordFileService.saveRecordFile(file, createdRecord.getId());
+            if (files != null && !files.isEmpty()) {
+                recordFileService.saveRecordFile(files, createdRecord.getId());
                 redirectAttributes.addFlashAttribute("successMessage", "Record created and file uploaded successfully.");
             } else {
                 redirectAttributes.addFlashAttribute("successMessage", "Record created successfully.");
@@ -116,9 +118,17 @@ public class RecordWebController {
     @GetMapping("/edit/{recordId}")
     public String showEditForm(@PathVariable Long recordId, Model model) {
         RecordDto recordDto = recordService.findById(recordId);
+
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .build()
+                .toUriString();
+        List<RecordFileInfoDto> files = recordFileService.getFilesByRecordId(recordId, baseUrl);
+
+
         model.addAttribute("recordDto", recordDto);
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("role", userService.getCurrentUserRole());
+        model.addAttribute("files", files);
         return "records/form2";
     }
 
@@ -127,7 +137,8 @@ public class RecordWebController {
     public String updateRecord(@PathVariable Long recordId,
                                @ModelAttribute @Valid RecordDto recordDto,
                                BindingResult bindingResult,
-                               @RequestParam(value = "file", required = false) MultipartFile file,
+                               @RequestParam(value = "file", required = false) List<MultipartFile> files,
+                               @RequestParam(value = "filesToDelete", required = false) List<Long> filesToDelete,
                                RedirectAttributes redirectAttributes,
                                Model model) {
 
@@ -140,9 +151,15 @@ public class RecordWebController {
         try {
             recordService.updateRecord(recordId, recordDto);
 
-            if (file != null && !file.isEmpty()) {
-                recordFileRepository.deleteByRecordId(recordId);
-                recordFileService.saveRecordFile(file, recordId);
+            if (filesToDelete != null) {
+                for (Long fileId : filesToDelete) {
+                    recordFileService.deleteRecordFileById(fileId);
+                }
+            }
+
+            if (files != null && !files.isEmpty() && files.get(0).getSize() > 0) {
+                //recordFileRepository.deleteByRecordId(recordId);
+                recordFileService.saveRecordFile(files, recordId);
                 redirectAttributes.addFlashAttribute("successMessage", "Record updated and new file uploaded successfully");
             } else {
                 redirectAttributes.addFlashAttribute("successMessage", "Record updated successfully");
@@ -586,4 +603,6 @@ public class RecordWebController {
         reactionService.addOrUpdateReaction(reactionDto);
         return "redirect:/web/records/" + id;
     }
+
+
 }
