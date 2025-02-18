@@ -284,6 +284,7 @@ public class RecordWebController {
 
             Map<Long, String> authorNames = new HashMap<>();
             Map<Long, String> categoryNames = new HashMap<>();
+            Map<Long, ReactionCountDto> reactions = new HashMap<>();
 
             for (RecordDto record : searchResults) {
                 authorNames.put(record.getAuthorId(),
@@ -291,6 +292,8 @@ public class RecordWebController {
 
                 categoryNames.put(record.getCategoryId(),
                         categoryRepository.findCategoryNameById(record.getCategoryId()));
+
+                reactions.put(record.getId(), reactionService.getReactionsCount(record.getId()));
             }
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -310,6 +313,7 @@ public class RecordWebController {
             model.addAttribute("searchTitle", title);
             model.addAttribute("searchLimit", limit);
             model.addAttribute("role", role);
+            model.addAttribute("reactions", reactions);
 
             return "records/searchResults";
         } catch (Exception e) {
@@ -333,6 +337,7 @@ public class RecordWebController {
 
             Map<Long, String> authorNames = new HashMap<>();
             Map<Long, String> categoryNames = new HashMap<>();
+            Map<Long, ReactionCountDto> reactions = new HashMap<>();
 
             for (RecordDto record : searchResults) {
                 authorNames.put(record.getAuthorId(),
@@ -340,6 +345,8 @@ public class RecordWebController {
 
                 categoryNames.put(record.getCategoryId(),
                         categoryRepository.findCategoryNameById(record.getCategoryId()));
+
+                reactions.put(record.getId(), reactionService.getReactionsCount(record.getId()));
             }
 
             model.addAttribute("records", searchResults);
@@ -349,6 +356,7 @@ public class RecordWebController {
             model.addAttribute("searchTitle", title);
             model.addAttribute("searchLimit", limit);
             model.addAttribute("role", userService.getCurrentUserRole());
+            model.addAttribute("reactions", reactions);
 
             return "records/searchResults";
         } catch (Exception e) {
@@ -526,6 +534,7 @@ public class RecordWebController {
             List<RecordDto> records = recordService.getPendingRecordsByCategory(categoryId);
             Map<Long, String> authorNames = new HashMap<>();
             Map<Long, String> categoryNames = new HashMap<>();
+            Map<Long, ReactionCountDto> reactions = new HashMap<>();
 
             for (RecordDto record : records) {
                 authorNames.put(record.getAuthorId(),
@@ -533,12 +542,15 @@ public class RecordWebController {
 
                 categoryNames.put(record.getCategoryId(),
                         categoryRepository.findCategoryNameById(record.getCategoryId()));
+
+                reactions.put(record.getId(), reactionService.getReactionsCount(record.getId()));
             }
             model.addAttribute("records", records);
             model.addAttribute("selectedCategoryId", categoryId);
             model.addAttribute("authorNames", authorNames);
             model.addAttribute("categoryNames", categoryNames);
             model.addAttribute("role", userService.getCurrentUserRole());
+            model.addAttribute("reactions", reactions);
             return "records/searchResults";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to fetch records for the selected category.");
