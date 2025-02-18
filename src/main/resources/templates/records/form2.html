@@ -63,6 +63,32 @@
         .remove-button:hover {
             color: #a71d2a;
         }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-div {
+            flex: 1;
+        }
+
+        footer {
+            width: 100%;
+            background-color: #212529;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 767px) {
+            .hidden-mobile {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -150,14 +176,6 @@
             </div>
         </div>
 
-<!--        <div th:if="${files != null and !files.isEmpty()}" class="mb-3">-->
-<!--            <label class="form-label">Attached Files:</label>-->
-<!--            <div th:each="file : ${files}" class="mb-2">-->
-<!--                <a th:href="@{${file.fileUrl}}" th:text="${#strings.substringAfter(file.filename, '_')}" target="_blank"></a>-->
-<!--&lt;!&ndash;                <a th:href="@{${file.fileUrl}}" target="_blank" th:text="${file.filename}"></a>&ndash;&gt;-->
-<!--            </div>-->
-<!--        </div>-->
-
         <div th:if="${files != null and !files.isEmpty()}" class="mb-3">
             <label class="form-label">Attached Files:</label>
             <div th:each="file : ${files}"
@@ -175,9 +193,23 @@
 
         <button type="submit" class="btn btn-primary"
                 th:text="${recordDto.id == null ? 'Create Record' : 'Save Changes'}"></button>
-        <a href="/web/records" class="btn btn-secondary">Cancel</a>
+        <a href="/web/records" class="btn btn-secondary mb-2">Cancel</a>
     </form>
 </div>
+<footer class="bg-dark text-light py-2">
+    <div class="container text-center small">
+        <p class="mb-1 hidden-mobile">Team: Viktoria Petriv, Yuliia Krupka, Nadia Paliuha, Victoria Kravetska, Vitalii Pavliuk</p>
+        <p class="mb-0">Email:
+            <a href="mailto:viktoriia.petriv.22@pnu.edu.ua" class="text-light">
+                viktoriia.petriv.22@pnu.edu.ua
+            </a>
+        </p>
+        <p class="mb-1">&copy; Copyright 2025</p>
+    </div>
+</footer>
+
+
+<script src="https://kit.fontawesome.com/YOUR_KIT_ID.js" crossorigin="anonymous"></script>
 
 <script>
     const fileInput = document.getElementById('file');
