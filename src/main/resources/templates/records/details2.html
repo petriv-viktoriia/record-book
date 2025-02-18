@@ -201,7 +201,7 @@
                             </a>
                         </div>
                         <div th:unless="${file.getFileUrl().endsWith('jpg') or file.getFileUrl().endsWith('jpeg') or file.getFileUrl().endsWith('png') or file.getFileUrl().endsWith('gif')}">
-                            <a th:href="@{${file.fileUrl}}" th:text="${#strings.substringAfter(file.filename, '_')}" class="download-link">
+                            <a th:href="@{${file.fileUrl}}" th:text="${#strings.substringAfter(file.filename, '_')}" class="download-link" target="_blank">
                                 <i class="bi bi-download me-2"></i>Open
                             </a>
                         </div>
