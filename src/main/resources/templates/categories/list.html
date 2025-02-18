@@ -29,6 +29,40 @@
         html::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Edge */
         }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-div {
+            flex: 1;
+        }
+
+        footer {
+            width: 100%;
+            background-color: #212529;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 767px) {
+            .hidden-mobile {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .btn-custom {
+                padding: 0.25rem 0.75rem; /* Зменшений внутрішній відступ */
+                font-size: 0.875rem; /* Менший розмір шрифту */
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -60,7 +94,7 @@
         </nav>
     </div>
 </header>
-<div class="container mt-4">
+<div class="container mt-4 main-div">
     <div th:if="${successMessage}" class="alert alert-success" role="alert">
         <span th:text="${successMessage}"></span>
     </div>
@@ -68,21 +102,22 @@
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <div class="row mb-4">
-        <div class="col">
+    <div class="row mb-4 d-flex align-items-center">
+        <div class="col text-start">
             <h2>Categories</h2>
         </div>
-        <div class="col text-end">
-            <a th:href="@{/web/categories/new}" class="btn btn-primary">Create New Category</a>
+        <div class="col d-flex justify-content-end">
+            <a th:href="@{/web/categories/new}" class="btn btn-primary btn-custom">Create New Category</a>
         </div>
     </div>
+
 
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead class="table-dark">
             <tr>
                 <th scope="col">Name</th>
-                <th scope="col">Actions</th>
+                <th scope="col" class="text-end">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -92,7 +127,7 @@
                     th:colspan="${category.name == null or category.name == 'Без категорії' ? 2 : 1}">
                     Category Name
                 </td>
-                <td th:if="${category.name != null and category.name != 'Без категорії'}">
+                <td th:if="${category.name != null and category.name != 'Без категорії'}" class="text-end">
                     <a th:href="@{/web/categories/edit/{id}(id=${category.id})}"
                        class="btn btn-sm btn-warning me-2">Edit</a>
                     <form th:action="@{/web/categories/delete/{id}(id=${category.id})}" method="post"
@@ -113,7 +148,20 @@
         </table>
     </div>
 </div>
+<footer class="bg-dark text-light py-2">
+    <div class="container text-center small">
+        <p class="mb-1 hidden-mobile">Team: Viktoria Petriv, Yuliia Krupka, Nadia Paliuha, Victoria Kravetska, Vitalii Pavliuk</p>
+        <p class="mb-0">Email:
+            <a href="mailto:viktoriia.petriv.22@pnu.edu.ua" class="text-light">
+                viktoriia.petriv.22@pnu.edu.ua
+            </a>
+        </p>
+        <p class="mb-1">&copy; Copyright 2025</p>
+    </div>
+</footer>
 
+
+<script src="https://kit.fontawesome.com/YOUR_KIT_ID.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
