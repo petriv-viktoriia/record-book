@@ -68,15 +68,47 @@
                 display: none;
             }
 
+            .button-edit-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-edit{
+                padding: 8px 20px;
+            }
+
+            .button-edit-group button,
+            .button-edit-group a {
+                width: 100%;
+            }
+
+            .button-edit-group button,
+            .button-edit-group a {
+                display: block; /* Всі кнопки займають всю ширину */
+                text-align: center;
+                font-size: 0.85rem; /* Робимо текст меншим */
+
+                white-space: nowrap; /* Запобігає переносу тексту */
+            }
+
             .icon-sm {
-                font-size: 0.8rem; /* Зменшуємо розмір іконки для малих екранів */
+                font-size: 0.75rem; /* Зменшені іконки */
             }
+        }
 
-            .btn-sm {
-                padding: 0.25rem 0.5rem; /* Зменшуємо відступи для кнопок */
-                font-size: 0.75rem; /* Зменшуємо розмір шрифту */
-            }
+        /* Базові стилі для вирівнювання та зменшення відстані між кнопками */
+        .button-edit-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
 
+        /* Вирівнювання тексту в колонках email та role */
+        td {
+            vertical-align: middle;
+
+            white-space: nowrap;
         }
 
     </style>
@@ -162,30 +194,32 @@
                     <td th:text="${user.email}" class="user-email"></td>
                     <td th:text="${user.role}" class="user-role"></td>
                     <td class="text-end">
-                        <form th:if="${user.role.toString() != 'ADMIN'}"
-                              th:action="@{/web/users/{id}/role(id=${user.id})}" method="post" class="d-inline">
-                            <input type="hidden" name="_method" value="put"/>
-                            <button type="submit" class="btn btn-sm btn-outline-primary me-2">
-                                <i class="bi bi-person-lines-fill icon-sm"></i>
-                                <span class="d-none d-md-inline"> Set Admin</span>
-                            </button>
-                        </form>
+                        <div class="d-flex flex-wrap justify-content-end gap-2 gap-sm-1 gap-md-2 button-edit-group">
+                            <form th:if="${user.role.toString() != 'ADMIN'}"
+                                  th:action="@{/web/users/{id}/role(id=${user.id})}" method="post">
+                                <input type="hidden" name="_method" value="put"/>
+                                <button type="submit" class="btn btn-sm btn-outline-primary btn-edit">
+                                    <i class="bi bi-person-lines-fill icon-sm"></i>
+                                    <span class="d-none d-md-inline"> Set Admin</span>
+                                </button>
+                            </form>
 
-                        <a th:href="@{/web/users/edit/{id}(id=${user.id})}" class="btn btn-sm btn-warning me-2">
-                            <i class="bi bi-pencil-square icon-sm"></i>
-                            <span class="d-none d-md-inline"> Edit</span>
-                        </a>
+                            <a th:href="@{/web/users/edit/{id}(id=${user.id})}" class="btn btn-sm btn-warning btn-edit">
+                                <i class="bi bi-pencil-square icon-sm"></i>
+                                <span class="d-none d-md-inline"> Edit</span>
+                            </a>
 
-                        <form th:if="${currentUserId != user.id}" th:action="@{/web/users/delete/{id}(id=${user.id})}" method="post" class="d-inline"
-                              th:data-firstname="${user.firstName}"
-                              th:data-lastname="${user.lastName}"
-                              onsubmit="return confirm('Delete user: ' + this.getAttribute('data-firstname') + ' ' + this.getAttribute('data-lastname') + '?')">
-                            <input type="hidden" name="_method" value="delete"/>
-                            <button type="submit" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash icon-sm"></i>
-                                <span class="d-none d-md-inline"> Delete</span>
-                            </button>
-                        </form>
+                            <form th:if="${currentUserId != user.id}" th:action="@{/web/users/delete/{id}(id=${user.id})}" method="post"
+                                  th:data-firstname="${user.firstName}"
+                                  th:data-lastname="${user.lastName}"
+                                  onsubmit="return confirm('Delete user: ' + this.getAttribute('data-firstname') + ' ' + this.getAttribute('data-lastname') + '?')">
+                                <input type="hidden" name="_method" value="delete"/>
+                                <button type="submit" class="btn btn-sm btn-danger btn-edit">
+                                    <i class="bi bi-trash icon-sm"></i>
+                                    <span class="d-none d-md-inline"> Delete</span>
+                                </button>
+                            </form>
+                        </div>
                     </td>
 
                 </tr>
