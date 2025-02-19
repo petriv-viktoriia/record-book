@@ -121,7 +121,7 @@
     </div>
 </header>
 
-<div class="container mt-4">
+<div class="container mt-4 main-div">
 
     <div class="row mb-4">
         <div class="col">
@@ -191,9 +191,13 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary"
-                th:text="${recordDto.id == null ? 'Create Record' : 'Save Changes'}"></button>
-        <a href="/web/records" class="btn btn-secondary mb-2">Cancel</a>
+        <div class="d-flex gap-2 mb-4">
+            <button type="submit" class="btn btn-primary"
+                    th:text="${recordDto.id == null ? 'Create Record' : 'Save Changes'}">
+            </button>
+            <a href="/web/records" class="btn btn-secondary">Cancel</a>
+        </div>
+
     </form>
 </div>
 <footer class="bg-dark text-light py-2">
