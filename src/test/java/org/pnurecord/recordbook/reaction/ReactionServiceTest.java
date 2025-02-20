@@ -182,7 +182,7 @@ public class ReactionServiceTest extends AbstractTestContainerBaseTest {
     }
 
     @Test
-    void shouldAddOrUpdateReaction() {
+    void testAddOrUpdateReaction() {
         ReactionDto reactionDto = new ReactionDto();
         reactionDto.setRecordId(savedRecord.getId());
         reactionDto.setUserId(savedUser.getId());

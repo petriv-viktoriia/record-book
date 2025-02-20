@@ -37,7 +37,6 @@ public class CategoryServiceTest extends AbstractTestContainerBaseTest {
         }
 
         int numberOfCategoriesToCreate = 10;
-        List<CategoryDto> savedCategories = new ArrayList<>();
 
         for (int i = 0; i < numberOfCategoriesToCreate; i++) {
             CategoryDto categoryDto = new CategoryDto();
@@ -45,7 +44,6 @@ public class CategoryServiceTest extends AbstractTestContainerBaseTest {
 
             CategoryDto savedCategory = categoryService.createCategory(categoryDto);
             assertNotNull(savedCategory.getId(), "Saved category should have an ID");
-            savedCategories.add(savedCategory);
         }
 
         List<CategoryDto> categories = categoryService.getAllCategories();

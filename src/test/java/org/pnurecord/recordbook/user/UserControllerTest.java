@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -93,6 +94,8 @@ public class UserControllerTest extends AbstractTestContainerBaseTest {
 
         mockMvc.perform(delete("/users/" + createdUser.getId()))
                 .andExpect(status().isOk());
+
+        assertFalse(userRepository.findById(createdUser.getId()).isPresent());
     }
 
     @Test

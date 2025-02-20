@@ -91,7 +91,7 @@ public class ReactionControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldGetAllReactions() throws Exception {
+    void testGetAllReactions() throws Exception {
         mockMvc.perform(get("/reactions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
@@ -99,7 +99,7 @@ public class ReactionControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldGetReactionById() throws Exception {
+    void testGetReactionById() throws Exception {
         mockMvc.perform(get("/reactions/{id}", testReaction.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.liked").value(testReaction.isLiked()));
@@ -107,7 +107,7 @@ public class ReactionControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldNotCreateDuplicateReaction() throws Exception {
+    void testNotCreateDuplicateReaction() throws Exception {
         UserCreateDto userDto2 = new UserCreateDto();
         userDto2.setFirstName(UUID.randomUUID().toString());
         userDto2.setLastName(UUID.randomUUID().toString());
@@ -134,7 +134,7 @@ public class ReactionControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldUpdateReaction() throws Exception {
+    void testUpdateReaction() throws Exception {
         ReactionUpdateDto updateDto = new ReactionUpdateDto();
         updateDto.setLiked(false);
 
@@ -147,7 +147,7 @@ public class ReactionControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldDeleteReactionById() throws Exception {
+    void testDeleteReactionById() throws Exception {
         mockMvc.perform(delete("/reactions/{id}", testReaction.getId()))
                 .andExpect(status().isOk());
 
@@ -156,7 +156,7 @@ public class ReactionControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldGetReactionCount() throws Exception {
+    void testGetReactionCount() throws Exception {
         mockMvc.perform(get("/reactions/count").param("record-id", savedRecord.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.likes").value(1))

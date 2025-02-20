@@ -76,7 +76,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void findAllRecords() throws Exception {
+    void testFindAllRecords() throws Exception {
         mockMvc.perform(get("/records"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value(savedRecord.getTitle()))
@@ -89,7 +89,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void getRecordById() throws Exception {
+    void testGetRecordById() throws Exception {
         mockMvc.perform(get("/records/" + savedRecord.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(savedRecord.getTitle()))
@@ -99,7 +99,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void createRecord() throws Exception {
+    void testCreateRecord() throws Exception {
         RecordDto newRecordDto = new RecordDto();
         newRecordDto.setTitle(UUID.randomUUID().toString());
         newRecordDto.setDescription(UUID.randomUUID().toString());
@@ -128,7 +128,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void updateRecord() throws Exception {
+    void testUpdateRecord() throws Exception {
         String updatedTitle = UUID.randomUUID().toString();
         String updatedDescription = UUID.randomUUID().toString();
 
@@ -155,7 +155,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void deleteRecordById() throws Exception {
+    void testDeleteRecordById() throws Exception {
         int initialCount = recordService.findAllRecords().size();
         assertEquals(1, initialCount);
 
@@ -169,7 +169,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void gePendingRecordsByCategory() throws Exception {
+    void testGetPendingRecordsByCategory() throws Exception {
         mockMvc.perform(get("/records/pending/categories/" + savedCategory.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -187,7 +187,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void getApprovedRecordsByCategory() throws Exception {
+    void testGetApprovedRecordsByCategory() throws Exception {
         UserCreateDto userDto2 = new UserCreateDto();
         userDto2.setFirstName(UUID.randomUUID().toString());
         userDto2.setLastName(UUID.randomUUID().toString());
@@ -214,7 +214,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void getRecordsByAuthor() throws Exception {
+    void testGetRecordsByAuthor() throws Exception {
         mockMvc.perform(get("/records/authors/" + savedUser.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -230,7 +230,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void findAllPendingRecords() throws Exception {
+    void testFindAllPendingRecords() throws Exception {
         mockMvc.perform(get("/records/pending"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value(savedRecord.getTitle()))
@@ -239,7 +239,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void findAllApprovedRecords() throws Exception {
+    void testFindAllApprovedRecords() throws Exception {
         recordService.approveRecord(savedRecord.getId());
 
         mockMvc.perform(get("/records/approved"))
@@ -250,7 +250,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void getPendingRecordsByDate() throws Exception {
+    void testGetPendingRecordsByDate() throws Exception {
         mockMvc.perform(get("/records/pending/date/" + LocalDate.now()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value(savedRecord.getTitle()))
@@ -259,7 +259,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void getApprovedRecordsByDate() throws Exception {
+    void testGetApprovedRecordsByDate() throws Exception {
         UserCreateDto userDto2 = new UserCreateDto();
         userDto2.setFirstName(UUID.randomUUID().toString());
         userDto2.setLastName(UUID.randomUUID().toString());
@@ -283,7 +283,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void getUserRecordsByStatus() throws Exception {
+    void testGetUserRecordsByStatus() throws Exception {
         mockMvc.perform(get("/records/users/" + savedUser.getId() + "?status=PENDING"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].authorId").value(savedUser.getId()))
@@ -293,7 +293,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void approveRecord() throws Exception {
+    void testApproveRecord() throws Exception {
         mockMvc.perform(put("/records/" + savedRecord.getId() + "/approve"))
                 .andExpect(status().isOk());
 
@@ -303,7 +303,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void rejectRecord() throws Exception {
+    void testRejectRecord() throws Exception {
         mockMvc.perform(put("/records/" + savedRecord.getId() + "/reject"))
                 .andExpect(status().isOk());
 
@@ -313,7 +313,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void searchApprovedOrPendingRecordsByTitle() throws Exception {
+    void testSearchApprovedOrPendingRecordsByTitle() throws Exception {
         recordDto.setTitle("Test" + UUID.randomUUID());
         savedRecord = recordService.createRecord(recordDto);
         UserCreateDto adminDto = new UserCreateDto();
@@ -350,7 +350,7 @@ class RecordControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void searchRecordsByTitleTooShort() throws Exception {
+    void testSearchRecordsByTitleTooShort() throws Exception {
         mockMvc.perform(get("/records/search?title=a"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())

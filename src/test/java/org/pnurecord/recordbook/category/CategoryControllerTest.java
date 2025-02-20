@@ -49,7 +49,7 @@ public class CategoryControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldGetAllCategories() throws Exception {
+    void testGetAllCategories() throws Exception {
         mockMvc.perform(get("/categories"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
@@ -57,7 +57,7 @@ public class CategoryControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldGetCategoryById() throws Exception {
+    void testGetCategoryById() throws Exception {
         mockMvc.perform(get("/categories/{categoryId}", testCategory.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(testCategory.getName()));
@@ -65,7 +65,7 @@ public class CategoryControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldCreateCategory() throws Exception {
+    void testCreateCategory() throws Exception {
         CategoryDto newCategory = new CategoryDto();
         newCategory.setName("New Test Category");
 
@@ -78,7 +78,7 @@ public class CategoryControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldUpdateCategory() throws Exception {
+    void testUpdateCategory() throws Exception {
         CategoryDto updatedCategory = new CategoryDto();
         updatedCategory.setName("Updated Name");
 
@@ -91,7 +91,7 @@ public class CategoryControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldDeleteCategoryById() throws Exception {
+    void testDeleteCategoryById() throws Exception {
         mockMvc.perform(delete("/categories/{categoryId}", testCategory.getId()))
                 .andExpect(status().isOk());
 
@@ -100,7 +100,7 @@ public class CategoryControllerTest extends AbstractTestContainerBaseTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void shouldDeleteAllCategories() throws Exception {
+    void testDeleteAllCategories() throws Exception {
         mockMvc.perform(delete("/categories"))
                 .andExpect(status().isOk());
 

@@ -330,10 +330,12 @@ public class RecordServiceTest extends AbstractTestContainerBaseTest {
         assertEquals(2, foundByDatePending.size(), "There should be exactly 2 pending records with today's published date");
 
         for (RecordDto record : foundByDatePending) {
+            assertEquals(LocalDate.now(), record.getPublishedDate());
             assertEquals(RecordStatus.PENDING, record.getStatus(), "Record should have PENDING status");
         }
 
         List<RecordDto> foundByDateApproved = recordService.getApprovedRecordsByDate(LocalDate.now());
+        assertEquals(LocalDate.now(), foundByDateApproved.get(0).getPublishedDate());
         assertEquals(1, foundByDateApproved.size(), "There should be exactly 1 approved record with today's published date");
         assertEquals(RecordStatus.APPROVED, foundByDateApproved.get(0).getStatus(), "Record should have APPROVED status");
     }
