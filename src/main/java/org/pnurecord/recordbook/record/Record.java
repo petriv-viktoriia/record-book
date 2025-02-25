@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import lombok.Data;
 import org.pnurecord.recordbook.category.Category;
 import org.pnurecord.recordbook.user.User;
@@ -33,7 +34,9 @@ public class Record {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
+
     private LocalDate publishedDate;
 
     @Enumerated(EnumType.STRING)
